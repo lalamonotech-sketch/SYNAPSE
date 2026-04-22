@@ -1,0 +1,259 @@
+/* ══════════════════════════════════════════════════════
+   SYNAPSE v95 — ANIMATIONS
+   Consolidated animation keyframes.
+   Co-located @keyframes in component files are the
+   canonical source — this file is the reference copy.
+   ══════════════════════════════════════════════════════ */
+
+@keyframes capture-blink{
+  from{box-shadow:inset 0 0 0 1px rgba(60,255,140,.15)}
+  to{box-shadow:inset 0 0 0 1px rgba(60,255,140,.75),0 0 18px rgba(60,255,140,.42)}
+}
+
+@keyframes pulse-ping{
+  0%{transform:scale(1.13);box-shadow:0 0 22px rgba(255,200,50,.7)}
+  100%{transform:scale(1);box-shadow:none}
+}
+
+@keyframes spine-btn-glow{
+  from{box-shadow:inset 0 0 0 1px rgba(255,190,40,.2)}
+  to{box-shadow:inset 0 0 0 1px rgba(255,190,40,.7),0 0 14px rgba(255,180,30,.32)}
+}
+
+@keyframes fusion-btn-blink{
+  from{box-shadow:inset 0 0 0 1px rgba(255,120,20,.25)}
+  to{box-shadow:inset 0 0 0 1px rgba(255,120,20,.85),0 0 22px rgba(255,100,10,.52)}
+}
+
+@keyframes energy-pop{
+  0%{transform:scale(1.4) translateY(-1px);color:rgba(80,255,200,1);text-shadow:0 0 20px rgba(60,255,180,.9)}
+  60%{transform:scale(1.08);color:rgba(140,240,255,.95)}
+  100%{transform:scale(1);color:rgba(120,220,255,.92);text-shadow:none}
+}
+
+@keyframes sc-breathe{
+  0%,100%{box-shadow:0 0 18px rgba(60,255,140,.05),inset 0 0 28px rgba(0,0,0,.4)}
+  50%    {box-shadow:0 0 32px rgba(60,255,140,.13),inset 0 0 28px rgba(0,0,0,.4)}
+}
+
+@keyframes ql-complete-flash{
+  0%{box-shadow:0 0 0 rgba(255,215,60,0)}
+  30%{box-shadow:0 0 28px rgba(255,215,60,.65),inset 0 0 18px rgba(255,180,0,.12)}
+  100%{box-shadow:0 0 0 rgba(255,215,60,0)}
+}
+
+@keyframes now-blink{from{opacity:.68}to{opacity:1}}
+
+@keyframes ob-complete-glow{
+  0%  {border-color:rgba(80,255,160,.6);box-shadow:0 0 22px rgba(60,255,140,.35)}
+  100%{border-color:rgba(70,140,255,.18);box-shadow:0 0 0 1px rgba(60,120,255,.06)}
+}
+
+@keyframes blink-dot{from{box-shadow:0 0 6px rgba(255,80,40,.65)}to{box-shadow:0 0 16px rgba(255,80,40,1),0 0 28px rgba(255,60,20,.4)}}
+
+@keyframes spine-pulse{from{box-shadow:0 0 7px rgba(255,190,40,.65)}to{box-shadow:0 0 16px rgba(255,190,40,.95),0 0 28px rgba(255,150,20,.48)}}
+
+@keyframes dormant-pulse{from{box-shadow:0 0 5px rgba(80,80,200,.28)}to{box-shadow:0 0 12px rgba(80,80,200,.62),0 0 22px rgba(60,60,180,.25)}}
+
+@keyframes ta-core-pulse{0%,100%{box-shadow:0 0 0 0 rgba(0,255,238,.0)}50%{box-shadow:0 0 18px 6px rgba(0,255,238,.35)}}
+
+@keyframes phantom-pulse{
+  from{box-shadow:0 0 8px rgba(200,80,255,.55),0 0 18px rgba(170,50,255,.3);opacity:.85}
+  to{box-shadow:0 0 16px rgba(220,100,255,1),0 0 32px rgba(190,60,255,.7);opacity:1}
+}
+
+@keyframes fuse-pulse{from{box-shadow:0 0 9px rgba(255,110,30,.75)}to{box-shadow:0 0 20px rgba(255,110,30,.98),0 0 34px rgba(255,80,10,.65)}}
+
+@keyframes orb-drift1{from{transform:translate(-40px,-30px) scale(.92)}to{transform:translate(40px,30px) scale(1.08)}}
+
+@keyframes orb-drift2{from{transform:translate(30px,20px) scale(1.04)}to{transform:translate(-30px,-20px) scale(.96)}}
+
+@keyframes fade-in-left{
+  from{opacity:0;transform:translateX(-18px)}
+  to{opacity:1;transform:translateX(0)}
+}
+
+@keyframes fade-in-up{
+  from{opacity:0;transform:translateY(22px)}
+  to{opacity:1;transform:translateY(0)}
+}
+
+@keyframes fade-in{from{opacity:0}to{opacity:1}}
+
+@keyframes train-ping{
+  0%{transform:scale(1.1);box-shadow:0 0 18px rgba(120,255,80,.65)}
+  100%{transform:scale(1);box-shadow:none}
+}
+
+@keyframes agent-blink{from{opacity:.7}to{opacity:1}}
+
+@keyframes timer-urgent-pulse{
+  from{opacity:.8}to{opacity:1}
+}
+
+@keyframes bpd-throb{
+  from{box-shadow:0 0 8px rgba(255,80,50,.7)}
+  to{box-shadow:0 0 16px rgba(255,80,50,1),0 0 28px rgba(255,60,30,.55)}
+}
+
+@keyframes boss-hud-breathe{
+  from{box-shadow:2px 0 22px rgba(255,40,40,.04)}
+  to  {box-shadow:2px 0 42px rgba(255,40,40,.14)}
+}
+
+@keyframes boss-hud-breathe-ghost{
+  from{box-shadow:2px 0 18px rgba(40,255,200,.04)}
+  to  {box-shadow:2px 0 38px rgba(40,255,200,.12)}
+}
+
+@keyframes boss-hud-breathe-sigma{
+  from{box-shadow:2px 0 18px rgba(180,60,255,.04)}
+  to  {box-shadow:2px 0 38px rgba(180,60,255,.12)}
+}
+
+@keyframes boss-telegraph-name{
+  from{text-shadow:0 0 40px rgba(255,40,40,.5),0 0 80px rgba(220,20,20,.18)}
+  to  {text-shadow:0 0 55px rgba(255,160,40,.85),0 0 100px rgba(255,80,20,.3)}
+}
+
+@keyframes boss-telegraph-hp{
+  from{box-shadow:0 0 6px rgba(255,40,40,.5)}
+  to  {box-shadow:0 0 16px rgba(255,140,40,.85)}
+}
+
+@keyframes boss-vuln-hud{
+  from{box-shadow:2px 0 22px rgba(80,255,160,.08)}
+  to  {box-shadow:2px 0 44px rgba(80,255,160,.32)}
+}
+
+@keyframes boss-vuln-name{
+  from{opacity:.85}to{opacity:1;text-shadow:0 0 40px rgba(80,255,160,.65),0 0 80px rgba(60,220,120,.22)}
+}
+
+@keyframes boss-telegraph-pulse{
+  from{background:radial-gradient(ellipse at 50% 50%,transparent 40%,rgba(255,0,0,.0) 100%)}
+  to{background:radial-gradient(ellipse at 50% 50%,transparent 30%,rgba(255,0,0,.22) 100%)}
+}
+
+@keyframes vuln-pulse{
+  from{color:rgba(255,80,80,.9);text-shadow:0 0 12px rgba(255,0,0,.6)}
+  to{color:rgba(255,220,80,.95);text-shadow:0 0 28px rgba(255,180,0,.9)}
+}
+
+@keyframes boss-hit-shake{
+  0%{transform:translate(0,0)}10%{transform:translate(-4px,2px)}20%{transform:translate(4px,-2px)}
+  30%{transform:translate(-3px,3px)}40%{transform:translate(3px,-1px)}50%{transform:translate(-2px,2px)}
+  100%{transform:translate(0,0)}
+}
+
+@keyframes mirror-pulse{
+  from{color:rgba(200,80,255,.9);text-shadow:0 0 10px rgba(160,40,255,.6)}
+  to{color:rgba(255,180,255,.98);text-shadow:0 0 28px rgba(200,80,255,.9)}
+}
+
+@keyframes best-glow{
+  0%{box-shadow:0 0 28px rgba(255,200,40,.6)}
+  100%{box-shadow:none}
+}
+
+@keyframes boss-hud-breathe-parasite{from{box-shadow:0 0 18px rgba(100,255,40,.12)}to{box-shadow:0 0 32px rgba(100,255,40,.22)}}
+
+@keyframes vortex-drain-pulse {
+  from { opacity: .85 }
+  to   { opacity: 1;  filter: brightness(1.18) }
+}
+
+@keyframes vx-saturate { from{opacity:.85} to{opacity:1} }
+
+@keyframes mini-bar-pulse{from{opacity:.7}to{opacity:1}}
+
+@keyframes sync-decay-pulse{from{opacity:.75}to{opacity:1}}
+
+@keyframes backbone-banner-glow{
+  from{text-shadow:0 0 12px rgba(255,110,20,.6)}
+  to{text-shadow:0 0 22px rgba(255,110,20,.95),0 0 40px rgba(255,80,0,.4)}
+}
+
+@keyframes layer-shimmer{
+  0%{opacity:0;letter-spacing:10px;color:rgba(150,220,255,.8)}
+  40%{opacity:1;letter-spacing:7px;color:rgba(100,200,255,.7)}
+  100%{opacity:1;letter-spacing:6px;color:rgba(80,160,255,.4)}
+}
+
+@keyframes agent-ticker-in{
+  0%{opacity:0;transform:translateY(4px)}
+  100%{opacity:1;transform:translateY(0)}
+}
+
+@keyframes pulse-rdy-shimmer{
+  0%{box-shadow:0 0 0 0 rgba(255,220,80,.0)}
+  50%{box-shadow:0 0 16px 2px rgba(255,210,60,.22)}
+  100%{box-shadow:0 0 0 0 rgba(255,220,80,.0)}
+}
+
+@keyframes hud-fadein{
+  from{opacity:0;transform:translateY(-8px) scale(.995)}
+  to{opacity:1;transform:translateY(0) scale(1)}
+}
+
+@keyframes dock-slidein{
+  from{opacity:0;transform:translateY(14px) scale(.995)}
+  to{opacity:1;transform:translateY(0) scale(1)}
+}
+
+@keyframes proto-sig-in{
+  0%{opacity:0} 8%{opacity:.18} 45%{opacity:.07} 100%{opacity:0}
+}
+
+@keyframes proto-chip-pop{
+  0%{transform:scale(0) translateY(8px);opacity:0}
+  60%{transform:scale(1.18) translateY(-2px);opacity:1}
+  100%{transform:scale(1) translateY(0);opacity:1}
+}
+
+@keyframes proto-banner-in{
+  0%{opacity:0;transform:translate(-50%,-50%) scale(.88) translateY(6px)}
+  12%{opacity:.9;transform:translate(-50%,-50%) scale(1.02) translateY(0)}
+  60%{opacity:.65}
+  100%{opacity:0;transform:translate(-50%,-50%) scale(1.05) translateY(-8px)}
+}
+
+@keyframes decay-blink{from{opacity:var(--di-op,1)}to{opacity:calc(var(--di-op,1)*.55)}}
+
+@keyframes e-loss {
+  0%   { color: rgba(255,75,55,1);
+         text-shadow: 0 0 16px rgba(255,45,25,.95);
+         transform: scale(1.15) translateY(0); }
+  35%  { transform: scale(0.90) translateY(2px); }
+  100% { color: var(--hud-val);
+         text-shadow: none;
+         transform: scale(1) translateY(0); }
+}
+
+@keyframes low-energy-pulse {
+  0%, 100% { box-shadow: none; }
+  50%       { box-shadow: 0 0 0 2px rgba(255,60,40,.28),
+                          0 0 14px rgba(255,40,20,.18); }
+}
+
+@keyframes prog-lbl-in {
+  from { opacity: 0; transform: translateY(-4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes orb1-breathe {
+  0%, 100% { opacity: .85; transform: scale(1) translate(0,0); }
+  50%       { opacity: 1.0; transform: scale(1.06) translate(2%, -1%); }
+}
+
+@keyframes orb2-breathe {
+  0%, 100% { opacity: .70; transform: scale(1) translate(0,0); }
+  50%       { opacity: .90; transform: scale(1.04) translate(-2%, 1.5%); }
+}
+
+@keyframes proto-chip-pop {
+  0%   { transform: scale(0) translateY(10px); opacity: 0; }
+  60%  { transform: scale(1.20) translateY(-3px); opacity: 1; }
+  100% { transform: scale(1) translateY(0); opacity: 1; }
+}
+

@@ -1,0 +1,275 @@
+/* ══════════════════════════════════════════════════════
+   SYNAPSE — HUD BASE LAYERS
+   - L3 Canvas setup
+   - v79 AI Awareness HUD — polished glass panel
+   - Pause Button
+   - Pause Overlay
+   - v66 Event Timer Fill
+   ══════════════════════════════════════════════════════ */
+
+/* ══════════════════════════════════════════════════════════
+   v68 BOTTOM-MESSAGE-STACK — zentrale Positionstabelle
+   Alle floating bottom-overlays richten sich an diesen Slots aus.
+   Stack (bottom edge, z-index):
+     210px z14 — #mirror-cluster-bar     (sigma only, exklusiv)
+     172px z14 — #boss-vuln-bar          (boss encounter, exklusiv)
+     150px z12 — #sync-overlay           (L3 sync, exklusiv während Boss: hidden)
+      86px z13 — #missed-flash / #hint   (exklusiv, gleiche Slot — missed verdrängt hint)
+      48px z10 — #obj-line               (immer sichtbar, außer Boss-Intro)
+   Slot-Regeln (orchestriert via window._msgStack):
+     • Boss-Intro sperrt: hint + obj-line werden hidden
+     • Boss-Aktiv: sync-overlay verborgen während boss-vuln-bar aktiv
+     • missed-flash: verdrängt hint via CSS-Sibling (existing)
+     • now-action: eigenes prio-System (boss>sync>event>advisory)
+   Dock height: ≈74px + safe-area → clearance 86px.
+   ══════════════════════════════════════════════════════════ */
+#missed-flash{
+  position:fixed;bottom:calc(90px + env(safe-area-inset-bottom,0px));left:50%;transform:translateX(-50%);
+  z-index:13;pointer-events:none;white-space:nowrap;
+  font-size:11px;letter-spacing:3.5px;
+  color:rgba(255,90,65,.9);text-transform:uppercase;
+  font-family:'Share Tech Mono',monospace;
+  text-shadow:0 0 16px rgba(255,60,40,.7);
+  opacity:0;transition:opacity .2s;
+}
+#missed-flash.show{opacity:1}
+/* Wenn missed-flash aktiv ist: hint ausblenden */
+#missed-flash.show ~ #hint{opacity:0!important}
+
+/* ── AI AWARENESS HUD — redesigned glass panel ── */
+#ai-hud {
+  position: fixed;
+  top: max(62px, calc(env(safe-area-inset-top, 0px) + 48px));
+  right: 0;
+  z-index: 11;
+  width: clamp(152px, 19vw, 186px);
+  background: linear-gradient(180deg, rgba(0,4,22,.96) 0%, rgba(0,3,16,.98) 100%);
+  border-left: 1px solid rgba(70,130,255,.18);
+  border-bottom: 1px solid rgba(70,130,255,.18);
+  border-radius: 0 0 0 10px;
+  padding: 12px 14px 14px 16px;
+  pointer-events: none;
+  opacity: 0; transform: translateX(16px);
+  transition: opacity .5s cubic-bezier(.25,0,.15,1), transform .5s cubic-bezier(.25,0,.15,1), visibility .5s;
+  display: none; visibility: hidden;
+  backdrop-filter: blur(36px) saturate(2.0);
+  -webkit-backdrop-filter: blur(36px) saturate(2.0);
+  box-shadow: -6px 6px 32px rgba(0,0,0,.55), inset 0 1px 0 rgba(255,255,255,.05), inset -1px 0 0 rgba(80,140,255,.08);
+}
+/* Left accent spine */
+#ai-hud::before {
+  content: ''; position: absolute; right: 100%; top: 0; bottom: 0; width: 1px; pointer-events: none;
+  background: linear-gradient(to bottom, transparent 6%, rgba(80,160,255,.20) 20%, rgba(110,205,255,.42) 50%, rgba(80,160,255,.20) 80%, transparent 94%);
+}
+/* Tick on spine */
+#ai-hud::after {
+  content: ''; position: absolute; right: calc(100% - 4px); top: 28%; width: 9px; height: 1px; background: rgba(90,170,255,.38);
+}
+#ai-hud.vis { opacity: 1; transform: translateX(0); display: block; visibility: visible; }
+
+/* Divider line below stage label */
+#ai-stage-lbl {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: var(--hud-fs-xs); letter-spacing: var(--hud-ls-mid);
+  color: rgba(75,145,255,.52); text-transform: uppercase;
+  margin-bottom: 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  padding-bottom: 6px;
+  border-bottom: 1px solid rgba(80,130,255,.10);
+}
+#ai-profile-lbl {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 13px; font-weight: 600; letter-spacing: 3.5px; text-transform: uppercase;
+  margin-bottom: 0; transition: color .5s, text-shadow .5s;
+}
+#ai-profile-lbl.profile-locked { font-size: 13px; letter-spacing: 3.5px; }
+#ai-mood-lbl {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 10px; letter-spacing: 2px; color: rgba(255,255,255,.22); text-transform: uppercase;
+  margin-bottom: 6px; transition: opacity .5s, color .4s; overflow: hidden; max-height: 1.2em;
+}
+#ai-mood-lbl:empty { display: none; }
+#ai-mood-lbl.mood-idle { opacity: 0; pointer-events: none; }
+#ai-bonus-lbl {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 10px; letter-spacing: 1.5px; color: rgba(255,255,255,.24); text-transform: uppercase;
+  margin-bottom: 8px; line-height: 1.65; transition: opacity .4s, max-height .35s;
+  overflow: hidden; max-height: 3em;
+}
+#ai-bonus-lbl:empty { max-height: 0; margin-bottom: 0; }
+
+/* Bar rows */
+.ai-bars { display: flex; flex-direction: column; gap: 6px; }
+.ai-bar-row { display: flex; align-items: center; gap: 7px; padding: 1px 0; }
+.ai-bar-key {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 10px; letter-spacing: 2.5px; color: rgba(255,255,255,.34);
+  text-transform: uppercase; width: 28px; flex-shrink: 0;
+  transition: color .3s, letter-spacing .3s;
+}
+.ai-bar-track {
+  flex: 1; height: 4px;
+  background: rgba(255,255,255,.07);
+  border-radius: 3px; overflow: visible; position: relative;
+}
+.ai-bar-fill { height: 100%; border-radius: 3px; width: 0%; transition: width .8s cubic-bezier(.25,0,.15,1); }
+.ai-bar-val {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 10px; letter-spacing: 1px; color: rgba(255,255,255,.30);
+  width: 22px; text-align: right; flex-shrink: 0;
+  opacity: 0; transition: opacity .2s;
+}
+#ai-hud:hover .ai-bar-val { opacity: .62; }
+
+/* Profile colours */
+.ab-analyst  .ai-bar-fill { background: rgba(80,180,255,.76); }
+.ab-predator .ai-bar-fill { background: rgba(255,80,80,.76); }
+.ab-architect .ai-bar-fill { background: rgba(255,200,60,.76); }
+.ab-mnemonic .ai-bar-fill { background: rgba(180,80,255,.76); }
+
+/* Dominant state — bright bar, bright label */
+.ai-bar-row.dominant .ai-bar-fill { filter: brightness(1.45); box-shadow: 0 0 8px currentColor; }
+.ai-bar-row.dominant .ai-bar-key  { color: rgba(255,255,255,.93); letter-spacing: .5px; }
+.ai-bar-row.dominant .ai-bar-track { background: rgba(255,255,255,.10); }
+
+/* Mobile: hide AI panel on very small screens, show only profile label */
+@media (max-width: 480px) {
+  #ai-hud { width: clamp(120px, 38vw, 152px); padding: 8px 10px 10px 12px; }
+  #ai-stage-lbl { font-size: 8px; letter-spacing: 2px; }
+  #ai-profile-lbl { font-size: 11px; letter-spacing: 2.5px; }
+  #ai-bonus-lbl, #ai-mood-lbl { display: none; }
+  .ai-bar-key { font-size: 8px; width: 22px; }
+}
+
+/* ── PAUSE BUTTON ── */
+#pause-btn{
+  position:fixed;top:max(10px,env(safe-area-inset-top,10px));right:14px;z-index:14;
+  display:none;
+  width:36px;height:36px;
+  background:linear-gradient(180deg, rgba(0,5,28,.80) 0%, rgba(0,3,18,.88) 100%);
+  border:1px solid rgba(70,130,255,.18);
+  border-radius:var(--hud-panel-r);cursor:pointer;
+  backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+  color:rgba(255,255,255,.38);
+  font-size:.75rem;line-height:1;
+  align-items:center;justify-content:center;
+  transition:all .2s cubic-bezier(.25,0,.15,1);outline:none;
+  -webkit-tap-highlight-color:transparent;
+  pointer-events:auto;
+  box-shadow:0 2px 14px rgba(0,0,0,.55), inset 0 1px 0 rgba(255,255,255,.05), 0 0 0 1px rgba(50,100,255,.05);
+}
+#pause-btn:hover{
+  /* FIX B-04: merged duplicate :hover declarations */
+  background:rgba(30,70,180,.28);
+  border-color:rgba(80,160,255,.32);
+  color:rgba(150,220,255,.9);
+  box-shadow:0 2px 16px rgba(0,0,0,.5),0 0 0 1px rgba(80,160,255,.1);
+}
+#pause-btn:active{transform:scale(.92);}
+#pause-btn.game-active{display:flex}
+/* Pause icon — two bars */
+#pause-btn::before{
+  content:'';
+  display:block;width:10px;height:12px;
+  border-left:3px solid currentColor;
+  border-right:3px solid currentColor;
+  box-sizing:border-box
+}
+/* show X when paused */
+#pause-btn.is-paused::before{
+  border:none;
+  width:13px;height:13px;
+  background:
+    linear-gradient(45deg,transparent 42%,currentColor 42%,currentColor 58%,transparent 58%),
+    linear-gradient(-45deg,transparent 42%,currentColor 42%,currentColor 58%,transparent 58%);
+  border-radius:1px
+}
+
+/* ── PAUSE OVERLAY ── */
+/* v67: pause overlay — grid + spine via shell classes (no more ::before/::after duplication) */
+#pause-overlay{
+  position:fixed;inset:0;z-index:90;
+  display:flex;align-items:stretch;
+  background:#010308;
+  opacity:0;pointer-events:none;
+  transition:opacity .5s cubic-bezier(.4,0,.2,1);
+  overflow:hidden
+}
+#pause-overlay.show{opacity:1;pointer-events:auto}
+
+#pause-box{
+  position:relative;z-index:3;
+  display:flex;flex-direction:column;justify-content:center;
+  padding:clamp(40px,8vh,80px) clamp(36px,7vw,100px);
+  padding-left:clamp(54px,10vw,108px);
+  width:min(480px,100%);min-height:100vh;
+  text-align:left;border:none;border-radius:0;
+  background:transparent;box-shadow:none
+}
+
+/* Ambient orb */
+#pause-box::before{
+  content:'';position:absolute;width:600px;height:600px;border-radius:50%;
+  background:radial-gradient(ellipse at 50% 50%,rgba(40,100,255,.055) 0%,transparent 65%);
+  left:-180px;top:-100px;pointer-events:none
+}
+
+/* PAUSE label — matches title-label */
+#pause-label-line{
+  font-family:'Share Tech Mono','Courier New',monospace;
+  font-size:clamp(10px,.75vw, 10px);letter-spacing:clamp(4px,1.4vw,8px);
+  color:rgba(80,160,255,.32);text-transform:uppercase;margin-bottom:8px;
+  white-space:nowrap
+}
+
+/* PAUSE — Bebas Neue, matches title-main scale */
+#pause-title{
+  font-family:'Bebas Neue','Space Grotesk',sans-serif;
+  font-size:clamp(3.2rem,10vw,6rem);
+  font-weight:400;letter-spacing:.05em;line-height:.88;
+  color:#fff;text-transform:uppercase;
+  text-shadow:0 0 60px rgba(80,160,255,.45),0 0 120px rgba(60,120,255,.18);
+  margin-bottom:clamp(24px,3.5vh,40px);text-align:left
+}
+
+/* Separator */
+#pause-sep{
+  width:100%;height:1px;
+  background:linear-gradient(90deg,rgba(80,160,255,.28),rgba(80,160,255,.06),transparent);
+  margin-bottom:clamp(20px,3vh,32px)
+}
+
+/* Menu items — mirrors title menu-item */
+.pause-item{
+  display:block;width:100%;
+  font-family:'Space Grotesk',sans-serif;
+  padding:13px 0;border:none;border-radius:0;
+  border-bottom:1px solid rgba(255,255,255,.05);
+  background:transparent;
+  font-size:clamp(11px,1.3vw,12px);font-weight:500;
+  letter-spacing:5px;text-transform:uppercase;
+  cursor:pointer;
+  transition:padding-left .32s cubic-bezier(.25,0,.15,1),color .25s,background .25s;
+  outline:none;-webkit-tap-highlight-color:transparent;
+  position:relative;text-align:left;margin-bottom:0
+}
+.pause-item:last-child{border-bottom:none}
+.pause-item::before{
+  content:'';position:absolute;left:0;top:50%;transform:translateY(-50%);
+  width:0;height:1px;background:currentColor;opacity:.65;
+  transition:width .32s cubic-bezier(.25,0,.15,1),opacity .25s
+}
+.pause-item:hover::before{width:12px;opacity:.9}
+.pause-item:hover{padding-left:18px}
+
+.pause-item.p-resume{color:rgba(120,210,255,.88);text-shadow:0 0 18px rgba(100,200,255,.3)}
+.pause-item.p-resume:hover{color:rgba(165,235,255,.98);text-shadow:0 0 26px rgba(130,220,255,.6);background:rgba(40,100,220,.05)}
+.pause-item.p-title{color:rgba(255,255,255,.28);font-size:clamp(10px,1.1vw,11px);letter-spacing:4px}
+.pause-item.p-title:hover{color:rgba(255,255,255,.62);background:rgba(255,255,255,.02)}
+
+#pause-hint{
+  margin-top:12px;
+  font-family:'Share Tech Mono',monospace;
+  font-size:11px;letter-spacing:3px;
+  color:rgba(255,255,255,.14);text-transform:uppercase
+}
+

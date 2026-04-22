@@ -1,0 +1,271 @@
+/**
+ * SYNAPSE v98 — Sprint 2 CSS
+ * Blueprint Mode | Grid Expansion | Data Nomads
+ */
+
+/* ─── Blueprint Mode ──────────────────────────────────────────────────────── */
+
+body.blueprint-mode .mbtn#btn-blueprint {
+  background: rgba(0, 200, 255, 0.18);
+  border-color: #00ccff;
+  color: #00ccff;
+  box-shadow: 0 0 10px rgba(0, 200, 255, 0.4);
+}
+
+body.blueprint-dragging {
+  cursor: crosshair !important;
+}
+body.blueprint-dragging * {
+  cursor: crosshair !important;
+}
+
+/* Template selector bar */
+#bp-template-bar {
+  position: fixed;
+  bottom: 80px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(4, 12, 28, 0.88);
+  border: 1px solid rgba(0, 200, 255, 0.35);
+  border-radius: 8px;
+  padding: 7px 14px;
+  z-index: 600;
+  backdrop-filter: blur(8px);
+  animation: bp-bar-in 0.22s ease;
+}
+
+@keyframes bp-bar-in {
+  from { opacity: 0; transform: translateX(-50%) translateY(12px); }
+  to   { opacity: 1; transform: translateX(-50%) translateY(0); }
+}
+
+.bp-bar-label {
+  font-size: 10px;
+  color: #00ccff;
+  letter-spacing: 0.08em;
+  opacity: 0.7;
+  text-transform: uppercase;
+  margin-right: 4px;
+}
+
+.bp-tpl-btn {
+  background: rgba(0,200,255,0.07);
+  border: 1px solid rgba(0,200,255,0.25);
+  color: #8bbfcc;
+  border-radius: 5px;
+  padding: 4px 10px;
+  font-size: 11px;
+  cursor: pointer;
+  transition: all 0.14s;
+}
+.bp-tpl-btn:hover { background: rgba(0,200,255,0.18); color: #00ccff; }
+.bp-tpl-btn.active {
+  background: rgba(0,200,255,0.22);
+  border-color: #00ccff;
+  color: #00ccff;
+}
+
+.bp-exit-btn {
+  background: transparent;
+  border: 1px solid rgba(255,80,80,0.35);
+  color: #ff6666;
+  border-radius: 5px;
+  padding: 4px 8px;
+  font-size: 11px;
+  cursor: pointer;
+  margin-left: 6px;
+}
+.bp-exit-btn:hover { background: rgba(255,60,60,0.15); }
+
+/* Ghost nodes */
+.bp-ghost-node {
+  position: fixed;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  border: 2px dashed rgba(0, 200, 255, 0.75);
+  background: rgba(0, 200, 255, 0.1);
+  color: #00ccff;
+  font-size: 11px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  z-index: 500;
+  animation: ghost-pulse 1.2s ease infinite;
+}
+
+.bp-ghost-node.bp-node-source  { border-color: rgba(255,140,0,0.75); color: #ff8c00; background: rgba(255,140,0,0.08); }
+.bp-ghost-node.bp-node-relay   { border-color: rgba(0,200,255,0.75); }
+.bp-ghost-node.bp-node-amplifier{ border-color: rgba(80,255,120,0.75); color: #50ff78; background: rgba(80,255,120,0.07); }
+.bp-ghost-node.bp-node-memory  { border-color: rgba(160,100,255,0.75); color: #aa66ff; background: rgba(160,100,255,0.07); }
+
+@keyframes ghost-pulse {
+  0%, 100% { opacity: 0.65; }
+  50%       { opacity: 1.0; }
+}
+
+/* Ghost links */
+.bp-ghost-link {
+  position: fixed;
+  height: 2px;
+  background: rgba(0,200,255,0.40);
+  transform-origin: 0 50%;
+  pointer-events: none;
+  z-index: 499;
+  top: 0; left: 0;
+}
+.bp-ghost-link.bp-link-resonance { background: rgba(160,100,255,0.45); }
+.bp-ghost-link.bp-link-stable   { background: rgba(0,200,255,0.40); }
+
+/* Cost label */
+.bp-ghost-cost {
+  position: fixed;
+  background: rgba(4,12,28,0.82);
+  border: 1px solid rgba(0,200,255,0.4);
+  color: #00ccff;
+  font-size: 11px;
+  border-radius: 4px;
+  padding: 2px 6px;
+  pointer-events: none;
+  z-index: 502;
+  white-space: nowrap;
+}
+.bp-ghost-cost.bp-cost-unaffordable {
+  border-color: rgba(255,80,80,0.5);
+  color: #ff6060;
+}
+
+/* Confirm banner */
+#bp-confirm-banner {
+  position: fixed;
+  bottom: 130px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(4,12,28,0.92);
+  border: 1px solid rgba(0,200,255,0.5);
+  border-radius: 10px;
+  padding: 12px 20px;
+  z-index: 650;
+  backdrop-filter: blur(10px);
+  text-align: center;
+  min-width: 220px;
+  animation: bp-bar-in 0.18s ease;
+}
+
+.bp-banner-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: #00ccff;
+  letter-spacing: 0.1em;
+  margin-bottom: 4px;
+}
+.bp-banner-desc {
+  font-size: 10px;
+  color: #6699aa;
+  margin-bottom: 6px;
+}
+.bp-banner-cost {
+  font-size: 14px;
+  color: #00ffaa;
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+.bp-banner-cost.bp-cost-unaffordable { color: #ff6060; }
+.bp-banner-btns { display: flex; gap: 8px; justify-content: center; }
+
+.bp-banner-btns button {
+  border-radius: 5px;
+  padding: 5px 14px;
+  font-size: 11px;
+  cursor: pointer;
+  transition: all 0.14s;
+}
+#bp-confirm-btn {
+  background: rgba(0,200,255,0.18);
+  border: 1px solid #00ccff;
+  color: #00ccff;
+}
+#bp-confirm-btn:hover { background: rgba(0,200,255,0.35); }
+#bp-cancel-btn {
+  background: rgba(255,60,60,0.1);
+  border: 1px solid rgba(255,60,60,0.4);
+  color: #ff6060;
+}
+#bp-cancel-btn:hover { background: rgba(255,60,60,0.22); }
+
+/* ─── Grid Expansion ──────────────────────────────────────────────────────── */
+
+.biome-label {
+  position: fixed;
+  font-size: 9px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 2px 6px;
+  border-radius: 3px;
+  pointer-events: none;
+  z-index: 300;
+  opacity: 0.7;
+}
+.biome-label.biome-corrupted  { color: #ff6644; border: 1px solid rgba(255,100,68,0.4); background: rgba(255,60,40,0.08); }
+.biome-label.biome-resonance  { color: #44ffcc; border: 1px solid rgba(68,255,200,0.4); background: rgba(40,200,160,0.08); }
+.biome-label.biome-data-ocean { color: #4488ff; border: 1px solid rgba(68,136,255,0.4); background: rgba(40,80,200,0.08); }
+
+/* ─── Data Nomads HUD indicator ───────────────────────────────────────────── */
+
+#nomad-hud {
+  position: fixed;
+  bottom: 48px;
+  right: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  z-index: 400;
+  pointer-events: none;
+}
+
+.nomad-indicator {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(4,12,28,0.78);
+  border: 1px solid rgba(68,204,255,0.25);
+  border-radius: 5px;
+  padding: 3px 8px;
+  font-size: 10px;
+  animation: nomad-in 0.2s ease;
+}
+
+@keyframes nomad-in {
+  from { opacity: 0; transform: translateX(16px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+.nomad-indicator.nomad-drifter    { border-color: rgba(68,204,255,0.3); color: #44ccff; }
+.nomad-indicator.nomad-pathfinder { border-color: rgba(136,255,204,0.3); color: #88ffcc; }
+.nomad-indicator.nomad-glitch     { border-color: rgba(255,68,136,0.3); color: #ff4488; }
+.nomad-indicator.nomad-archivist  { border-color: rgba(170,136,255,0.3); color: #aa88ff; }
+.nomad-indicator.nomad-symbiotic  { border-color: rgba(0,255,150,0.5); color: #00ff96; animation: symbiosis-pulse 2s ease infinite; }
+
+@keyframes symbiosis-pulse {
+  0%, 100% { box-shadow: none; }
+  50%       { box-shadow: 0 0 8px rgba(0,255,150,0.35); }
+}
+
+.nomad-capture-bar {
+  height: 3px;
+  background: rgba(255,255,255,0.1);
+  border-radius: 2px;
+  overflow: hidden;
+  width: 40px;
+}
+.nomad-capture-fill {
+  height: 100%;
+  border-radius: 2px;
+  background: currentColor;
+  transition: width 0.3s ease;
+}

@@ -1,0 +1,67 @@
+/* ══════════════════════════════════════════════════════
+   SYNAPSE — Low-Graphics Performance Overrides
+   ──────────────────────────────────────────────────────
+   When the player picks `Niedrig`, ALL backdrop-filters
+   become solid (or very lightly transparent) colors and
+   expensive multi-shadows collapse to a single border.
+   This frees the GPU on laptops and mobile (typical
+   gain: 10–20 FPS in dense overlays).
+   ══════════════════════════════════════════════════════ */
+
+body[data-graphics="low"] *,
+body[data-graphics="low"] *::before,
+body[data-graphics="low"] *::after {
+  /* Wipe every backdrop-filter site-wide. */
+  -webkit-backdrop-filter: none !important;
+          backdrop-filter: none !important;
+}
+
+/* Replace glassy panels with a solid-ish dark fill so contrast is preserved. */
+body[data-graphics="low"] #hud,
+body[data-graphics="low"] #ctrl-dock,
+body[data-graphics="low"] #ai-hud,
+body[data-graphics="low"] #boss-hud,
+body[data-graphics="low"] #l3-hud,
+body[data-graphics="low"] #ql-panel,
+body[data-graphics="low"] #active-projects-hud,
+body[data-graphics="low"] #onboard-card,
+body[data-graphics="low"] #node-tip,
+body[data-graphics="low"] #toast,
+body[data-graphics="low"] #train-score-popup,
+body[data-graphics="low"] #pause-overlay,
+body[data-graphics="low"] #settings-box,
+body[data-graphics="low"] #info-overlay,
+body[data-graphics="low"] #protocol-overlay,
+body[data-graphics="low"] #draft-overlay,
+body[data-graphics="low"] #boss-screen,
+body[data-graphics="low"] #win-screen,
+body[data-graphics="low"] #history-panel,
+body[data-graphics="low"] .syn-card,
+body[data-graphics="low"] .glass-panel {
+  background: rgba(4, 12, 24, 0.94) !important;
+  box-shadow: 0 0 0 1px rgba(80, 180, 255, 0.18) !important;
+  filter: none !important;
+}
+
+/* Strip vignette + scanlines — both repaint every frame. */
+body[data-graphics="low"] #vignette,
+body[data-graphics="low"] #scanline-overlay {
+  display: none !important;
+}
+
+/* Disable text-shadow glows on dense HUD numerals. */
+body[data-graphics="low"] #hud,
+body[data-graphics="low"] #hud *,
+body[data-graphics="low"] #ai-hud *,
+body[data-graphics="low"] #boss-hud *,
+body[data-graphics="low"] .ai-bar-val,
+body[data-graphics="low"] .energy-num {
+  text-shadow: none !important;
+}
+
+/* Cut animation cost — keep entrance but no continuous loops. */
+body[data-graphics="low"] .pulse,
+body[data-graphics="low"] .breathe,
+body[data-graphics="low"] .shimmer {
+  animation: none !important;
+}

@@ -1,0 +1,167 @@
+/* ══════════════════════════════════════════════════════
+   SYNAPSE v95 — WIN SCREEN
+   Win screen, tier badges, QA dock clearance.
+   Migrated win-state styles
+   ══════════════════════════════════════════════════════ */
+
+/* ── v66 QA: floating overlays — clear dock height (≈78px) + safe margin ── */
+#sync-overlay{
+  position:fixed;bottom:calc(150px + env(safe-area-inset-bottom,0px));left:50%;transform:translateX(-50%);
+  z-index:12;pointer-events:none;text-align:center;opacity:0;transition:opacity .3s
+}
+#sync-overlay.show{opacity:1}
+#sync-title{font-size:13px;letter-spacing:5px;color:rgba(255,200,60,.95);text-transform:uppercase;text-shadow:0 0 20px rgba(255,180,40,.8)}
+#sync-bar-wrap{width:180px;height:4px;background:rgba(255,255,255,.09);border-radius:4px;margin:6px auto 0}
+#sync-bar{will-change:opacity;height:100%;border-radius:4px;background:rgba(255,200,60,.9);width:100%;box-shadow:0 0 8px rgba(255,190,40,.5)}
+/* legacy #l3-obj/.l3o duplicates removed — definitions above are canonical */
+#bonus-flash{position:fixed;inset:0;z-index:8;pointer-events:none;background:radial-gradient(ellipse at 50% 50%,rgba(160,80,255,.22) 0%,transparent 70%);opacity:0;transition:opacity .8s}
+#bonus-flash.show{opacity:1}
+
+/* ── v63 WIN SCREEN — title-screen architecture ── */
+#win-screen{
+  position:fixed;inset:0;z-index:120;
+  display:flex;align-items:stretch;
+  background:#010308;
+  opacity:0;pointer-events:none;transition:opacity 1.0s cubic-bezier(.4,0,.2,1);
+  overflow:hidden
+}
+#win-screen.show{opacity:1;pointer-events:auto}
+
+/* v66: win grid via shell tokens */
+#win-grid{
+  position:absolute;inset:0;z-index:0;pointer-events:none;
+  background-image:
+    linear-gradient(var(--shell-grid-green) 1px,transparent 1px),
+    linear-gradient(90deg,var(--shell-grid-green) 1px,transparent 1px);
+  background-size:var(--shell-grid-size) var(--shell-grid-size);
+  -webkit-mask-image:var(--shell-mask);mask-image:var(--shell-mask)
+}
+
+/* v66: win spine via shell token */
+#win-spine-line{
+  position:absolute;left:var(--shell-spine-x);top:0;bottom:0;
+  width:1px;z-index:2;pointer-events:none;
+  background:var(--shell-spine-green)
+}
+#win-spine-line::before,#win-spine-line::after{
+  content:'';position:absolute;left:-3px;width:7px;height:1px;background:rgba(80,255,160,.5)
+}
+#win-spine-line::before{top:30%}
+#win-spine-line::after{top:68%}
+
+/* Ambient glow orb */
+#win-orb{
+  position:absolute;width:700px;height:700px;border-radius:50%;
+  background:radial-gradient(ellipse at 50% 50%,rgba(40,255,140,.06) 0%,transparent 65%);
+  left:-180px;top:-120px;pointer-events:none;z-index:0;
+  animation:orb-drift1 12s infinite alternate ease-in-out
+}
+
+/* Scanlines */
+#win-scanlines{
+  position:absolute;inset:0;pointer-events:none;z-index:1;
+  background:repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(0,0,0,.006) 3px,rgba(0,0,0,.006) 6px)
+}
+
+/* Left content column — mirrors title-content */
+#win-inner{
+  position:relative;z-index:3;
+  display:flex;flex-direction:column;justify-content:flex-start;
+  padding:clamp(40px,8vh,72px) clamp(36px,7vw,100px);
+  padding-left:clamp(54px,10vw,108px);
+  padding-right:clamp(36px,6vw,80px);
+  width:min(680px,100%);min-height:100vh;
+  overflow-y:auto;
+  text-align:left;border:none;border-radius:0;background:transparent;box-shadow:none
+}
+
+/* MAIN WIN TITLE — Bebas Neue, matches title-main */
+#win-title{
+  font-family:'Bebas Neue','Space Grotesk',sans-serif;
+  font-size:clamp(3.4rem,11vw,6.8rem);
+  font-weight:400;letter-spacing:.05em;line-height:.88;
+  color:#fff;text-transform:uppercase;
+  text-shadow:0 0 60px rgba(80,255,160,.55),0 0 120px rgba(60,220,120,.22);
+  margin-bottom:10px;text-align:left
+}
+
+/* Subtitle label — matches title-sub style */
+#win-sub{
+  font-family:'Share Tech Mono','Courier New',monospace;
+  font-size:clamp(.36rem,.75vw,.48rem);letter-spacing:clamp(4px,1.2vw,7px);
+  color:rgba(100,255,170,.50);text-transform:uppercase;margin-bottom:0
+}
+
+/* Separator — matches title-sep */
+#win-sep{
+  width:100%;height:1px;
+  background:linear-gradient(90deg,rgba(80,255,160,.28),rgba(80,255,160,.06),transparent);
+  margin:clamp(16px,2.5vh,28px) 0
+}
+
+#win-stats{display:grid;grid-template-columns:1fr 1fr;gap:0 32px;margin-bottom:0;text-align:left}
+.wstat{display:flex;flex-direction:column;gap:2px;padding:6px 0;border-bottom:1px solid rgba(255,255,255,.04)}
+.wstat:nth-last-child(-n+2){border-bottom:none}
+.wk{font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:3px;color:rgba(255,255,255,.35);text-transform:uppercase}
+.wv{font-family:'Space Grotesk',sans-serif;font-size:.68rem;letter-spacing:2px;color:rgba(100,240,180,.92);font-weight:600}
+
+#win-perfect{
+  font-family:'Share Tech Mono',monospace;
+  font-size:11px;letter-spacing:4px;color:rgba(255,220,80,.85);text-transform:uppercase;
+  text-shadow:0 0 14px rgba(255,200,40,.5);margin-bottom:0;
+  display:none
+}
+#win-perfect.show{display:block}
+
+/* Action buttons — match menu-item architecture */
+#win-restart{
+  display:block;width:100%;
+  padding:13px 0;border:none;border-radius:0;
+  border-bottom:1px solid rgba(255,255,255,.05);
+  background:transparent;color:rgba(120,255,180,.88);
+  font-family:'Space Grotesk',sans-serif;font-size:clamp(.5rem,1.3vw,.65rem);
+  font-weight:500;letter-spacing:5px;text-transform:uppercase;
+  cursor:pointer;
+  transition:padding-left .32s cubic-bezier(.25,0,.15,1),color .25s,background .25s;
+  outline:none;position:relative;text-align:left
+}
+#win-restart::before{
+  content:'';position:absolute;left:0;top:50%;transform:translateY(-50%);
+  width:0;height:1px;background:currentColor;opacity:.65;
+  transition:width .32s cubic-bezier(.25,0,.15,1),opacity .25s
+}
+#win-restart:hover::before{width:12px;opacity:.9}
+#win-restart:hover{padding-left:18px;color:rgba(160,255,200,.98);background:rgba(40,140,80,.05)}
+#win-hardmode:hover{background:rgba(120,20,20,.08)!important;color:rgba(255,140,140,.98)!important;padding-left:18px}
+#win-hotkey{font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:3px;color:rgba(255,255,255,.14);text-transform:uppercase;margin-top:6px}
+
+/* ── v67 Enhanced L3 cluster state visuals ── */
+.cl-slot.open .cl-dot{animation:blink-dot .42s infinite alternate;box-shadow:0 0 12px rgba(255,80,40,.95),0 0 24px rgba(255,60,20,.45)}
+.cl-slot.open{color:rgba(255,145,80,.95)}
+.cl-slot.captured .cl-dot{box-shadow:0 0 8px rgba(60,255,140,.7),0 0 18px rgba(60,255,140,.28)}
+.cl-slot.pair-linked .cl-dot{background:rgba(255,220,60,.95)!important;border-color:rgba(255,200,40,.95)!important;box-shadow:0 0 10px rgba(255,200,60,.85),0 0 20px rgba(255,180,40,.42)!important}
+.cl-slot.pair-linked{color:rgba(255,230,80,.88)}
+
+/* Spine node */
+.cl-slot.spine-node .cl-dot{background:rgba(255,200,60,.95)!important;border-color:rgba(255,170,30,.95)!important;box-shadow:0 0 8px rgba(255,190,40,.8),0 0 18px rgba(255,160,20,.38)!important;animation:spine-pulse .9s infinite alternate}
+.cl-slot.spine-node{color:rgba(255,215,70,.92)}
+/* @keyframes spine-pulse — removed: defined in animations.css */
+
+/* Dormant node */
+.cl-slot.dormant .cl-dot{background:rgba(100,100,200,.5)!important;border-color:rgba(80,80,180,.6)!important;box-shadow:0 0 6px rgba(80,80,200,.35)!important;animation:dormant-pulse 2.2s infinite alternate}
+.cl-slot.dormant{color:rgba(140,140,220,.62);font-style:italic}
+/* @keyframes dormant-pulse — removed: defined in animations.css */
+
+/* Fused node */
+.cl-slot.fused .cl-dot{background:rgba(255,130,40,.98)!important;border-color:rgba(255,100,20,.98)!important;box-shadow:0 0 12px rgba(255,110,30,.95),0 0 24px rgba(255,80,10,.55)!important;animation:fuse-pulse .55s infinite alternate}
+.cl-slot.fused{color:rgba(255,160,60,.95)}
+/* v76.3: Timeline panel scrollbar */
+#win-timeline-rows::-webkit-scrollbar{display:none}
+/* v76.3: Temporal Anchor — cyan core-window pulse */
+/* @keyframes ta-core-pulse — removed: defined in animations.css */
+/* v76: Phantom Nexus slot */
+.cl-slot.phantom .cl-dot{background:rgba(200,80,255,.6)!important;border-color:rgba(180,60,255,.85)!important;box-shadow:0 0 10px rgba(200,80,255,.85),0 0 22px rgba(170,50,255,.45)!important;animation:phantom-pulse 1.1s infinite alternate}
+.cl-slot.phantom{color:rgba(220,130,255,.92)}
+/* @keyframes phantom-pulse — removed: defined in animations.css */
+/* @keyframes fuse-pulse — removed: defined in animations.css */
+

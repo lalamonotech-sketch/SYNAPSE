@@ -1,0 +1,1411 @@
+/* polish/consistency.css — MERGED from consistency-screens/panels + recipe-consistency/tokens-overlays */
+/* === consistency-screens.css === */
+/* ══════════════════════════════════════════════════════
+   SYNAPSE — HUD CONSISTENCY: SCREENS & LAYOUT
+   1. HUD TOP-BAR — Vereinheitlicht
+   2. TITLE SCREEN — Einheitliches Typographie-System
+   3. TITEL-SCREEN BUTTONS — Unified, consistent
+   4. OVERLAYS (Settings, Info, Pause) — Unified panels
+   5. COMMAND DOCK — Einheitlich
+   ══════════════════════════════════════════════════════ */
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   UNIFIED DESIGN TOKENS — Eine einzige Quelle der Wahrheit
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+:root {
+  /* Konsistente Panel-Sprache */
+  --u-panel-bg:       rgba(2, 7, 24, 0.88);
+  --u-panel-border:   rgba(80, 160, 255, 0.18);
+  --u-panel-border-h: rgba(100, 180, 255, 0.32);
+  --u-panel-r:        10px;
+  --u-panel-blur:     blur(28px) saturate(1.9);
+  --u-panel-shadow:   0 8px 40px rgba(0,0,0,0.72), 0 0 0 1px rgba(60,120,255,0.10), inset 0 1px 0 rgba(255,255,255,0.04);
+
+  /* Chip/Badge-System */
+  --u-chip-bg:        rgba(60, 120, 255, 0.10);
+  --u-chip-border:    rgba(80, 160, 255, 0.22);
+  --u-chip-r:         6px;
+  --u-chip-fs:        clamp(0.60rem, 1.2vw, 0.68rem);
+  --u-chip-ls:        2.5px;
+  --u-chip-pad:       3px 9px;
+
+  /* Button-System */
+  --u-btn-primary-bg:     rgba(60, 140, 255, 0.14);
+  --u-btn-primary-border: rgba(80, 160, 255, 0.40);
+  --u-btn-primary-hover:  rgba(60, 140, 255, 0.28);
+  --u-btn-secondary-bg:   rgba(255,255,255,0.04);
+  --u-btn-secondary-border: rgba(255,255,255,0.10);
+  --u-btn-r:              10px;
+
+  /* Text-Hierarchie unified */
+  --u-text-title:   rgba(220, 240, 255, 0.96);
+  --u-text-main:    rgba(200, 225, 255, 0.88);
+  --u-text-sub:     rgba(160, 200, 255, 0.65);
+  --u-text-dim:     rgba(130, 170, 220, 0.45);
+  --u-text-accent:  rgba(100, 200, 255, 1.0);
+  --u-text-green:   rgba(80, 255, 160, 1.0);
+  --u-text-amber:   rgba(255, 200, 60, 1.0);
+
+  /* Einheitliche Übergänge */
+  --u-ease:  cubic-bezier(0.22, 1, 0.36, 1);
+  --u-t-fast: 0.14s;
+  --u-t-mid:  0.26s;
+  --u-t-slow: 0.48s;
+}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   1. HUD TOP-BAR — Vereinheitlicht
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+
+#hud {
+  background: linear-gradient(180deg, rgba(2,7,22,0.94) 0%, rgba(1,4,16,0.90) 100%);
+  backdrop-filter: var(--u-panel-blur);
+  -webkit-backdrop-filter: var(--u-panel-blur);
+  border-bottom: 1px solid var(--u-panel-border);
+  box-shadow: 0 1px 0 rgba(80,160,255,0.15) inset, 0 4px 28px rgba(0,0,0,0.5);
+  font-family: 'Share Tech Mono', monospace;
+  letter-spacing: var(--u-chip-ls);
+}
+
+/* HUD Stats — einheitliche Chips */
+.stat {
+  background: var(--u-chip-bg);
+  border: 1px solid var(--u-chip-border);
+  border-radius: var(--u-chip-r);
+  padding: var(--u-chip-pad);
+  font-family: 'Share Tech Mono', monospace;
+  font-size: var(--u-chip-fs);
+  letter-spacing: var(--u-chip-ls);
+  color: var(--u-text-sub);
+  transition: border-color var(--u-t-fast) var(--u-ease),
+              color var(--u-t-fast) var(--u-ease);
+  white-space: nowrap;
+}
+
+.stat .sv {
+  color: var(--u-text-accent);
+  font-weight: 500;
+}
+
+/* Layer / Phase Tag */
+#layer-tag,
+#phase-name {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: clamp(0.58rem, 1.1vw, 0.65rem);
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--u-text-sub);
+}
+
+#phase-name {
+  color: var(--u-text-accent);
+  text-shadow: 0 0 10px rgba(100,200,255,0.35);
+}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   2. TITLE SCREEN — Einheitliches Typographie-System
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+
+/* Label über dem Titel */
+#title-label {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: clamp(0.60rem, 1.4vw, 0.70rem);
+  letter-spacing: 4.5px;
+  text-transform: uppercase;
+  color: var(--u-text-sub);
+  margin-bottom: clamp(6px,1.5vh,12px);
+  opacity: 0.78;
+}
+
+/* Haupt-Titel */
+#title-main {
+  font-family: 'Bebas Neue', sans-serif;
+  letter-spacing: 8px;
+  color: var(--u-text-title);
+  text-shadow:
+    0 0 40px rgba(80,160,255,0.30),
+    0 0 80px rgba(60,120,255,0.14),
+    0 2px 0 rgba(0,0,0,0.6);
+  line-height: 1.0;
+}
+
+/* Sub-Titel */
+#title-sub {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: clamp(0.58rem, 1.2vw, 0.68rem);
+  letter-spacing: 5px;
+  text-transform: uppercase;
+  color: var(--u-text-dim);
+  margin-top: clamp(4px,0.8vh,8px);
+}
+
+/* Save-Card — einheitlicher Panel-Style */
+#save-card {
+  background: linear-gradient(135deg, rgba(4,14,44,0.88) 0%, rgba(2,8,28,0.92) 100%);
+  border: 1px solid rgba(80,160,255,0.20);
+  border-radius: var(--u-panel-r);
+  backdrop-filter: blur(20px) saturate(1.8);
+  -webkit-backdrop-filter: blur(20px) saturate(1.8);
+  box-shadow: 0 6px 32px rgba(0,0,0,0.55), inset 0 1px 0 rgba(255,255,255,0.04);
+  padding: clamp(14px,2.5vh,20px) clamp(16px,3vw,22px);
+  cursor: pointer;
+  transition: border-color var(--u-t-mid) var(--u-ease),
+              box-shadow var(--u-t-mid) var(--u-ease);
+}
+
+#save-card:hover {
+  border-color: rgba(80,160,255,0.38);
+  box-shadow: 0 8px 40px rgba(0,0,0,0.6), 0 0 0 1px rgba(80,160,255,0.12), inset 0 1px 0 rgba(255,255,255,0.06);
+}
+
+/* Save-Card Label */
+#save-card-label {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: clamp(0.58rem, 1.1vw, 0.65rem);
+  letter-spacing: 3.5px;
+  text-transform: uppercase;
+  color: var(--u-text-sub);
+  margin-bottom: 8px;
+}
+
+/* Save-Card Headline */
+#save-card-cta,
+.save-cta {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: clamp(0.75rem, 1.8vw, 0.90rem);
+  font-weight: 600;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--u-text-green);
+  text-shadow: 0 0 14px rgba(80,255,160,0.28);
+}
+
+/* Save-Card Chips */
+.sc-chip {
+  background: var(--u-chip-bg);
+  border: 1px solid var(--u-chip-border);
+  border-radius: var(--u-chip-r);
+  padding: var(--u-chip-pad);
+  font-family: 'Share Tech Mono', monospace;
+  font-size: var(--u-chip-fs);
+  letter-spacing: var(--u-chip-ls);
+  color: var(--u-text-sub);
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   3. TITEL-SCREEN BUTTONS — Unified, consistent
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+
+/* Primary action button (Continue / Neuer Run) */
+.menu-item.primary,
+#btn-continue {
+  background: linear-gradient(135deg, rgba(30,90,255,0.16) 0%, rgba(20,70,220,0.10) 100%);
+  border: 1px solid rgba(80,160,255,0.36);
+  border-radius: var(--u-btn-r);
+  color: rgba(140,210,255,0.95);
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: clamp(0.68rem, 1.5vw, 0.80rem);
+  font-weight: 600;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  padding: clamp(13px,2.4vh,17px) clamp(18px,4vw,28px);
+  cursor: pointer;
+  transition: background var(--u-t-mid) var(--u-ease),
+              border-color var(--u-t-mid) var(--u-ease),
+              box-shadow var(--u-t-mid) var(--u-ease),
+              color var(--u-t-fast) var(--u-ease);
+  box-shadow: 0 4px 20px rgba(40,100,255,0.12), inset 0 1px 0 rgba(255,255,255,0.06);
+  outline: none;
+  width: 100%;
+  text-align: left;
+}
+
+.menu-item.primary:hover,
+#btn-continue:hover {
+  background: linear-gradient(135deg, rgba(40,110,255,0.26) 0%, rgba(30,90,240,0.18) 100%);
+  border-color: rgba(100,180,255,0.55);
+  box-shadow: 0 6px 32px rgba(40,100,255,0.20), 0 0 0 1px rgba(80,160,255,0.10), inset 0 1px 0 rgba(255,255,255,0.08);
+  color: rgba(180,230,255,0.98);
+}
+
+.menu-item.primary:active {
+  transform: translateY(1px);
+  box-shadow: 0 2px 12px rgba(40,100,255,0.14);
+}
+
+/* Secondary buttons (Einstellungen, Info) */
+.menu-item.secondary,
+#btn-settings,
+#btn-info {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.09);
+  border-radius: var(--u-btn-r);
+  color: rgba(160,190,230,0.72);
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: clamp(0.62rem, 1.3vw, 0.74rem);
+  font-weight: 500;
+  letter-spacing: 3.5px;
+  text-transform: uppercase;
+  padding: clamp(11px,2vh,14px) clamp(14px,3vw,20px);
+  cursor: pointer;
+  transition: background var(--u-t-fast) var(--u-ease),
+              border-color var(--u-t-fast) var(--u-ease),
+              color var(--u-t-fast) var(--u-ease);
+  outline: none;
+}
+
+.menu-item.secondary:hover,
+#btn-settings:hover,
+#btn-info:hover {
+  background: rgba(255,255,255,0.07);
+  border-color: rgba(100,160,255,0.22);
+  color: rgba(190,215,250,0.88);
+}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   4. OVERLAYS (Settings, Info, Pause) — Unified panels
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+
+#settings-overlay,
+#info-overlay,
+#pause-overlay {
+  background: rgba(0, 3, 16, 0.76);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+}
+
+/* Overlay inner content panels */
+.shell-content,
+.settings-inner,
+.info-inner,
+.pause-inner {
+  background: linear-gradient(160deg, rgba(3,10,36,0.96) 0%, rgba(1,5,22,0.98) 100%);
+  border: 1px solid var(--u-panel-border);
+  border-radius: 14px;
+  box-shadow: var(--u-panel-shadow);
+}
+
+/* Overlay headers */
+.shell-label,
+.settings-title,
+.info-title,
+.pause-title {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: clamp(0.58rem, 1.1vw, 0.65rem);
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  color: var(--u-text-dim);
+}
+
+/* Overlay section titles */
+.settings-section-title,
+.info-section-title {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: clamp(0.60rem, 1.2vw, 0.68rem);
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--u-text-sub);
+  border-bottom: 1px solid rgba(80,140,255,0.12);
+  padding-bottom: 6px;
+  margin-bottom: 12px;
+}
+
+/* Diff/Option toggle buttons */
+.diff-btn,
+.opt-btn,
+.lang-btn,
+.motion-btn,
+.graphics-btn {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.09);
+  border-radius: 8px;
+  color: rgba(150,180,220,0.68);
+  font-family: 'Share Tech Mono', monospace;
+  font-size: clamp(0.60rem, 1.1vw, 0.68rem);
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  padding: 9px 16px;
+  cursor: pointer;
+  transition: background var(--u-t-fast) var(--u-ease),
+              border-color var(--u-t-fast) var(--u-ease),
+              color var(--u-t-fast) var(--u-ease);
+  outline: none;
+}
+
+.diff-btn.active,
+.opt-btn.active,
+.lang-btn.active,
+.motion-btn.active,
+.graphics-btn.active {
+  background: rgba(60,130,255,0.16);
+  border-color: rgba(80,160,255,0.42);
+  color: rgba(140,210,255,0.95);
+  text-shadow: 0 0 8px rgba(100,180,255,0.25);
+}
+
+.diff-btn:hover:not(.active),
+.opt-btn:hover:not(.active) {
+  background: rgba(255,255,255,0.07);
+  border-color: rgba(100,160,255,0.18);
+  color: rgba(180,210,245,0.80);
+}
+
+/* Close / Apply buttons in overlays */
+.settings-close-btn,
+.overlay-close {
+  background: transparent;
+  border: 1px solid rgba(255,255,255,0.09);
+  border-radius: 8px;
+  color: rgba(150,180,220,0.65);
+  cursor: pointer;
+  transition: border-color var(--u-t-fast) var(--u-ease), color var(--u-t-fast) var(--u-ease);
+}
+
+.settings-close-btn:hover,
+.overlay-close:hover {
+  border-color: rgba(100,160,255,0.28);
+  color: rgba(180,210,250,0.85);
+}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   5. COMMAND DOCK — Einheitlich, konsistent mit Title-Screen
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+
+#ctrl-dock {
+  background: linear-gradient(135deg, rgba(2,8,28,0.90) 0%, rgba(1,5,20,0.92) 100%);
+  backdrop-filter: blur(32px) saturate(2.0) brightness(0.96);
+  -webkit-backdrop-filter: blur(32px) saturate(2.0) brightness(0.96);
+  border: 1px solid var(--u-panel-border);
+  box-shadow: 0 -1px 0 rgba(80,160,255,0.12),
+              0 -8px 32px rgba(0,0,0,0.55),
+              inset 0 1px 0 rgba(255,255,255,0.03);
+}
+
+/* Dock Buttons — konsistent */
+.ctrl-btn,
+.dock-btn,
+#btn-pulse,
+#btn-train {
+  background: var(--u-chip-bg);
+  border: 1px solid var(--u-chip-border);
+  border-radius: 8px;
+  color: var(--u-text-sub);
+  font-family: 'Share Tech Mono', monospace;
+  font-size: clamp(0.58rem, 1.1vw, 0.65rem);
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  transition: background var(--u-t-fast) var(--u-ease),
+              border-color var(--u-t-fast) var(--u-ease),
+              color var(--u-t-fast) var(--u-ease);
+  outline: none;
+  cursor: pointer;
+}
+
+.ctrl-btn:hover,
+.dock-btn:hover,
+#btn-pulse:hover,
+#btn-train:hover {
+  background: rgba(60,130,255,0.18);
+  border-color: rgba(80,160,255,0.38);
+  color: rgba(140,210,255,0.95);
+}
+
+/* Active dock button */
+.ctrl-btn.active,
+.dock-btn.active,
+.ctrl-btn[data-active="true"] {
+  background: rgba(60,140,255,0.20);
+  border-color: rgba(80,160,255,0.45);
+  color: rgba(160,220,255,1.0);
+  box-shadow: 0 0 12px rgba(60,140,255,0.14);
+}
+
+/* Pulse / Action buttons — slightly more prominent */
+#btn-pulse {
+  background: linear-gradient(135deg, rgba(50,120,255,0.18) 0%, rgba(30,90,220,0.12) 100%);
+  border-color: rgba(80,160,255,0.36);
+  color: rgba(140,210,255,0.95);
+}
+
+#btn-pulse:hover {
+  background: linear-gradient(135deg, rgba(60,140,255,0.28) 0%, rgba(40,110,230,0.20) 100%);
+  box-shadow: 0 0 18px rgba(60,140,255,0.16);
+}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+/* === consistency-panels.css === */
+/* ══════════════════════════════════════════════════════
+   SYNAPSE — HUD CONSISTENCY: PANELS & STATES
+   6.  BOSS / WIN / POST-RUN SCREENS — Einheitlich
+   7.  AI / L3 HUD PANELS — Einheitliches Panel-Design
+   8.  TOAST / NOTIFICATION — Einheitlich
+   9.  PAUSE MENU — Einheitliches Design
+   10. PROTOCOL SCREEN — Einheitlich
+   11. DRAFT OVERLAY — Einheitliche Cards
+   12. PAUSE BUTTON — Einheitlich
+   13. MOBILE — Alle Elemente konsistent
+   14. ACCESSIBILITY — Reduced motion
+   ══════════════════════════════════════════════════════ */
+
+   /* 6. BOSS / WIN / POST-RUN SCREENS — Einheitlich
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+
+/* Win Screen Panel */
+#win-screen .shell-content,
+#postrun-overlay .shell-content {
+  background: linear-gradient(160deg, rgba(3,10,38,0.97) 0%, rgba(1,5,24,0.99) 100%);
+  border-color: rgba(80,160,255,0.20);
+}
+
+/* Grade / Score badge */
+#win-grade {
+  font-family: 'Bebas Neue', sans-serif;
+  letter-spacing: 4px;
+  text-shadow: 0 0 30px rgba(100,200,255,0.4), 0 0 60px rgba(80,160,255,0.2);
+  line-height: 1.0;
+}
+
+/* Win action buttons */
+#win-restart,
+#win-hardmode {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.10);
+  border-radius: 0;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  color: rgba(160,190,230,0.75);
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: clamp(0.62rem, 1.4vw, 0.74rem);
+  font-weight: 500;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: color var(--u-t-fast) var(--u-ease),
+              background var(--u-t-fast) var(--u-ease),
+              padding-left var(--u-t-mid) var(--u-ease);
+  outline: none;
+}
+
+#win-restart:hover {
+  color: rgba(140,210,255,0.95);
+  background: rgba(60,130,255,0.08);
+  padding-left: 20px;
+}
+
+/* Boss HUD elements */
+#boss-hud .boss-hp-bar,
+.boss-hp-inner {
+  background: linear-gradient(90deg, rgba(255,60,80,1) 0%, rgba(220,30,60,0.85) 100%);
+  box-shadow: 0 0 12px rgba(255,60,80,0.30);
+}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   7. AI / L3 HUD PANELS — Einheitliches Panel-Design
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+
+#ai-hud,
+#l3-hud,
+#active-projects-hud {
+  background: linear-gradient(135deg, rgba(2,8,28,0.88) 0%, rgba(1,5,20,0.92) 100%);
+  border: 1px solid var(--u-panel-border);
+  border-radius: var(--u-panel-r);
+  backdrop-filter: var(--u-panel-blur);
+  -webkit-backdrop-filter: var(--u-panel-blur);
+  box-shadow: var(--u-panel-shadow);
+}
+
+/* AI Panel Labels */
+.ai-stage-label,
+.ai-phase-chip,
+#ai-hud .hud-label {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: clamp(0.58rem, 1.1vw, 0.65rem);
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--u-text-sub);
+}
+
+/* Progress Bars — konsistente Optik */
+.hud-bar,
+.progress-bar,
+.energy-bar,
+.boss-hp-track {
+  background: rgba(255,255,255,0.05);
+  border-radius: 3px;
+  overflow: hidden;
+  border: 1px solid rgba(255,255,255,0.06);
+}
+
+.hud-bar-fill,
+.progress-fill {
+  border-radius: 2px;
+  transition: width 0.35s var(--u-ease);
+}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   8. TOAST / NOTIFICATION — Einheitlich
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+
+#toast {
+  background: linear-gradient(135deg, rgba(4,12,40,0.95) 0%, rgba(2,8,28,0.97) 100%);
+  border: 1px solid rgba(80,160,255,0.28);
+  border-radius: var(--u-panel-r);
+  backdrop-filter: blur(24px) saturate(2.0);
+  -webkit-backdrop-filter: blur(24px) saturate(2.0);
+  box-shadow: 0 8px 36px rgba(0,0,0,0.65), 0 0 0 1px rgba(60,120,255,0.08);
+  font-family: 'Share Tech Mono', monospace;
+  font-size: clamp(0.62rem, 1.2vw, 0.70rem);
+  letter-spacing: 2.5px;
+  color: var(--u-text-main);
+}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   9. PAUSE MENU — Einheitliches Design
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+
+.pause-item {
+  background: rgba(255,255,255,0.03);
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  color: rgba(160,190,230,0.75);
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: clamp(0.68rem, 1.5vw, 0.78rem);
+  font-weight: 500;
+  letter-spacing: 3.5px;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: color var(--u-t-fast) var(--u-ease),
+              background var(--u-t-fast) var(--u-ease),
+              padding-left var(--u-t-mid) var(--u-ease);
+  padding: 15px 20px;
+  outline: none;
+}
+
+.pause-item:hover {
+  background: rgba(60,130,255,0.08);
+  color: rgba(140,210,255,0.95);
+  padding-left: 28px;
+}
+
+.pause-item.p-resume {
+  color: rgba(80,220,160,0.90);
+  font-weight: 600;
+}
+
+.pause-item.p-resume:hover {
+  color: rgba(80,255,160,1.0);
+  background: rgba(60,255,140,0.06);
+}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   10. PROTOCOL SCREEN — Einheitlich
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+
+.protocol-card {
+  background: linear-gradient(135deg, rgba(3,10,36,0.88) 0%, rgba(2,7,24,0.92) 100%);
+  border: 1px solid var(--u-panel-border);
+  border-radius: var(--u-panel-r);
+  transition: border-color var(--u-t-mid) var(--u-ease),
+              box-shadow var(--u-t-mid) var(--u-ease);
+  cursor: pointer;
+}
+
+.protocol-card:hover,
+.protocol-card.selected {
+  border-color: rgba(80,160,255,0.45);
+  box-shadow: 0 0 24px rgba(60,130,255,0.12), inset 0 1px 0 rgba(255,255,255,0.05);
+}
+
+.protocol-card.selected {
+  background: linear-gradient(135deg, rgba(30,80,220,0.14) 0%, rgba(20,60,180,0.10) 100%);
+}
+
+.protocol-name {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: clamp(0.70rem, 1.5vw, 0.82rem);
+  font-weight: 600;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  color: var(--u-text-main);
+}
+
+.protocol-desc {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: clamp(0.62rem, 1.2vw, 0.70rem);
+  color: var(--u-text-sub);
+  line-height: 1.55;
+}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   11. DRAFT OVERLAY — Einheitliche Cards
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+
+.draft-card {
+  background: linear-gradient(135deg, rgba(3,10,38,0.90) 0%, rgba(2,7,26,0.93) 100%);
+  border: 1px solid var(--u-panel-border);
+  border-radius: var(--u-panel-r);
+  transition: border-color var(--u-t-mid) var(--u-ease),
+              box-shadow var(--u-t-mid) var(--u-ease),
+              transform var(--u-t-mid) var(--u-ease);
+  cursor: pointer;
+}
+
+.draft-card:hover {
+  border-color: rgba(80,160,255,0.40);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.5), 0 0 0 1px rgba(60,120,255,0.08);
+  transform: translateY(-2px);
+}
+
+.dc-name {
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 600;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--u-text-main);
+}
+
+.dc-desc {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: clamp(0.62rem, 1.2vw, 0.70rem);
+  color: var(--u-text-sub);
+  line-height: 1.55;
+}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   12. PAUSE BUTTON — Einheitlich, nie zu aufdringlich
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+
+#pause-btn {
+  background: rgba(2,8,28,0.72);
+  border: 1px solid var(--u-panel-border);
+  border-radius: 8px;
+  backdrop-filter: blur(16px) saturate(1.8);
+  -webkit-backdrop-filter: blur(16px) saturate(1.8);
+  color: rgba(120,170,220,0.65);
+  transition: background var(--u-t-fast) var(--u-ease),
+              border-color var(--u-t-fast) var(--u-ease),
+              color var(--u-t-fast) var(--u-ease);
+  cursor: pointer;
+  outline: none;
+}
+
+#pause-btn:hover {
+  background: rgba(4,12,40,0.88);
+  border-color: rgba(80,160,255,0.30);
+  color: rgba(140,200,255,0.88);
+}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   13. MOBILE — Alle Elemente konsistent auf kleinen Screens
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+
+@media (max-width: 768px) {
+  /* Touch-Targets: mindestens 44px */
+  .menu-item,
+  .ctrl-btn,
+  .dock-btn,
+  #btn-pulse,
+  #btn-continue,
+  #btn-settings,
+  #btn-info,
+  #pause-btn {
+    min-height: 44px;
+    min-width: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* Full-width buttons on mobile */
+  .menu-item.primary,
+  #btn-continue {
+    width: 100%;
+    justify-content: flex-start;
+    padding-left: clamp(16px, 5vw, 24px);
+  }
+
+  /* Chips readable on mobile */
+  .sc-chip,
+  .stat {
+    font-size: clamp(0.60rem, 2.5vw, 0.68rem);
+    padding: 4px 10px;
+  }
+
+  /* HUD bar slightly taller for readability */
+  #hud {
+    min-height: 48px;
+  }
+
+  /* Title fonts scaling */
+  #title-label {
+    font-size: clamp(0.60rem, 2.8vw, 0.70rem);
+    letter-spacing: 3px;
+  }
+
+  #title-sub {
+    font-size: clamp(0.58rem, 2.5vw, 0.68rem);
+    letter-spacing: 3.5px;
+  }
+
+  /* Secondary buttons side by side */
+  .menu-item.secondary,
+  #btn-settings,
+  #btn-info {
+    flex: 1;
+    min-width: 0;
+    font-size: clamp(0.60rem, 2.8vw, 0.72rem);
+    letter-spacing: 2.5px;
+    padding: 13px 12px;
+  }
+}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   14. ACCESSIBILITY — Reduced motion
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  body,
+  body.synapse-ready {
+    transition: none !important;
+    opacity: 1 !important;
+  }
+}
+/* === recipe-consistency.css === */
+/* ══════════════════════════════════════════════════════
+   SYNAPSE — UI CONSISTENCY PASS
+   §K  Event Pill — prominent & polished
+   §L  Active Projects HUD — border-radius
+   §M  Questline Panel — border-radius
+   §N  Sync Decay Bar — refined
+   §O  Spine Banner — monospace scale
+   §P  Boss Intro Label Scale
+   §Q  AI HUD — scale tokens
+   §R  Node-Tip / Cluster Tooltip — unified recipe
+   §S  Universal Small-Element Consistency
+   §U  Minimap / Audio Flash — colour
+   §V  Onboarding Dots
+   §W  History Toggle Button
+   §X  Cluster Dots
+   §Y  Responsive Adjustments
+   ══════════════════════════════════════════════════════ */
+
+/* ══════════════════════════════════════════════════════════════════ */
+
+#event-pill {
+  font-size: var(--u-fs-xxs) !important;
+  letter-spacing: var(--u-ls-wide) !important;
+  background: linear-gradient(to right,
+    rgba(28,14,0,.94) 0%,
+    rgba(20,10,0,.90) 50%,
+    rgba(28,14,0,.94) 100%) !important;
+  border-bottom: 1px solid rgba(255,185,42,.12) !important;
+  border-top: 1px solid rgba(255,200,55,.06) !important;
+  color: rgba(255,215,92,.58) !important;
+  backdrop-filter: var(--u-blur) !important;
+  -webkit-backdrop-filter: var(--u-blur) !important;
+  box-shadow:
+    0 1px 0 rgba(255,180,40,.07),
+    0 6px 28px rgba(0,0,0,.45) !important;
+}
+#event-pill::before {
+  color: rgba(255,205,65,.40) !important;
+  font-size: .80em !important;
+}
+#event-pill::after {
+  font-size: var(--u-fs-xxs) !important;
+  letter-spacing: var(--u-ls-normal) !important;
+  color: rgba(255,200,65,.32) !important;
+}
+
+/* Event timer fill — graduated */
+#event-timer-fill {
+  background: linear-gradient(to right,
+    rgba(255,185,42,.20) 0%,
+    rgba(255,228,82,.52) 100%) !important;
+}
+#event-timer-bar[data-urgent="1"] #event-timer-fill {
+  background: linear-gradient(to right,
+    rgba(255,105,42,.38) 0%,
+    rgba(255,168,62,.75) 100%) !important;
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   §L  ACTIVE PROJECTS HUD — border-radius consistency
+   ══════════════════════════════════════════════════════════════════ */
+
+#active-projects-hud {
+  border-radius: var(--u-r-md) !important;
+  border-radius: 0 var(--u-r-md) var(--u-r-md) 0 !important;
+  background: linear-gradient(145deg,
+    rgba(0,4,22,.93) 0%,
+    rgba(0,3,16,.97)  100%) !important;
+  box-shadow:
+    0 4px 28px rgba(0,0,0,.62),
+    0 0 0 1px rgba(90,52,210,.06),
+    inset 1px 0 0 rgba(145,92,255,.04) !important;
+  backdrop-filter: var(--u-blur) !important;
+  -webkit-backdrop-filter: var(--u-blur) !important;
+}
+#ap-hud-label {
+  font-size: var(--u-fs-xxs) !important;
+  letter-spacing: var(--u-ls-wide) !important;
+  color: rgba(148,88,255,.46) !important;
+}
+.ap-hud-row {
+  font-size: var(--u-fs-xxs) !important;
+  letter-spacing: var(--u-ls-tight) !important;
+  color: rgba(185,155,255,.58) !important;
+}
+.ap-hud-name {
+  font-size: var(--u-fs-xxs) !important;
+}
+.ap-hud-progress {
+  font-size: var(--u-fs-xxs) !important;
+  color: rgba(255,255,255,.28) !important;
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   §M  QUESTLINE PANEL — border-radius consistency
+   ══════════════════════════════════════════════════════════════════ */
+
+#ql-panel {
+  border-radius: 0 var(--u-r-md) var(--u-r-md) 0 !important;
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   §N  SYNC DECAY BAR — refined
+   ══════════════════════════════════════════════════════════════════ */
+
+#sync-decay-bar-wrap {
+  height: 3px !important;
+  width: 170px !important;
+  background: rgba(255,255,255,.06) !important;
+  border-radius: 2px !important;
+}
+#sync-decay-fill {
+  border-radius: 2px !important;
+  background: rgba(255,205,65,.88) !important;
+  box-shadow: 0 0 8px rgba(255,185,42,.62) !important;
+}
+#sync-decay-fill.fusion {
+  background: rgba(255,145,42,.92) !important;
+  box-shadow: 0 0 10px rgba(255,125,20,.72) !important;
+}
+#sync-decay-fill.critical {
+  background: rgba(255,58,58,.98) !important;
+  box-shadow: 0 0 12px rgba(255,38,38,.90) !important;
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   §O  SPINE BANNER — consistent monospace scale
+   ══════════════════════════════════════════════════════════════════ */
+
+#spine-banner {
+  font-size: var(--u-fs-xs) !important;
+  letter-spacing: var(--u-ls-xwide) !important;
+}
+#spine-banner.spn {
+  color: rgba(255,215,65,.88) !important;
+  text-shadow: 0 0 14px rgba(255,195,42,.58), 0 0 30px rgba(255,165,20,.18) !important;
+}
+#spine-banner.bb {
+  color: rgba(255,135,45,.98) !important;
+  text-shadow:
+    0 0 18px rgba(255,112,22,.78),
+    0 0 36px rgba(255,80,0,.28) !important;
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   §P  BOSS INTRO LABEL SCALE — unify to system tokens
+   ══════════════════════════════════════════════════════════════════ */
+
+#boss-intro-label {
+  font-size: var(--u-fs-xxs) !important;
+  letter-spacing: var(--u-ls-xwide) !important;
+  color: rgba(255,65,62,.34) !important;
+}
+#boss-intro-phase-note {
+  font-size: var(--u-fs-xxs) !important;
+  letter-spacing: var(--u-ls-normal) !important;
+  color: rgba(255,115,82,.35) !important;
+}
+#boss-intro-sub {
+  font-size: var(--u-fs-xxs) !important;
+  letter-spacing: var(--u-ls-wide) !important;
+  color: rgba(255,115,82,.38) !important;
+}
+#boss-hud-label {
+  font-size: var(--u-fs-xxs) !important;
+  letter-spacing: var(--u-ls-wide) !important;
+  color: rgba(255,62,62,.30) !important;
+}
+#boss-hp-key {
+  font-size: var(--u-fs-xxs) !important;
+  letter-spacing: var(--u-ls-wide) !important;
+}
+#boss-hp-val {
+  font-size: var(--u-fs-sm) !important;
+  letter-spacing: var(--u-ls-normal) !important;
+}
+#boss-enc-status {
+  font-size: var(--u-fs-xxs) !important;
+  letter-spacing: var(--u-ls-normal) !important;
+}
+#boss-phase-lbl {
+  font-size: var(--u-fs-xxs) !important;
+  letter-spacing: var(--u-ls-normal) !important;
+}
+
+/* Boss phase dots — slightly larger */
+.bpd {
+  width: 7px !important;
+  height: 7px !important;
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   §Q  AI HUD — scale tokens
+   ══════════════════════════════════════════════════════════════════ */
+
+#ai-stage-lbl  { font-size: var(--u-fs-xxs) !important; letter-spacing: var(--u-ls-wide) !important; }
+#ai-profile-lbl{ font-size: var(--u-fs-sm)  !important; letter-spacing: var(--u-ls-normal) !important; }
+#ai-mood-lbl   { font-size: var(--u-fs-xxs) !important; letter-spacing: var(--u-ls-normal) !important; }
+.ai-bar-key    { font-size: var(--u-fs-xxs) !important; letter-spacing: var(--u-ls-tight) !important; }
+.ai-bar-val    { font-size: var(--u-fs-xxs) !important; letter-spacing: var(--u-ls-tight) !important; }
+
+/* AI bars — slightly taller */
+.ai-bar-track  { height: 4px !important; border-radius: 2px !important; }
+.ai-bar-fill   { border-radius: 2px !important; }
+
+/* ══════════════════════════════════════════════════════════════════
+   §R  NODE-TIP / CLUSTER TOOLTIP — unified recipe
+   ══════════════════════════════════════════════════════════════════ */
+
+#node-tip,
+#cl-tooltip {
+  font-size: var(--u-fs-xxs) !important;
+  letter-spacing: var(--u-ls-tight) !important;
+  line-height: 1.70 !important;
+  border-radius: var(--u-r-sm) !important;
+}
+#cl-tooltip {
+  border-radius: 0 var(--u-r-sm) var(--u-r-sm) var(--u-r-sm) !important;
+  border-left-color: rgba(80,210,165,.62) !important;
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   §S  UNIVERSAL SMALL-ELEMENT CONSISTENCY
+   ══════════════════════════════════════════════════════════════════ */
+
+/* HUD stats row — tighter, crisper */
+#stats-row .stat {
+  font-size: var(--u-fs-xxs) !important;
+  letter-spacing: var(--u-ls-normal) !important;
+}
+#stats-row .sk {
+  color: rgba(255,255,255,.38) !important;
+}
+#stats-row .sv {
+  color: var(--hud-val) !important;
+  font-size: var(--u-fs-xxs) !important;
+}
+
+/* Phase name — unified scale */
+#phase-name {
+  font-size: clamp(.70rem, 1.6vw, .92rem) !important;
+  letter-spacing: 5.5px !important;
+}
+#layer-tag {
+  font-size: var(--u-fs-xxs) !important;
+  letter-spacing: 5px !important;
+}
+#obj-line {
+  font-size: var(--u-fs-xxs) !important;
+  letter-spacing: var(--u-ls-normal) !important;
+}
+
+/* Proto chip — refined */
+#proto-chip {
+  font-size: var(--u-fs-xxs) !important;
+  letter-spacing: var(--u-ls-wide) !important;
+  border-radius: var(--u-r-sm) !important;
+}
+
+/* Diff badge — refined */
+#diff-badge {
+  font-size: var(--u-fs-xxs) !important;
+  letter-spacing: var(--u-ls-normal) !important;
+  border-radius: 18px !important;
+}
+
+/* Pause btn */
+#pause-btn {
+  font-size: var(--u-fs-xxs) !important;
+  letter-spacing: var(--u-ls-wide) !important;
+  border-radius: var(--u-r-sm) !important;
+}
+
+/* Toast text */
+#t-title {
+  font-size: var(--u-fs-sm) !important;
+  letter-spacing: var(--u-ls-wide) !important;
+}
+#t-sub {
+  font-size: var(--u-fs-xxs) !important;
+  letter-spacing: var(--u-ls-normal) !important;
+}
+
+/* Hint */
+#hint {
+  font-size: var(--u-fs-xs) !important;
+  letter-spacing: var(--u-ls-wide) !important;
+  border-radius: var(--u-r-pill) !important;
+}
+
+/* Missed flash */
+#missed-flash {
+  font-size: var(--u-fs-xs) !important;
+  letter-spacing: var(--u-ls-wide) !important;
+}
+
+/* Agent line */
+#agent-line {
+  font-size: var(--u-fs-xxs) !important;
+  letter-spacing: var(--u-ls-normal) !important;
+}
+#now-action {
+  font-size: var(--u-fs-xxs) !important;
+  letter-spacing: var(--u-ls-normal) !important;
+}
+
+/* Combo HUD text scale */
+#combo-hud {
+  font-size: var(--u-fs-sm) !important;
+  letter-spacing: var(--u-ls-wide) !important;
+}
+
+/* Vortex charge label */
+.vx-label {
+  font-size: var(--u-fs-xxs) !important;
+  letter-spacing: var(--u-ls-wide) !important;
+}
+
+/* Cost ghost on type buttons */
+.tbtn .cost-ghost {
+  font-size: var(--u-fs-xxs) !important;
+  letter-spacing: var(--u-ls-tight) !important;
+}
+
+/* L3 HUD labels */
+#l3-hud-label {
+  font-size: var(--u-fs-xxs) !important;
+  letter-spacing: var(--u-ls-wide) !important;
+}
+#l3-hud-header {
+  font-size: var(--u-fs-xs) !important;
+  letter-spacing: var(--u-ls-normal) !important;
+}
+
+/* ── Questline panel text — */
+#ql-name   { font-size: var(--u-fs-xs) !important; letter-spacing: var(--u-ls-normal) !important; }
+#ql-reward { font-size: var(--u-fs-xxs) !important; letter-spacing: var(--u-ls-normal) !important; }
+
+/* ══════════════════════════════════════════════════════════════════
+   ══════════════════════════════════════════════════════════════════ */
+
+#audio-cue-flash {
+  background: rgba(255,255,255,.016) !important;
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   §V  ONBOARDING DOTS — slightly larger
+   ══════════════════════════════════════════════════════════════════ */
+
+.ob-dot {
+  width: 7px !important;
+  height: 7px !important;
+  border-radius: 50% !important;
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   §W  HISTORY TOGGLE BUTTON
+   ══════════════════════════════════════════════════════════════════ */
+
+#history-toggle {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: var(--u-fs-xxs);
+  letter-spacing: var(--u-ls-wide);
+  text-transform: uppercase;
+  background: rgba(0,4,20,.80);
+  border: 1px solid rgba(70,140,255,.18);
+  border-radius: var(--u-r-sm);
+  color: rgba(110,178,255,.55);
+  padding: 6px 12px;
+  cursor: pointer;
+  transition: color .22s, border-color .22s, box-shadow .22s;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+#history-toggle:hover {
+  color: rgba(158,225,255,.88);
+  border-color: rgba(90,178,255,.35);
+  box-shadow: 0 0 14px rgba(60,148,255,.14);
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   §X  CLUSTER DOTS — size consistency
+   ══════════════════════════════════════════════════════════════════ */
+
+.cl-dot {
+  width: 9px !important;
+  height: 9px !important;
+  border-radius: 50% !important;
+  border: 1px solid rgba(255,255,255,.30) !important;
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   §Y  RESPONSIVE ADJUSTMENTS — coherence at all breakpoints
+   ══════════════════════════════════════════════════════════════════ */
+
+@media (max-width: 600px) {
+  /* Float bars — narrower on mobile */
+  #parasite-infection-bar { min-width: 148px !important; padding: 7px 13px 8px !important; }
+  #pib-track              { width: 125px !important; }
+  #vortex-charge-bar      { padding: 6px 12px 7px !important; }
+  .vx-track               { width: 75px !important; }
+  #boss-vuln-fill-wrap    { width: 185px !important; }
+  #mirror-cluster-bar     { padding: 7px 14px 8px !important; }
+
+  /* Overlay title — tighter on mobile */
+  #draft-title,
+  #ev-title,
+  #boss-name              { font-size: clamp(2.8rem, 9vw, 4.5rem) !important; }
+}
+
+@media (max-width: 380px) {
+  /* Collapse some float bars fully */
+  #parasite-infection-bar { min-width: 128px !important; }
+  #pib-track              { width: 108px !important; }
+  #boss-vuln-fill-wrap    { width: 160px !important; }
+}
+
+
+/* === recipe-tokens-overlays.css === */
+/* ══════════════════════════════════════════════════════
+   SYNAPSE — GLASS RECIPE TOKENS & OVERLAY CARDS
+   §A  Shared Glass Recipe Tokens
+   §B  Universal Separator Line
+   §C  Draft Cards — border-radius, card system unification
+   §T  Overlay Titles — Bebas Neue, uniform scale
+   ══════════════════════════════════════════════════════ */
+
+   §A  SHARED GLASS RECIPE TOKENS
+   /* Referenced by all panels below via CSS custom properties
+   ══════════════════════════════════════════════════════════════════ */
+:root {
+  /* Universal panel geometry */
+  --u-r-sm:  5px;   /* chips, small badges */
+  --u-r-md:  7px;   /* mid panels, cards */
+  --u-r-lg:  9px;   /* main overlays, large panels */
+  --u-r-pill: 22px;  /* pill / hint */
+
+  /* Universal glass */
+  --u-blur:  blur(28px) saturate(1.95);
+  --u-bg:    linear-gradient(145deg, rgba(0,5,22,.97) 0%, rgba(0,3,16,.99) 100%);
+
+  /* Universal border colours */
+  --u-bdr-idle:  rgba(255,255,255,.07);
+  --u-bdr-top:   rgba(255,255,255,.10);
+  --u-bdr-blue:  rgba(70,145,255,.22);
+  --u-bdr-blue-t: rgba(95,195,255,.35);
+
+  /* Universal box-shadow */
+  --u-shadow: 0 0 0 1px rgba(50,100,255,.06),
+              0 10px 48px rgba(0,0,0,.80),
+              inset 0 1px 0 rgba(95,185,255,.05);
+
+  /* Separator gradient — scale: left accent, fade right */
+  --u-sep-blue:   linear-gradient(90deg, rgba(80,165,255,.40) 0%, rgba(130,225,255,.68) 40%, rgba(80,165,255,.22) 70%, transparent 100%);
+  --u-sep-red:    linear-gradient(90deg, rgba(255,60,40,.38) 0%, rgba(255,90,60,.55) 38%, rgba(255,60,40,.14) 70%, transparent 100%);
+  --u-sep-amber:  linear-gradient(90deg, rgba(255,180,40,.35) 0%, rgba(255,215,70,.52) 38%, rgba(255,180,40,.14) 70%, transparent 100%);
+  --u-sep-purple: linear-gradient(90deg, rgba(160,80,255,.38) 0%, rgba(190,110,255,.55) 38%, rgba(160,80,255,.14) 70%, transparent 100%);
+  --u-sep-teal:   linear-gradient(90deg, rgba(40,255,200,.35) 0%, rgba(70,255,215,.52) 38%, rgba(40,255,200,.14) 70%, transparent 100%);
+
+  /* Universal font-size scale (monospace labels) */
+  --u-fs-xxs: clamp(.28rem,.56vw,.37rem);
+  --u-fs-xs:  clamp(.32rem,.64vw,.43rem);
+  --u-fs-sm:  clamp(.38rem,.76vw,.50rem);
+  --u-fs-md:  clamp(.44rem,.88vw,.58rem);
+  --u-fs-lg:  clamp(.52rem,1.04vw,.68rem);
+
+  /* Universal letter-spacing scale */
+  --u-ls-tight:  1.5px;
+  --u-ls-normal: 2.5px;
+  --u-ls-wide:   3.5px;
+  --u-ls-xwide:  5px;
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   §B  UNIVERSAL SEPARATOR LINE
+   Every `<div>` or `::before` acting as a divider gets consistent
+   1px gradient line — call the right colour variant per context
+   ══════════════════════════════════════════════════════════════════ */
+
+/* Generic horizontal rule inside any overlay / panel */
+.u-sep,
+#draft-sep,
+#boss-intro-sep,
+#ev-sep,
+#boss-hud-sep,
+#run-report::before,
+#win-progression::before {
+  height: 1px !important;
+  border: none !important;
+}
+
+#draft-sep      { background: var(--u-sep-purple) !important; margin: clamp(14px,2.2vh,24px) 0 !important; }
+#boss-intro-sep { background: var(--u-sep-red)    !important; margin: clamp(16px,2.5vh,26px) 0 !important; }
+#ev-sep         { background: var(--u-sep-amber)  !important; margin: clamp(14px,2.2vh,24px) 0 !important; }
+#boss-hud-sep   { background: var(--u-sep-red)    !important; margin-bottom: clamp(8px,1.4vh,14px) !important; }
+#run-report::before     { background: var(--u-sep-blue)   !important; margin-bottom: 16px !important; }
+#win-progression::before{ background: var(--u-sep-blue)   !important; margin-bottom: 14px !important; }
+
+/* ══════════════════════════════════════════════════════════════════
+   §C  DRAFT CARDS — fix border-radius:0, unify with card system
+   ══════════════════════════════════════════════════════════════════ */
+
+/* Override original border-radius:0 with higher specificity */
+#draft-overlay .draft-card,
+#draft-overlay #draft-cards .draft-card,
+.draft-card {
+  border-radius: var(--u-r-md) !important;
+  border-left: 2px solid rgba(145,65,255,.30) !important;
+  border-top: 1px solid rgba(255,255,255,.09) !important;
+  border-right: 1px solid rgba(255,255,255,.05) !important;
+  border-bottom: 1px solid rgba(0,0,0,.50) !important;
+  background: linear-gradient(145deg,
+    rgba(12,5,30,.92) 0%,
+    rgba(8,3,22,.96)  100%) !important;
+  box-shadow:
+    0 0 0 1px rgba(100,40,220,.06),
+    0 8px 36px rgba(0,0,0,.65),
+    inset 0 1px 0 rgba(155,80,255,.06) !important;
+  backdrop-filter: var(--u-blur) !important;
+  -webkit-backdrop-filter: var(--u-blur) !important;
+  transition:
+    border-color .22s,
+    background .22s,
+    box-shadow .28s,
+    transform .18s !important;
+}
+
+#draft-overlay .draft-card:hover,
+#draft-overlay #draft-cards .draft-card:hover,
+.draft-card:hover {
+  border-left-color: rgba(195,115,255,.75) !important;
+  border-top-color: rgba(255,255,255,.14) !important;
+  background: linear-gradient(145deg,
+    rgba(28,10,68,.90) 0%,
+    rgba(18,6,50,.94) 100%) !important;
+  box-shadow:
+    0 0 0 1px rgba(155,75,255,.14),
+    0 12px 50px rgba(0,0,0,.72),
+    0 0 30px rgba(120,50,240,.08),
+    inset 0 1px 0 rgba(185,100,255,.07) !important;
+  transform: translateY(-2px) !important;
+}
+
+/* Top shimmer line — always visible on card */
+.draft-card::before {
+  background: linear-gradient(90deg,
+    rgba(155,80,255,.28) 0%,
+    rgba(200,130,255,.14) 55%,
+    transparent 100%) !important;
+  border-radius: var(--u-r-md) var(--u-r-md) 0 0;
+}
+
+/* Rarity colour-coded left accent */
+.draft-card.rarity-common   { border-left-color: rgba(140,140,200,.35) !important; }
+.draft-card.rarity-rare     { border-left-color: rgba(65,145,255,.45) !important; }
+.draft-card.rarity-epic     { border-left-color: rgba(160,65,255,.50) !important; }
+.draft-card.rarity-legendary { border-left-color: rgba(255,185,45,.55) !important; }
+
+/* Card text upgrades */
+.dc-name {
+  font-size: var(--u-fs-md) !important;
+  letter-spacing: var(--u-ls-wide) !important;
+  color: rgba(215,165,255,.96) !important;
+  text-shadow: 0 0 12px rgba(175,90,255,.25) !important;
+}
+.dc-desc {
+  font-size: var(--u-fs-xxs) !important;
+  letter-spacing: var(--u-ls-tight) !important;
+  color: rgba(255,255,255,.38) !important;
+  line-height: 1.80 !important;
+}
+.dc-icon {
+  font-size: 1.55rem !important;
+  opacity: .90 !important;
+}
+
+/* Skip button — tighter, consistent */
+.draft-skip {
+  font-size: var(--u-fs-xxs) !important;
+  letter-spacing: var(--u-ls-wide) !important;
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   §T  OVERLAY TITLES — Bebas Neue, uniform scale
+   ══════════════════════════════════════════════════════════════════ */
+
+/* All shell overlay titles unified */
+#draft-title,
+#ev-title,
+#boss-name {
+  font-family: 'Bebas Neue', sans-serif !important;
+  font-size: clamp(3.2rem, 10vw, 6.5rem) !important;
+  letter-spacing: 6px !important;
+  line-height: .88 !important;
+}
+
+/* All shell label lines unified */
+#draft-label-line,
+#ev-label,
+#boss-intro-label {
+  font-family: 'Share Tech Mono', monospace !important;
+  font-size: var(--u-fs-xxs) !important;
+  letter-spacing: var(--u-ls-xwide) !important;
+  text-transform: uppercase !important;
+  margin-bottom: 8px !important;
+  white-space: nowrap !important;
+}
+
+/* All shell sub lines unified */
+#draft-sub,
+#ev-desc,
+#boss-intro-sub {
+  font-family: 'Share Tech Mono', monospace !important;
+  font-size: var(--u-fs-xxs) !important;
+  letter-spacing: var(--u-ls-wide) !important;
+  text-transform: uppercase !important;
+}
+
+/* Boss intro start button — consistent with menu-item arch */
+#boss-start-btn {
+  font-family: 'Share Tech Mono', monospace !important;
+  font-size: var(--u-fs-md) !important;
+  letter-spacing: var(--u-ls-xwide) !important;
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   §U  MINIMAP / AUDIO FLASH — colour consistency
+ */

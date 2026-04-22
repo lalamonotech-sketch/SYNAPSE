@@ -1,0 +1,345 @@
+/**
+ * SYNAPSE v98 — Sprint 4 CSS
+ * UI-Verschleierung | Genetic Memory | AP Badge | Epoch Palette
+ */
+
+/* ── CSS Custom Properties (injected by applyEpochPalette) ──────────────────── */
+:root {
+  --s4-accent:   #2a4a6a;
+  --s4-glow:     rgba(40, 80, 140, 0.3);
+  --s4-hud-fade: 0.55;
+}
+
+/* ── Epoch I: Strict UI restriction ─────────────────────────────────────────── */
+
+/*
+ * body.s4-epoch-restricted hides dock buttons that shouldn't exist yet.
+ * The epoch-mechanical body class (from awakening.css) handles #stats-row etc.
+ * We add granular button hiding here.
+ */
+
+body.s4-epoch-restricted [data-s4-hidden] {
+  opacity: 0 !important;
+  pointer-events: none !important;
+  visibility: hidden !important;
+}
+
+/* Dock fades to near-invisible during epoch I */
+body.epoch-mechanical #ctrl-dock {
+  opacity: var(--s4-hud-fade);
+  filter: saturate(0.3) brightness(0.7);
+  transition: opacity 1.2s ease, filter 1.2s ease;
+}
+
+body.epoch-reactive #ctrl-dock,
+body.epoch-temporal #ctrl-dock,
+body.epoch-sentience #ctrl-dock {
+  opacity: 1;
+  filter: none;
+}
+
+/* Stats row emerges on epoch II with a soft animation */
+body.epoch-reactive #stats-row {
+  animation: hud-emerge 1.2s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes hud-emerge {
+  from { opacity: 0; transform: translateY(-6px); filter: brightness(2) saturate(0); }
+  to   { opacity: 1; transform: none; filter: none; }
+}
+
+/* ── Epoch palette transitions ───────────────────────────────────────────────── */
+
+body.epoch-mechanical {
+  --hud-accent: #2a4a6a;
+  --hud-glow:   rgba(40,80,140,0.25);
+}
+body.epoch-reactive {
+  --hud-accent: #00aacc;
+  --hud-glow:   rgba(0,160,200,0.35);
+}
+body.epoch-temporal {
+  --hud-accent: #aa44ff;
+  --hud-glow:   rgba(160,80,255,0.4);
+}
+body.epoch-sentience {
+  --hud-accent: #ff88ff;
+  --hud-glow:   rgba(255,140,255,0.5);
+}
+
+/* Breathe animation activates only from epoch II onward */
+body.epoch-breathe-on .breathe {
+  animation-play-state: running !important;
+}
+body.epoch-mechanical .breathe {
+  animation-play-state: paused !important;
+}
+
+/* ── Awakening Points badge ──────────────────────────────────────────────────── */
+
+.s4-ap-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 10px;
+  color: rgba(255, 220, 100, 0.75);
+  background: rgba(255, 200, 60, 0.08);
+  border: 1px solid rgba(255, 200, 60, 0.2);
+  border-radius: 4px;
+  padding: 3px 8px;
+  letter-spacing: 0.1em;
+  margin-left: 8px;
+  vertical-align: middle;
+  cursor: default;
+  transition: color 0.3s, background 0.3s;
+}
+
+#s4-ap-val {
+  color: rgba(255, 230, 100, 0.95);
+  text-shadow: 0 0 8px rgba(255, 200, 60, 0.5);
+  font-variant-numeric: tabular-nums;
+}
+
+@keyframes ap-bump {
+  0%   { transform: scale(1);    background: rgba(255, 200, 60, 0.08); }
+  30%  { transform: scale(1.18); background: rgba(255, 200, 60, 0.22); }
+  100% { transform: scale(1);    background: rgba(255, 200, 60, 0.08); }
+}
+
+.s4-ap-badge.ap-gained {
+  animation: ap-bump 0.5s ease-out;
+}
+
+/* ── Genetic Memory overlay ──────────────────────────────────────────────────── */
+
+.s4-genetic-wrap {
+  margin: 16px 0 12px;
+  padding: 14px 16px;
+  background: linear-gradient(135deg,
+    rgba(180, 80, 255, 0.07) 0%,
+    rgba(8, 2, 20, 0.92) 100%
+  );
+  border: 1px solid rgba(180, 80, 255, 0.28);
+  border-left: 3px solid rgba(200, 100, 255, 0.65);
+  border-radius: 8px;
+  animation: genetic-fade-in 0.6s ease both;
+}
+
+@keyframes genetic-fade-in {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: none; }
+}
+
+.s4-genetic-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.s4-genetic-icon {
+  font-size: 16px;
+  color: #d28cff;
+  text-shadow: 0 0 12px rgba(180, 80, 255, 0.6);
+}
+
+.s4-genetic-title {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  color: #d28cff;
+  text-transform: uppercase;
+  text-shadow: 0 0 8px rgba(180, 80, 255, 0.4);
+}
+
+.s4-genetic-desc {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 10px;
+  color: rgba(255, 255, 255, 0.38);
+  line-height: 1.6;
+  margin-bottom: 10px;
+}
+
+.s4-genetic-node-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+
+.s4-genetic-node-btn {
+  background: rgba(160, 80, 255, 0.10);
+  border: 1px solid rgba(180, 100, 255, 0.30);
+  color: #e6c8ff;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  padding: 5px 10px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.s4-genetic-node-btn:hover:not(:disabled) {
+  background: rgba(180, 100, 255, 0.22);
+  border-color: rgba(200, 120, 255, 0.55);
+  box-shadow: 0 0 10px rgba(180, 80, 255, 0.3);
+}
+
+.s4-genetic-node-btn.s4-selected {
+  background: rgba(180, 100, 255, 0.28);
+  border-color: rgba(200, 120, 255, 0.8);
+  color: #fff;
+  box-shadow: 0 0 14px rgba(180, 80, 255, 0.5);
+}
+
+.s4-genetic-node-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.s4-genetic-status {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 10px;
+  min-height: 14px;
+  letter-spacing: 0.08em;
+}
+
+/* ── Genetic ruin ghost nodes (rendered in layer1.js) ───────────────────────── */
+
+/* Pure CSS fallback — actual ruin visuals handled by Three.js material opacity */
+.s4-ruin-tooltip {
+  position: fixed;
+  background: rgba(100, 40, 200, 0.88);
+  border: 1px solid rgba(180, 80, 255, 0.6);
+  border-radius: 6px;
+  padding: 6px 10px;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 10px;
+  color: #e6c8ff;
+  letter-spacing: 0.08em;
+  pointer-events: none;
+  z-index: 500;
+  animation: ruin-tooltip-in 0.25s ease;
+  white-space: nowrap;
+}
+
+@keyframes ruin-tooltip-in {
+  from { opacity: 0; transform: translateY(4px); }
+  to   { opacity: 1; transform: none; }
+}
+
+/* ── Win-screen research row ─────────────────────────────────────────────────── */
+
+#ws-research-row .wk {
+  color: rgba(180, 100, 255, 0.72);
+}
+#ws-research-row .wv {
+  color: #d28cff;
+}
+
+/* ── Epoch transition full-screen flash ──────────────────────────────────────── */
+
+.s4-epoch-flash {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 9000;
+  opacity: 0;
+}
+
+.s4-epoch-flash.flash-reactive {
+  background: radial-gradient(ellipse at center, rgba(0,200,255,0.18) 0%, transparent 70%);
+  animation: epoch-flash 1.2s ease-out both;
+}
+.s4-epoch-flash.flash-temporal {
+  background: radial-gradient(ellipse at center, rgba(160,80,255,0.22) 0%, transparent 70%);
+  animation: epoch-flash 1.4s ease-out both;
+}
+.s4-epoch-flash.flash-sentience {
+  background: radial-gradient(ellipse at center, rgba(255,140,255,0.28) 0%, transparent 70%);
+  animation: epoch-flash 1.8s ease-out both;
+}
+
+@keyframes epoch-flash {
+  0%   { opacity: 0; }
+  15%  { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+/* ── Epoch I → II glitch burst on energy threshold ──────────────────────────── */
+
+body.s4-glitch-burst #hud-topbar,
+body.s4-glitch-burst #ctrl-dock {
+  animation: s4-glitch-burst 0.6s steps(2) both;
+}
+
+@keyframes s4-glitch-burst {
+  0%   { filter: none; }
+  20%  { filter: hue-rotate(180deg) saturate(3) brightness(1.8); transform: translateX(4px); }
+  40%  { filter: hue-rotate(-90deg) saturate(2) brightness(0.6); transform: translateX(-3px); }
+  60%  { filter: hue-rotate(90deg)  saturate(4) brightness(2.0); transform: translateX(2px); }
+  80%  { filter: hue-rotate(0deg)   saturate(1) brightness(1.0); transform: none; }
+  100% { filter: none; transform: none; }
+}
+
+/* ── Mobile: genetic memory panel full width ────────────────────────────────── */
+
+@media (max-width: 480px) {
+  .s4-genetic-wrap { margin: 12px 0 10px; padding: 12px; }
+  .s4-genetic-node-btn { font-size: 9px; padding: 4px 8px; }
+}
+
+/* ── Onboarding card — Epoch I emphasis ─────────────────────────────────────── */
+
+/*
+ * In Epoch I the card is the primary teacher.
+ * We add a subtle outer glow to pull attention without being jarring.
+ */
+
+body.epoch-mechanical #onboard-card {
+  box-shadow:
+    0 0 0 1px rgba(60, 120, 200, 0.22),
+    0 0 24px rgba(40, 90, 180, 0.18),
+    0 4px 32px rgba(0, 0, 0, 0.55);
+  border-color: rgba(60, 130, 220, 0.32);
+  animation: ob-epoch-i-pulse 3.5s ease-in-out infinite;
+}
+
+@keyframes ob-epoch-i-pulse {
+  0%, 100% { box-shadow: 0 0 0 1px rgba(60,120,200,0.22), 0 0 24px rgba(40,90,180,0.18), 0 4px 32px rgba(0,0,0,0.55); }
+  50%       { box-shadow: 0 0 0 1px rgba(60,140,220,0.40), 0 0 36px rgba(40,100,220,0.30), 0 4px 32px rgba(0,0,0,0.55); }
+}
+
+/* After Epoch II the pulse stops — card becomes subtle again */
+body.epoch-reactive  #onboard-card,
+body.epoch-temporal  #onboard-card,
+body.epoch-sentience #onboard-card {
+  animation: none;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.5);
+}
+
+/* Epoch I step icon pulses faintly */
+body.epoch-mechanical .ob-step-icon {
+  animation: ob-icon-breathe 2.8s ease-in-out infinite;
+}
+body.epoch-reactive  .ob-step-icon,
+body.epoch-temporal  .ob-step-icon,
+body.epoch-sentience .ob-step-icon {
+  animation: none;
+}
+
+@keyframes ob-icon-breathe {
+  0%, 100% { opacity: 0.75; }
+  50%       { opacity: 1.0; text-shadow: 0 0 12px rgba(80, 160, 255, 0.55); }
+}
+
+/* ── Dormant icon style for epoch_i step ────────────────────────────────────── */
+
+/* The ◌ icon should look "hollow" and waiting */
+.ob-step-icon {
+  display: inline-block;
+  min-width: 1.2em;
+  text-align: center;
+}

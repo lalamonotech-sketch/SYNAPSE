@@ -1,0 +1,35 @@
+/* ══════════════════════════════════════════════════════
+   SYNAPSE — APP SHELL BASE
+   html/body baseline, prod-status-banner,
+   reduce-motion accessibility overrides.
+   ══════════════════════════════════════════════════════ */
+
+/* ── Extra style block 7 ── */
+  html, body { background:#010308; }
+  body.prod-ready { overscroll-behavior:none; }
+  body.reduce-motion *, body.reduce-motion *::before, body.reduce-motion *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  #prod-status-banner {
+    position: fixed;
+    left: 50%;
+    top: 16px;
+    transform: translateX(-50%);
+    z-index: 9998;
+    display: none;
+    max-width: min(90vw, 760px);
+    padding: 10px 14px;
+    border-radius: 10px;
+    border: 1px solid rgba(255,120,120,.28);
+    background: rgba(42,10,16,.94);
+    color: rgba(255,245,245,.96);
+    font: 500 14px/1.4 system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+    box-shadow: 0 12px 40px rgba(0,0,0,.45);
+  }
+  #prod-status-banner[data-level="warn"] {
+    border-color: rgba(255,210,120,.28);
+    background: rgba(46,28,6,.94);
+  }

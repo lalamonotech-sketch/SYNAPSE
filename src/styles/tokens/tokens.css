@@ -1,0 +1,72 @@
+/* ══════════════════════════════════════════════════════
+   SYNAPSE v95 — DESIGN TOKENS
+   Single source of truth for all HUD + shell variables.
+   Migrated root token block.
+   ══════════════════════════════════════════════════════ */
+
+:root {
+  /* ── Blue accent family ─────────────────────────── */
+  --hud-blue-dim:   rgba(80,150,255,.18);
+  --hud-blue-mid:   rgba(80,150,255,.35);
+  --hud-blue-line:  rgba(80,150,255,.65);
+  --hud-blue-glow:  rgba(100,200,255,.5);
+
+  /* ── Text hierarchy ─────────────────────────────── */
+  --hud-text-faint: rgba(255,255,255,.38);
+  --hud-text-dim:   rgba(255,255,255,.58);
+  --hud-text-mid:   rgba(255,255,255,.78);
+  --hud-text-main:  rgba(255,255,255,.95);
+  --hud-text-full:  rgba(255,255,255,1.0);
+
+  /* ── Value colour (cyan) ────────────────────────── */
+  --hud-val:        rgba(130,235,255,.99);
+  --hud-val-dim:    rgba(130,235,255,.75);
+
+  /* ── Panel chrome ───────────────────────────────── */
+  --hud-panel-bg:     rgba(0,4,22,.96);
+  --hud-panel-blur:   blur(36px) saturate(1.9);
+  --hud-panel-r:      6px;
+  --hud-panel-shadow: 0 4px 36px rgba(0,0,0,.80),
+                      inset 0 1px 0 rgba(255,255,255,.07),
+                      0 0 0 1px rgba(60,120,255,.12);
+
+  /* ── Dock tokens (v91) ──────────────────────────── */
+  --dock-bg:          rgba(3,7,26,.92);
+  --dock-border-top:  rgba(80,160,255,.32);
+  --dock-btn-r:       10px;
+  --dock-type-r:      100px;
+
+  /* ── Typography scale ───────────────────────────── */
+  /* minimums bumped — all values now ≥ 11px for legibility.     */
+  --hud-fs-xs:  clamp(.62rem,.80vw,.68rem);   /* labels, tags  — ~10–11px */
+  --hud-fs-sm:  clamp(.68rem,.90vw,.75rem);   /* chips, meta   — ~11–12px */
+  --hud-fs-md:  clamp(.73rem,1.0vw,.82rem);   /* stats, hints  — ~12–13px */
+  --hud-fs-lg:  clamp(.78rem,1.3vw,.88rem);   /* buttons       — ~12.5–14px */
+  --hud-fs-xl:  clamp(.92rem,2.7vw,1.10rem);  /* phase name    */
+
+  /* ── Letter spacing ─────────────────────────────── */
+  --hud-ls-wide:  6px;
+  --hud-ls-mid:   3.5px;
+  --hud-ls-norm:  2.5px;
+  --hud-ls-tight: 1.8px;
+
+  /* ── Shell tokens (overlay architecture) ─────────── */
+  --shell-spine-x:      clamp(28px,6vw,72px);
+  --shell-content-pl:   clamp(54px,10vw,108px);
+  --shell-content-pr:   clamp(36px,7vw,100px);
+  --shell-content-pt:   clamp(40px,8vh,80px);
+  --shell-grid-blue:    rgba(60,120,255,.022);
+  --shell-grid-red:     rgba(255,40,40,.015);
+  --shell-grid-amber:   rgba(255,180,40,.018);
+  --shell-grid-green:   rgba(60,255,140,.018);
+  --shell-grid-size:    48px;
+  --shell-mask:         radial-gradient(ellipse 85% 90% at 28% 50%,rgba(0,0,0,.82) 10%,transparent 75%);
+  --shell-mask-center:  radial-gradient(ellipse 80% 80% at 50% 50%,rgba(0,0,0,.85) 0%,transparent 75%);
+  --shell-spine-blue:   linear-gradient(to bottom,transparent 4%,rgba(60,140,255,.18) 15%,rgba(80,180,255,.42) 45%,rgba(60,140,255,.18) 82%,transparent 96%);
+  --shell-spine-red:    linear-gradient(to bottom,transparent 4%,rgba(255,40,40,.15) 15%,rgba(255,60,60,.32) 45%,rgba(255,40,40,.15) 82%,transparent 96%);
+  --shell-spine-amber:  linear-gradient(to bottom,transparent 4%,rgba(255,180,40,.12) 18%,rgba(255,200,50,.26) 46%,rgba(255,180,40,.12) 80%,transparent 96%);
+  --shell-spine-green:  linear-gradient(to bottom,transparent 4%,rgba(60,255,140,.15) 15%,rgba(80,255,160,.36) 45%,rgba(60,255,140,.15) 82%,transparent 96%);
+  --shell-orb-offset-x: -180px;
+  --shell-orb-offset-y: -120px;
+  --shell-transition:   opacity .5s cubic-bezier(.4,0,.2,1);
+}

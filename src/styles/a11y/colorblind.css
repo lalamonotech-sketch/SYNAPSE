@@ -1,0 +1,87 @@
+/* ══════════════════════════════════════════════════════
+   SYNAPSE — Colorblind / High-Contrast Mode
+   ──────────────────────────────────────────────────────
+   Activated via `body[data-colorblind="on"]`.
+   Strategy: REDUNDANT ENCODING — color stays, but
+   shape / pattern / border-style carry the same info
+   so deuteranopia + protanopia + monochromacy users
+   can still parse the network at a glance.
+
+   - Boss profiles get distinct outline patterns.
+   - Energy decay zones get diagonal stripes.
+   - Fragile links → dotted; stable → solid; volatile → dashed.
+   - Important numerals get a baseline weight bump.
+   ══════════════════════════════════════════════════════ */
+
+body[data-colorblind="on"] {
+  /* Stronger contrast tokens (overrides) */
+  --hud-text:        #ffffff;
+  --hud-text-dim:    #d6e2ee;
+  --hud-warn:        #ffb000;
+  --hud-danger:      #ff5c5c;
+  --hud-ok:          #5cffb0;
+  --hud-accent:      #ffffff;
+}
+
+/* Boss profile chips — distinguishable by border PATTERN, not just color */
+body[data-colorblind="on"] [data-boss-profile="ghost"] {
+  border-style: dotted !important;
+  border-width: 2px !important;
+}
+body[data-colorblind="on"] [data-boss-profile="sigma"] {
+  border-style: dashed !important;
+  border-width: 2px !important;
+}
+body[data-colorblind="on"] [data-boss-profile="overload"] {
+  border-style: double !important;
+  border-width: 4px !important;
+}
+body[data-colorblind="on"] [data-boss-profile="entropy"] {
+  border-style: ridge !important;
+  border-width: 3px !important;
+}
+
+/* Link / connection legend hooks (used by the HUD legend) */
+body[data-colorblind="on"] .lnk-stable    { border-style: solid !important; }
+body[data-colorblind="on"] .lnk-fragile   { border-style: dotted !important; }
+body[data-colorblind="on"] .lnk-volatile  { border-style: dashed !important; }
+body[data-colorblind="on"] .lnk-resonant  { border-style: double !important; }
+
+/* Energy bar gets stripe overlay so direction-of-change is readable */
+body[data-colorblind="on"] #energy-bar-fill,
+body[data-colorblind="on"] .ai-bar-fill {
+  background-image: repeating-linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.18) 0,
+    rgba(255, 255, 255, 0.18) 4px,
+    transparent 4px,
+    transparent 9px
+  ) !important;
+}
+
+/* Warning / danger zones get diagonal stripes regardless of red */
+body[data-colorblind="on"] .warn,
+body[data-colorblind="on"] .danger,
+body[data-colorblind="on"] [data-state="critical"] {
+  background-image: repeating-linear-gradient(
+    45deg,
+    rgba(255, 60, 60, 0.35) 0,
+    rgba(255, 60, 60, 0.35) 6px,
+    transparent 6px,
+    transparent 14px
+  ) !important;
+}
+
+/* Make all numerical HUD values heavier for contrast */
+body[data-colorblind="on"] .energy-num,
+body[data-colorblind="on"] .ai-bar-val,
+body[data-colorblind="old"] #boss-hp-val {
+  font-weight: 800 !important;
+  letter-spacing: 0.02em;
+}
+
+/* Focus ring upgrade for keyboard navigation */
+body[data-colorblind="on"] :focus-visible {
+  outline: 3px solid #ffd400 !important;
+  outline-offset: 2px !important;
+}

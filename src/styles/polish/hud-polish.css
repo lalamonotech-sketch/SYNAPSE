@@ -1,0 +1,236 @@
+/* ══════════════════════════════════════════════════════════════════
+   SYNAPSE v98 — HUD POLISH  (lean, non-conflicting)
+   Token updates, non-topbar/non-dock elements only:
+   History panel, Onboarding, Combo HUD, Decay, Node Tip,
+   Boss HUD, L3 panel, Sync Overlay, Settings, Title screen meta.
+   topbar.css and dock.css handle their own scopes.
+   ══════════════════════════════════════════════════════════════════ */
+
+/* ── 1. TOKEN OVERRIDES ─────────────────────────────────────────── */
+:root {
+  --hud-fs-xs:  clamp(.60rem, .82vw, .66rem);   /* ≥9.6px on any screen */
+  --hud-fs-sm:  clamp(.66rem, .92vw, .72rem);
+  --hud-fs-md:  clamp(.70rem, 1.02vw, .78rem);
+  --hud-fs-lg:  clamp(.74rem, 1.22vw, .84rem);
+  --hud-fs-xl:  clamp(.95rem, 2.6vw, 1.10rem);
+
+  --hud-ls-wide:  5px;
+  --hud-ls-mid:   3px;
+  --hud-ls-norm:  2px;
+  --hud-ls-tight: 1.2px;
+
+  --hud-text-faint: rgba(255,255,255,.38);
+  --hud-text-dim:   rgba(255,255,255,.58);
+  --hud-text-mid:   rgba(255,255,255,.78);
+  --hud-text-main:  rgba(255,255,255,.95);
+  --hud-val:        rgba(130,235,255, 1.0);
+  --hud-val-dim:    rgba(130,235,255, .75);
+  --hud-prog-h:     3px;
+}
+
+/* ── 2. COMBO HUD ────────────────────────────────────────────────── */
+#combo-hud {
+  font-family: 'Share Tech Mono', monospace !important;
+  font-size: var(--hud-fs-sm) !important;
+  letter-spacing: var(--hud-ls-mid) !important;
+  color: rgba(255,225,68,.99) !important;
+  text-shadow: 0 0 18px rgba(255,202,44,.90), 0 0 36px rgba(255,180,24,.35) !important;
+  border: 1px solid rgba(255,188,34,.22) !important;
+  border-radius: 100px !important;
+  padding: 4px 18px !important;
+  background: rgba(60,40,0,.55) !important;
+  backdrop-filter: blur(14px) !important;
+}
+
+/* ── 3. DECAY INDICATOR ──────────────────────────────────────────── */
+#decay-ind {
+  font-family: 'Share Tech Mono', monospace !important;
+  font-size: var(--hud-fs-xs) !important;
+  letter-spacing: var(--hud-ls-mid) !important;
+  color: rgba(255,92,62,.96) !important;
+  text-shadow: 0 0 12px rgba(255,82,44,.66) !important;
+}
+
+/* ── 4. HISTORY PANEL ────────────────────────────────────────────── */
+#history-panel {
+  background: linear-gradient(160deg, rgba(0,6,26,.97) 0%, rgba(0,3,18,.99) 100%);
+  border: 1px solid rgba(72,138,255,.20);
+  border-top: 1px solid rgba(92,172,255,.30);
+  box-shadow: 0 10px 48px rgba(0,0,0,.78), 0 0 0 1px rgba(48,98,255,.07);
+  border-radius: 10px;
+}
+.hp-header { font-size: var(--hud-fs-xs); letter-spacing: var(--hud-ls-mid); color: rgba(88,162,255,.62); }
+.hp-row    { font-size: var(--hud-fs-xs); letter-spacing: var(--hud-ls-tight); padding: 5px 0; border-bottom: 1px solid rgba(255,255,255,.05); }
+.hp-run-num { color: rgba(255,255,255,.34); }
+.hp-tier.t1 { color: rgba(98,245,184,.92); }
+.hp-tier.t2 { color: rgba(255,202,62,.92); }
+.hp-tier.t3 { color: rgba(255,122,44,.96); }
+.hp-profile { color: rgba(148,192,255,.66); font-size: var(--hud-fs-xs); letter-spacing: var(--hud-ls-tight); }
+.hp-time    { color: rgba(255,255,255,.34); font-size: var(--hud-fs-xs); }
+.hp-traits  { font-size: var(--hud-fs-xs); letter-spacing: var(--hud-ls-tight); color: rgba(128,208,255,.52); margin-top: 8px; line-height: 1.8; }
+.hp-trait-item { font-size: var(--hud-fs-xs); padding: 2px 7px; border-radius: 4px; background: rgba(62,128,255,.12); border: 1px solid rgba(62,128,255,.22); color: rgba(128,208,255,.76); }
+
+/* ── 5. ONBOARDING CARD ──────────────────────────────────────────── */
+.ob-step-title { font-size: var(--hud-fs-md); letter-spacing: var(--hud-ls-mid); color: rgba(138,218,255,.97); text-shadow: 0 0 16px rgba(82,192,255,.36); }
+.ob-step-sub   { font-size: var(--hud-fs-sm); letter-spacing: var(--hud-ls-norm); color: rgba(255,255,255,.49); line-height: 1.88; margin-top: 4px; }
+.ob-step-tag   { font-size: var(--hud-fs-xs); letter-spacing: var(--hud-ls-mid); color: rgba(82,158,255,.44); }
+#ob-skip       { font-size: var(--hud-fs-xs); letter-spacing: var(--hud-ls-mid); color: rgba(255,255,255,.22); }
+#ob-skip:hover { color: rgba(255,255,255,.52); }
+
+/* ── 6. L3 HUD SIDE PANEL ────────────────────────────────────────── */
+#l3-hud-label  { font-size: var(--hud-fs-xs); letter-spacing: var(--hud-ls-mid); color: rgba(82,255,162,.42); }
+#l3-hud-header { font-size: var(--hud-fs-sm); letter-spacing: var(--hud-ls-norm); color: rgba(102,255,172,.62); }
+#l3-hud-header.near-win { color: rgba(102,255,172,.90); text-shadow: 0 0 12px rgba(62,255,142,.54); }
+
+/* Cluster dots — improved */
+.cl-dot {
+  width: 9px; height: 9px; border-radius: 50%;
+  border: 1.5px solid rgba(80,160,255,.30);
+  background: rgba(80,120,255,.22);
+  transition: all .3s;
+  flex-shrink: 0;
+  box-shadow: 0 0 4px rgba(80,120,255,.12);
+}
+.cl-slot.captured  .cl-dot { background: rgba(80,255,158,.92); border-color: rgba(60,255,138,.98); box-shadow: 0 0 12px rgba(80,255,158,.68); }
+.cl-slot.syncing   .cl-dot { background: rgba(255,218,58,.96); border-color: rgba(255,198,.96); box-shadow: 0 0 14px rgba(255,198,58,.74); animation: pulse-dot .62s ease-in-out infinite; }
+.cl-slot.open      .cl-dot { background: rgba(255,118,48,.98); border-color: rgba(255,88,38,.98); box-shadow: 0 0 16px rgba(255,98,48,.86); animation: blink-dot .38s ease-in-out infinite alternate; }
+.cl-slot.fused     .cl-dot { background: rgba(255,148,38,.90); border-color: rgba(255,128,28,.96); box-shadow: 0 0 12px rgba(255,138,28,.62); }
+.cl-slot.spine-node .cl-dot { background: rgba(255,198,58,.85); border-color: rgba(255,198,58,.90); box-shadow: 0 0 10px rgba(255,198,58,.48); }
+.cl-slot.pair-linked .cl-dot { background: rgba(80,200,255,.72); border-color: rgba(80,200,255,.80); box-shadow: 0 0 8px rgba(80,200,255,.38); }
+.cl-slot.dormant .cl-dot { background: rgba(255,255,255,.08); border-color: rgba(255,255,255,.12); box-shadow: none; }
+
+/* cl-state symbol: now symbols via CSS #9 fix */
+.cl-state {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: var(--hud-fs-xs);
+  letter-spacing: 1px; opacity: .82;
+  min-width: 36px; text-align: right; flex-shrink: 0;
+  color: rgba(200,240,220,.90);
+}
+.cl-slot.dormant .cl-state { opacity: .28; color: rgba(255,255,255,.38); }
+.cl-slot.open    .cl-state { color: rgba(255,120,50,.95); animation: blink-text .42s ease-in-out infinite alternate; }
+.cl-slot.syncing .cl-state { color: rgba(255,210,60,.88); }
+.cl-slot.fused   .cl-state { color: rgba(255,148,38,.90); }
+.cl-slot.spine-node .cl-state { color: rgba(255,198,58,.85); }
+
+@keyframes pulse-dot  { 0%,100% { opacity: .8; } 50% { opacity: 1; } }
+@keyframes blink-dot  { from { box-shadow: 0 0 8px rgba(255,98,48,.6); } to { box-shadow: 0 0 20px rgba(255,58,18,1), 0 0 32px rgba(255,58,18,.5); } }
+@keyframes blink-text { from { opacity: .82; } to { opacity: 1.0; } }
+
+/* ── 7. NODE TIP ─────────────────────────────────────────────────── */
+#node-tip {
+  font-size: var(--hud-fs-xs);
+  letter-spacing: var(--hud-ls-norm);
+  backdrop-filter: blur(18px) saturate(1.7);
+}
+
+/* ── 8. SYNC OVERLAY ─────────────────────────────────────────────── */
+#sync-title { font-size: var(--hud-fs-md); letter-spacing: var(--hud-ls-mid); }
+#sync-overlay {
+  transform: translateX(-50%) scale(.90);
+  opacity: 0;
+  transition: opacity .36s cubic-bezier(.25,0,.15,1), transform .36s cubic-bezier(.25,0,.15,1);
+}
+#sync-overlay.show { opacity: 1; transform: translateX(-50%) scale(1); }
+
+/* ── 9. BOSS HUD refinements ─────────────────────────────────────── */
+#boss-hud-name  { font-size: var(--hud-fs-xl); letter-spacing: var(--hud-ls-wide); }
+#boss-phase-lbl { font-size: var(--hud-fs-xs); letter-spacing: var(--hud-ls-mid); color: rgba(255,178,58,.74); }
+#boss-hp-key, #boss-hp-val { font-size: var(--hud-fs-xs); letter-spacing: var(--hud-ls-norm); }
+
+/* ── 10. SETTINGS TOGGLES ────────────────────────────────────────── */
+.toggle-btn {
+  font-size: var(--hud-fs-xs);
+  letter-spacing: var(--hud-ls-norm);
+  padding: 8px 14px; border-radius: 4px;
+}
+.toggle-btn.active { background: rgba(78,182,255,.18); color: rgba(212,248,255,.92); border-color: rgba(122,222,255,.46); }
+#settings-close, #settings-apply { font-size: var(--hud-fs-sm); letter-spacing: var(--hud-ls-mid); padding: 13px 0; }
+
+/* ── 11. TITLE META ──────────────────────────────────────────────── */
+#title-label   { letter-spacing: 5px; }
+#title-version { font-size: var(--hud-fs-xs); letter-spacing: var(--hud-ls-mid); color: rgba(255,255,255,.30); }
+#tm-last, #tm-best, #tm-profile, #tm-traits { font-size: var(--hud-fs-xs); color: rgba(158,198,255,.62); }
+
+/* ── 12. INFO ROWS ───────────────────────────────────────────────── */
+.info-row { color: rgba(158,198,255,.54); border-bottom: 1px solid rgba(255,255,255,.04); font-size: var(--hud-fs-xs); padding: 5px 0; }
+.info-row b { color: rgba(118,212,255,.93); }
+
+/* ── 13. NOW-ACTION urgency states ───────────────────────────────── */
+#now-action.urgent { color: rgba(255,172,58,.88) !important; }
+#now-action.critical { color: rgba(255,72,55,.92) !important; animation: now-action-crit .8s ease-in-out infinite; }
+@keyframes now-action-crit { 0%,100% { opacity: .85; } 50% { opacity: 1.0; } }
+
+/* ── 14. MISSED FLASH ────────────────────────────────────────────── */
+#missed-flash {
+  position: fixed;
+  bottom: calc(90px + env(safe-area-inset-bottom,0px)); left: 50%; transform: translateX(-50%);
+  z-index: 13; pointer-events: none; white-space: nowrap;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: var(--hud-fs-xs); letter-spacing: var(--hud-ls-mid); text-transform: uppercase;
+  color: rgba(255,88,62,.92); text-shadow: 0 0 16px rgba(255,58,38,.72);
+  opacity: 0; transition: opacity .2s;
+}
+#missed-flash.show { opacity: 1; }
+#missed-flash.show ~ #hint { opacity: 0 !important; }
+
+/* ── 15. ENERGY STAT low-pulse ───────────────────────────────────── */
+#energy-stat.low-energy { animation: low-energy-pulse 1.5s ease-in-out infinite; border-radius: 8px; }
+#energy-stat.low-energy .sv { color: rgba(255,98,72,.96); text-shadow: 0 0 10px rgba(255,52,32,.68); }
+#energy-stat.low-energy #energy-mini-bar { opacity: .65; }
+
+/* ── 16. PROG-LBL update animation ──────────────────────────────── */
+#prog-lbl.prog-updating { animation: prog-lbl-in .28s cubic-bezier(.25,0,.15,1) both; }
+@keyframes prog-lbl-in { from { opacity: 0; transform: translateY(3px); } to { opacity: 1; transform: translateY(0); } }
+
+/* ── 17. E-FLASH / E-LOSS value animation ────────────────────────── */
+.sv.e-flash {
+  animation: e-flash .22s cubic-bezier(.25,0,.15,1) both;
+}
+@keyframes e-flash {
+  0%   { color: rgba(255,255,255,.98); text-shadow: 0 0 12px rgba(200,240,255,.9); }
+  100% { color: var(--hud-val); text-shadow: none; }
+}
+
+/* ── 18. FOCUS RING ──────────────────────────────────────────────── */
+button:focus:not(:focus-visible), [tabindex]:focus:not(:focus-visible) { outline: none; }
+.mbtn:focus-visible, .tbtn:focus-visible {
+  outline: 1px solid rgba(128,208,255,.82); outline-offset: 2px;
+  box-shadow: 0 0 0 3px rgba(68,152,255,.18), 0 0 0 1px rgba(128,208,255,.22);
+}
+.menu-item:focus-visible, .pause-item:focus-visible { outline: 1px solid rgba(128,208,255,.66); outline-offset: 3px; }
+#pause-btn:focus-visible, #history-toggle:focus-visible, #ob-skip:focus-visible {
+  outline: 1px solid rgba(128,208,255,.76); outline-offset: 2px;
+  box-shadow: 0 0 0 3px rgba(68,152,255,.14);
+}
+
+/* ── 19. QL PANEL ────────────────────────────────────────────────── */
+#ql-name   { font-size: var(--hud-fs-sm); letter-spacing: var(--hud-ls-norm); color: rgba(158,212,255,.90); }
+#ql-reward { font-size: var(--hud-fs-xs); letter-spacing: var(--hud-ls-norm); color: rgba(128,255,182,.68); }
+
+/* ── 20. AGENT LINE ticker ───────────────────────────────────────── */
+#agent-line.ticker-in { animation: agent-ticker-in .4s ease-out; }
+@keyframes agent-ticker-in { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+
+/* ── 21. ACTIVE PROJECTS HUD ─────────────────────────────────────── */
+#active-projects-hud {
+  background: rgba(0,4,18,.86); border: 1px solid rgba(118,78,255,.16);
+  border-left: 2px solid rgba(138,78,255,.46); border-radius: 4px;
+  padding: 6px 10px 7px 9px; backdrop-filter: blur(12px);
+}
+#ap-hud-label { font-size: var(--hud-fs-xs); letter-spacing: var(--hud-ls-mid); color: rgba(138,78,255,.42); margin-bottom: 4px; }
+.ap-hud-row   { font-size: var(--hud-fs-xs); letter-spacing: var(--hud-ls-tight); color: rgba(178,148,255,.58); line-height: 1.7; }
+.ap-hud-row.triggered { color: rgba(255,218,78,.88); }
+
+/* ── 22. MOBILE CLEANUP ──────────────────────────────────────────── */
+@media (max-width: 600px) {
+  #stats-row { font-size: var(--hud-fs-xs); }
+  #phase-name { font-size: .92rem !important; letter-spacing: 4px !important; }
+  #hint { font-size: var(--hud-fs-xs) !important; }
+}
+@media (max-width: 380px) {
+  #hud-right { display: flex !important; flex-direction: row; align-items: flex-end; min-width: 0; }
+  #node-stat, #link-stat, #tri-stat, #br-stat, #l3-stat, #spine-stat, #spine-banner { display: none !important; }
+  #energy-stat { font-size: var(--hud-fs-xs); }
+  #energy-mini-bar { width: 18px; }
+}

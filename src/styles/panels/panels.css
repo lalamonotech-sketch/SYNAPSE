@@ -1,0 +1,1223 @@
+/* panels/panels.css — MERGED from panels-redesign + hud-modern-package */
+/* === panels-redesign.css === */
+/* ══════════════════════════════════════════════════════════════════════════════
+   SYNAPSE v95 — PANELS REDESIGN
+   Improved readability, modern layouts, elegant tooltips
+   ══════════════════════════════════════════════════════════════════════════════ */
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   NEURON INFO TOOLTIP — Large, Central, Clean
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+
+#node-tip {
+  position: fixed;
+  top: auto;
+  left: auto;
+  transform: none;
+  z-index: 50;
+  pointer-events: none;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.18s cubic-bezier(0.22, 1, 0.36, 1), visibility 0.18s;
+  
+  min-width: 280px;
+  max-width: 420px;
+  width: auto;
+  white-space: normal;
+  word-wrap: break-word;
+  
+  font-size: 14px;
+  line-height: 1.6;
+  letter-spacing: 1.2px;
+  font-family: 'Share Tech Mono', monospace;
+  font-weight: 500;
+  color: rgba(220, 250, 255, 0.96);
+  text-transform: uppercase;
+  
+  background: linear-gradient(
+    135deg,
+    rgba(2, 12, 40, 0.94),
+    rgba(1, 8, 30, 0.96)
+  );
+  
+  backdrop-filter: blur(32px) saturate(2) brightness(0.96);
+  -webkit-backdrop-filter: blur(32px) saturate(2) brightness(0.96);
+  
+  border: 1px solid rgba(100, 200, 255, 0.28);
+  border-top: 1px solid rgba(130, 230, 255, 0.42);
+  border-radius: 12px;
+  
+  padding: 20px 26px;
+  
+  box-shadow: 
+    0 0 1px rgba(100, 200, 255, 0.1) inset,
+    0 2px 0 rgba(100, 200, 255, 0.12) inset,
+    0 20px 60px rgba(0, 0, 0, 0.72),
+    0 0 40px rgba(80, 180, 255, 0.2);
+  
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+#node-tip.show {
+  opacity: 1;
+  visibility: visible;
+}
+
+#node-tip::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 20%;
+  right: 20%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(100, 200, 255, 0.4), transparent);
+  border-radius: 1px;
+}
+
+/* Node tip title */
+#node-tip > :first-child {
+  font-size: 18px;
+  letter-spacing: 3px;
+  font-weight: 700;
+  color: rgba(100, 220, 255, 0.98);
+  text-shadow: 0 0 16px rgba(80, 200, 255, 0.52);
+  margin-bottom: 4px;
+}
+
+/* Node tip info rows */
+#node-tip > div:not(:first-child) {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 0;
+  border-bottom: 1px solid rgba(100, 200, 255, 0.08);
+  font-size: 13px;
+}
+
+#node-tip > div:last-child {
+  border-bottom: none;
+}
+
+#node-tip .nt-key {
+  color: rgba(120, 180, 255, 0.68);
+  font-size: 12px;
+  letter-spacing: 1.5px;
+}
+
+#node-tip .nt-val {
+  color: rgba(180, 240, 255, 0.95);
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   HOVER TOOLTIP AT NEURON — Compact, Positioned
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+
+#neuron-hover-tip {
+  position: fixed;
+  z-index: 48;
+  pointer-events: none;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.15s cubic-bezier(0.22, 1, 0.36, 1);
+  
+  font-size: 12px;
+  line-height: 1.5;
+  letter-spacing: 1.2px;
+  font-family: 'Share Tech Mono', monospace;
+  font-weight: 500;
+  color: rgba(220, 250, 255, 0.94);
+  text-transform: uppercase;
+  white-space: nowrap;
+  
+  background: linear-gradient(
+    135deg,
+    rgba(0, 8, 28, 0.94),
+    rgba(0, 4, 20, 0.96)
+  );
+  
+  backdrop-filter: blur(24px) saturate(1.8) brightness(0.96);
+  -webkit-backdrop-filter: blur(24px) saturate(1.8) brightness(0.96);
+  
+  border: 1px solid rgba(80, 180, 255, 0.32);
+  border-top: 1px solid rgba(100, 210, 255, 0.48);
+  border-radius: 8px;
+  
+  padding: 10px 16px;
+  
+  box-shadow: 
+    0 0 1px rgba(80, 180, 255, 0.15) inset,
+    0 8px 24px rgba(0, 0, 0, 0.64),
+    0 0 20px rgba(80, 160, 255, 0.12);
+}
+
+#neuron-hover-tip.show {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   CLUSTER HOVER TOOLTIP — Enhanced
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+
+#cl-tooltip {
+  position: fixed;
+  z-index: 50;
+  pointer-events: none;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.18s, visibility 0.18s;
+  
+  background: linear-gradient(
+    135deg,
+    rgba(0, 8, 28, 0.96),
+    rgba(0, 4, 22, 0.98)
+  );
+  
+  border: 1px solid rgba(80, 200, 160, 0.36);
+  border-left: 2px solid rgba(80, 240, 180, 0.52);
+  border-top: 1px solid rgba(100, 220, 190, 0.48);
+  
+  border-radius: 10px;
+  padding: 14px 18px;
+  min-width: 160px;
+  max-width: 280px;
+  
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 13px;
+  letter-spacing: 1.5px;
+  line-height: 1.8;
+  color: rgba(220, 255, 245, 0.94);
+  text-transform: uppercase;
+  
+  box-shadow: 
+    0 0 1px rgba(80, 200, 160, 0.15) inset,
+    0 8px 32px rgba(0, 0, 0, 0.76),
+    0 0 24px rgba(80, 200, 160, 0.14);
+  
+  backdrop-filter: blur(28px) saturate(1.8);
+  -webkit-backdrop-filter: blur(28px) saturate(1.8);
+}
+
+#cl-tooltip.vis {
+  opacity: 1;
+  visibility: visible;
+}
+
+#cl-tooltip::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 20%;
+  right: 20%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(80, 240, 180, 0.32), transparent);
+}
+
+#cl-tooltip .clt-title {
+  font-size: 14px;
+  color: rgba(100, 255, 200, 0.98);
+  letter-spacing: 2.5px;
+  margin-bottom: 8px;
+  font-weight: 700;
+  text-shadow: 0 0 12px rgba(80, 240, 180, 0.4);
+}
+
+#cl-tooltip .clt-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 4px 0;
+  border-bottom: 1px solid rgba(80, 200, 160, 0.1);
+  font-size: 12px;
+}
+
+#cl-tooltip .clt-row:last-child {
+  border-bottom: none;
+}
+
+#cl-tooltip .clt-key {
+  opacity: 0.62;
+  color: rgba(140, 200, 180, 0.72);
+  flex-shrink: 0;
+}
+
+#cl-tooltip .clt-val {
+  color: rgba(180, 255, 230, 0.96);
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+.cl-id {
+  font-size: 11px;
+  letter-spacing: 1px;
+  opacity: 0.58;
+  flex-shrink: 0;
+  color: rgba(160, 200, 180, 0.68);
+}
+
+.cl-state {
+  font-size: 12px;
+  letter-spacing: 1px;
+  opacity: 0.82;
+  min-width: 40px;
+  text-align: right;
+  flex-shrink: 0;
+  color: rgba(200, 240, 220, 0.9);
+}
+
+.cl-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: rgba(80, 120, 255, 0.24);
+  border: 1.5px solid rgba(80, 160, 255, 0.28);
+  transition: all 0.28s;
+  flex-shrink: 0;
+  box-shadow: 0 0 4px rgba(80, 120, 255, 0.15);
+}
+
+/* State indicators */
+.cl-slot.captured .cl-dot {
+  background: rgba(80, 255, 160, 0.92);
+  border-color: rgba(60, 255, 140, 0.98);
+  box-shadow: 0 0 12px rgba(80, 255, 160, 0.68);
+}
+
+.cl-slot.syncing .cl-dot {
+  background: rgba(255, 220, 60, 0.96);
+  border-color: rgba(255, 200, 40, 0.96);
+  box-shadow: 0 0 14px rgba(255, 200, 60, 0.72);
+  animation: pulse-dot 0.6s ease-in-out infinite;
+}
+
+.cl-slot.open .cl-dot {
+  background: rgba(255, 120, 50, 0.97);
+  border-color: rgba(255, 90, 40, 0.98);
+  box-shadow: 0 0 16px rgba(255, 100, 50, 0.84);
+  animation: blink-dot-urgent 0.38s ease-in-out infinite alternate;
+}
+
+@keyframes pulse-dot {
+  0%, 100% { opacity: 0.8; }
+  50% { opacity: 1; }
+}
+
+@keyframes blink-dot-urgent {
+  from { box-shadow: 0 0 8px rgba(255, 100, 50, 0.6); }
+  to { box-shadow: 0 0 20px rgba(255, 100, 50, 1), 0 0 32px rgba(255, 60, 20, 0.48); }
+}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   L3 OBJECTIVE RAIL — Left Side Compact Panel
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+
+#l3-obj {
+  position: fixed;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 9;
+  pointer-events: none;
+  display: none;
+  flex-direction: column;
+  gap: 0;
+  
+  background: linear-gradient(to left, rgba(0, 8, 28, 0.88), rgba(0, 5, 20, 0.92) 90%);
+  padding: 14px 22px 14px 16px;
+  backdrop-filter: blur(20px) saturate(1.6);
+  -webkit-backdrop-filter: blur(20px) saturate(1.6);
+  
+  max-width: 260px;
+}
+
+#l3-obj::before {
+  content: '';
+  position: absolute;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  pointer-events: none;
+  background: linear-gradient(
+    to bottom,
+    transparent 8%,
+    rgba(80, 160, 255, 0.12) 25%,
+    rgba(80, 160, 255, 0.24) 50%,
+    rgba(80, 160, 255, 0.12) 75%,
+    transparent 92%
+  );
+}
+
+#l3-obj-label {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 2.5px;
+  color: rgba(100, 160, 255, 0.48);
+  text-transform: uppercase;
+  margin-bottom: 8px;
+  font-weight: 500;
+}
+
+.l3o {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 12px;
+  letter-spacing: 1.5px;
+  line-height: 1.6;
+  color: rgba(180, 220, 255, 0.88);
+  margin-bottom: 6px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid rgba(80, 160, 255, 0.08);
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.l3o:last-child {
+  border-bottom: none;
+  margin-bottom: 0;
+}
+
+.l3o.l3o-active {
+  color: rgba(180, 240, 255, 0.96);
+  text-shadow: 0 0 8px rgba(100, 200, 255, 0.4);
+}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   HISTORY TOGGLE — Minimal Button
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+
+#history-toggle {
+  position: fixed;
+  right: 14px;
+  bottom: 22px;
+  z-index: 13;
+  
+  background: linear-gradient(135deg, rgba(2, 12, 40, 0.82), rgba(1, 8, 28, 0.86));
+  border: 1px solid rgba(70, 140, 255, 0.2);
+  border-radius: 8px;
+  padding: 7px 14px;
+  
+  color: rgba(100, 180, 255, 0.48);
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  font-weight: 500;
+  
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+  display: none;
+  outline: none;
+  -webkit-tap-highlight-color: transparent;
+  
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.48);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+
+#history-toggle:hover {
+  color: rgba(140, 210, 255, 0.88);
+  border-color: rgba(100, 180, 255, 0.36);
+  box-shadow: 
+    0 2px 16px rgba(0, 0, 0, 0.56),
+    0 0 16px rgba(80, 160, 255, 0.12);
+}
+
+#history-toggle.has-data {
+  display: block;
+  opacity: 0.2;
+  bottom: calc(54px + env(safe-area-inset-bottom, 0px));
+}
+
+#history-toggle.has-data:hover {
+  opacity: 0.92;
+}
+
+#history-toggle.has-data.ht-prominent {
+  opacity: 1;
+  bottom: 22px;
+  border-color: rgba(100, 180, 255, 0.32);
+}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   HISTORY PANEL — Minimal Sidebar
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+
+#history-panel {
+  position: fixed;
+  right: 14px;
+  bottom: 20px;
+  z-index: 12;
+  width: 240px;
+  
+  background: linear-gradient(135deg, rgba(0, 8, 28, 0.92), rgba(0, 4, 20, 0.94));
+  border: 1px solid rgba(80, 160, 255, 0.22);
+  border-radius: 10px;
+  padding: 16px 18px 14px;
+  
+  backdrop-filter: blur(24px) saturate(1.7);
+  -webkit-backdrop-filter: blur(24px) saturate(1.7);
+  
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.56);
+  
+  opacity: 0;
+  transform: translateY(8px);
+  pointer-events: none;
+  transition: all 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+  display: none;
+}
+
+#history-panel.vis {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+  display: block;
+}
+
+#history-panel::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 20%;
+  right: 20%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(80, 160, 255, 0.24), transparent);
+}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   RESPONSIVE — Adjust tooltips for different screen sizes
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+
+@media (max-width: 1024px) {
+  #node-tip {
+    min-width: 240px;
+    max-width: 360px;
+    font-size: 13px;
+    padding: 16px 22px;
+  }
+  
+  #node-tip > :first-child {
+    font-size: 16px;
+    letter-spacing: 2.5px;
+  }
+  
+  #cl-tooltip {
+    font-size: 12px;
+    padding: 12px 16px;
+    max-width: 240px;
+  }
+  
+  #cl-tooltip .clt-title {
+    font-size: 13px;
+  }
+}
+
+@media (max-width: 768px) {
+  #node-tip {
+    min-width: 220px;
+    max-width: 320px;
+    font-size: 12px;
+    padding: 14px 18px;
+  }
+  
+  #node-tip > :first-child {
+    font-size: 15px;
+    letter-spacing: 2px;
+  }
+  
+  #neuron-hover-tip {
+    font-size: 11px;
+    padding: 8px 12px;
+    letter-spacing: 1px;
+  }
+  
+  #cl-tooltip {
+    font-size: 11px;
+    padding: 10px 14px;
+    max-width: 220px;
+  }
+  
+  #cl-tooltip .clt-title {
+    font-size: 12px;
+    letter-spacing: 2px;
+    margin-bottom: 6px;
+  }
+  
+  #l3-obj {
+    padding: 12px 18px 12px 14px;
+  }
+  
+  .l3o {
+    font-size: 11px;
+    margin-bottom: 4px;
+}
+  
+  #history-toggle,
+  #history-panel {
+    width: 220px;
+  }
+}
+
+@media (max-width: 640px) {
+  #node-tip {
+    min-width: 200px;
+    max-width: 280px;
+    font-size: 11px;
+    padding: 12px 16px;
+  }
+  
+  #node-tip > :first-child {
+    font-size: 13px;
+    letter-spacing: 1.8px;
+  }
+  
+  #neuron-hover-tip {
+    font-size: 10px;
+    padding: 7px 10px;
+  }
+  
+  #cl-tooltip {
+    font-size: 10px;
+    padding: 9px 12px;
+    max-width: 200px;
+  }
+  
+  #l3-obj {
+    max-width: 240px;
+    padding: 10px 14px 10px 12px;
+  }
+  
+  #l3-obj-label {
+    font-size: 9px;
+    margin-bottom: 6px;
+  }
+  
+  .l3o {
+    font-size: 10px;
+    margin-bottom: 3px;
+  }
+}
+
+@media (max-width: 480px) {
+  #node-tip {
+    min-width: 180px;
+    max-width: 240px;
+    font-size: 10px;
+    padding: 10px 14px;
+  }
+  
+  #node-tip > :first-child {
+    font-size: 12px;
+    letter-spacing: 1.5px;
+  }
+  
+  #node-tip > div:not(:first-child) {
+    font-size: 10px;
+    padding: 4px 0;
+  }
+  
+  #neuron-hover-tip {
+    font-size: 9px;
+    padding: 6px 9px;
+  }
+  
+  #cl-tooltip {
+    font-size: 9px;
+    padding: 8px 10px;
+    max-width: 180px;
+    min-width: 140px;
+  }
+  
+  #l3-obj {
+    max-width: 220px;
+    left: -8px;
+    padding: 8px 12px 8px 10px;
+  }
+  
+  #l3-obj-label {
+    font-size: 8px;
+  }
+  
+  .l3o {
+    font-size: 9px;
+    margin-bottom: 2px;
+    padding-bottom: 2px;
+  }
+}
+
+/* High contrast support */
+@media (prefers-contrast: more) {
+  #node-tip,
+  #neuron-hover-tip,
+  #cl-tooltip,
+  #history-panel {
+    border-color: rgba(100, 200, 255, 0.48);
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  #node-tip,
+  #neuron-hover-tip,
+  #cl-tooltip,
+  #history-toggle,
+  #history-panel {
+    transition: none;
+  }
+}
+/* === hud-modern-package.css === */
+/* ══════════════════════════════════════════════════════════════════════════════
+   SYNAPSE v95 — HUD MODERN DESIGN PACKAGE
+   Comprehensive aesthetic improvements, unified design tokens, premium styling
+   ══════════════════════════════════════════════════════════════════════════════ */
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   HUD DESIGN SYSTEM — Global Aesthetic Standards
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+
+:root {
+  /* ── Color Palette ── */
+  --hud-primary-accent: rgba(100, 180, 255, 1);
+  --hud-primary-dim: rgba(80, 160, 255, 0.5);
+  --hud-primary-glow: rgba(100, 180, 255, 0.3);
+  
+  --hud-success: rgba(80, 255, 160, 1);
+  --hud-success-dim: rgba(60, 220, 140, 0.4);
+  --hud-success-glow: rgba(80, 255, 160, 0.2);
+  
+  --hud-warning: rgba(255, 200, 60, 1);
+  --hud-warning-dim: rgba(240, 180, 40, 0.4);
+  --hud-warning-glow: rgba(255, 200, 60, 0.15);
+  
+  --hud-danger: rgba(255, 80, 80, 1);
+  --hud-danger-dim: rgba(220, 60, 60, 0.4);
+  --hud-danger-glow: rgba(255, 80, 80, 0.15);
+  
+  --hud-info: rgba(130, 210, 255, 1);
+  --hud-info-dim: rgba(100, 180, 240, 0.4);
+  --hud-info-glow: rgba(130, 210, 255, 0.2);
+  
+  /* ── Typography ── */
+  --hud-font-display: 'Bebas Neue', 'Space Grotesk', sans-serif;
+  --hud-font-body: 'Space Grotesk', sans-serif;
+  --hud-font-mono: 'Share Tech Mono', monospace;
+  
+  --hud-fs-lg: clamp(1.4rem, 4vw, 1.8rem);
+  --hud-fs-md: clamp(0.95rem, 2.5vw, 1.2rem);
+  --hud-fs-sm: clamp(0.7rem, 1.8vw, 0.85rem);
+  --hud-fs-xs: clamp(0.55rem, 1.2vw, 0.65rem);
+  
+  --hud-ls-tight: 0.8px;
+  --hud-ls-mid: 1.8px;
+  --hud-ls-wide: 3.2px;
+  
+  /* ── Spacing ── */
+  --hud-space-xs: 4px;
+  --hud-space-sm: 8px;
+  --hud-space-md: 12px;
+  --hud-space-lg: 16px;
+  --hud-space-xl: 24px;
+  
+  /* ── Effects ── */
+  --hud-panel-blur: blur(28px) saturate(1.9);
+  --hud-panel-shadow: 0 12px 40px rgba(0, 0, 0, 0.75), inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  --hud-panel-bg: linear-gradient(135deg, rgba(4, 12, 36, 0.9) 0%, rgba(2, 8, 28, 0.92) 100%);
+  --hud-panel-r: 12px;
+  
+  --hud-transition-fast: 0.12s cubic-bezier(0.22, 1, 0.36, 1);
+  --hud-transition-smooth: 0.24s cubic-bezier(0.22, 1, 0.36, 1);
+  --hud-transition-slow: 0.48s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   UNIVERSAL HUD IMPROVEMENTS
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+
+/* Main HUD Container */
+#hud {
+  font-family: var(--hud-font-body);
+  color: rgba(200, 235, 255, 0.92);
+}
+
+/* Page Title / Labels */
+#hud .panel-title,
+.hud-section-title {
+  font-family: var(--hud-font-display);
+  font-size: var(--hud-fs-md);
+  letter-spacing: var(--hud-ls-wide);
+  text-transform: uppercase;
+  font-weight: 400;
+  text-shadow: 0 0 20px rgba(100, 180, 255, 0.6), 0 0 40px rgba(80, 160, 255, 0.3);
+}
+
+/* Panel base styling */
+.hud-panel {
+  background: var(--hud-panel-bg);
+  border: 1px solid rgba(100, 180, 255, 0.28);
+  border-radius: var(--hud-panel-r);
+  backdrop-filter: var(--hud-panel-blur);
+  -webkit-backdrop-filter: var(--hud-panel-blur);
+  box-shadow: var(--hud-panel-shadow);
+  padding: var(--hud-space-lg) var(--hud-space-lg);
+}
+
+/* Info text styling */
+.hud-info-text {
+  font-size: var(--hud-fs-sm);
+  font-family: var(--hud-font-mono);
+  letter-spacing: var(--hud-ls-mid);
+  color: rgba(180, 220, 255, 0.8);
+  text-transform: uppercase;
+}
+
+/* Accent borders */
+.hud-accent-border {
+  border-left: 3px solid var(--hud-primary-accent);
+  padding-left: var(--hud-space-lg);
+}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   OBJECTIVE LINE REDESIGN
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+
+#obj-line {
+  font-size: var(--hud-fs-sm);
+  letter-spacing: var(--hud-ls-mid);
+  color: rgba(180, 255, 200, 0.8);
+  text-transform: uppercase;
+  font-family: var(--hud-font-mono);
+  font-weight: 500;
+  transition: color 0.6s, opacity 0.6s, text-shadow 0.4s;
+  
+  padding: 8px 0;
+  border-bottom: 1px solid rgba(100, 200, 160, 0.15);
+}
+
+#obj-line:not(:empty)::before {
+  content: '▸ ';
+  color: rgba(100, 255, 160, 0.4);
+  letter-spacing: 0;
+  margin-right: 4px;
+  display: inline-block;
+  animation: obj-pulse 1.2s ease-in-out infinite;
+}
+
+@keyframes obj-pulse {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 0.8; }
+}
+
+#obj-line.done {
+  color: rgba(120, 255, 180, 0.98);
+  text-shadow: 0 0 18px rgba(80, 255, 160, 0.72);
+  border-bottom-color: rgba(80, 255, 160, 0.3);
+}
+
+#obj-line.done::before {
+  content: '✓ ';
+  color: rgba(80, 255, 160, 0.8);
+  animation: obj-check-pop 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@keyframes obj-check-pop {
+  0% { transform: scale(0.5) rotate(-20deg); opacity: 0; }
+  60% { transform: scale(1.15); }
+  100% { transform: scale(1) rotate(0); opacity: 1; }
+}
+
+#obj-line.locked {
+  opacity: 0.18;
+  color: rgba(160, 180, 200, 0.5);
+}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   TRAIN SCORE POPUP REDESIGN
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+
+#train-score-popup {
+  position: fixed;
+  left: 50%;
+  bottom: calc(130px + env(safe-area-inset-bottom, 0px));
+  transform: translateX(-50%) scale(0.88) translateY(10px);
+  z-index: 15;
+  pointer-events: none;
+  opacity: 0;
+  
+  background: var(--hud-panel-bg);
+  border: 1px solid rgba(100, 180, 255, 0.35);
+  border-radius: var(--hud-panel-r);
+  backdrop-filter: var(--hud-panel-blur);
+  -webkit-backdrop-filter: var(--hud-panel-blur);
+  
+  padding: var(--hud-space-lg) var(--hud-space-xl);
+  box-shadow: var(--hud-panel-shadow), 0 0 40px rgba(100, 180, 255, 0.2);
+  
+  transition: opacity 0.3s, transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+#train-score-popup.show {
+  opacity: 1;
+  transform: translateX(-50%) scale(1) translateY(0);
+  pointer-events: auto;
+}
+
+.tsp-title {
+  font-family: var(--hud-font-display);
+  font-size: var(--hud-fs-md);
+  letter-spacing: var(--hud-ls-wide);
+  color: rgba(200, 235, 255, 0.98);
+  text-transform: uppercase;
+  text-shadow: 0 0 16px rgba(100, 180, 255, 0.7);
+  margin-bottom: var(--hud-space-md);
+  border-bottom: 1px solid rgba(100, 180, 255, 0.2);
+  padding-bottom: var(--hud-space-md);
+}
+
+.tsp-rows {
+  display: flex;
+  flex-direction: column;
+  gap: var(--hud-space-sm);
+  margin-bottom: var(--hud-space-md);
+}
+
+.tsp-row {
+  font-family: var(--hud-font-mono);
+  font-size: var(--hud-fs-xs);
+  letter-spacing: var(--hud-ls-mid);
+  color: rgba(180, 220, 255, 0.75);
+  text-transform: uppercase;
+  padding: 4px 0;
+  border-bottom: 1px solid rgba(100, 180, 255, 0.12);
+}
+
+.tsp-row strong {
+  color: rgba(150, 220, 255, 0.95);
+  font-weight: 600;
+}
+
+.tsp-total {
+  font-size: var(--hud-fs-sm);
+  letter-spacing: 3px;
+  color: rgba(200, 255, 220, 0.9);
+  font-family: var(--hud-font-mono);
+  text-transform: uppercase;
+  text-shadow: 0 0 12px rgba(100, 255, 180, 0.5);
+  font-weight: 600;
+  border-top: 1px solid rgba(100, 200, 160, 0.2);
+  padding-top: var(--hud-space-md);
+}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   QUESTLINE PANEL IMPROVEMENT
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+
+#ql-panel {
+  position: fixed;
+  left: 12px;
+  bottom: calc(120px + env(safe-area-inset-bottom, 0px));
+  z-index: 12;
+  max-width: clamp(160px, 35vw, 220px);
+  
+  background: var(--hud-panel-bg);
+  border: 1px solid rgba(100, 180, 255, 0.3);
+  border-left: 3px solid var(--ql-color, var(--hud-primary-accent));
+  
+  backdrop-filter: var(--hud-panel-blur);
+  -webkit-backdrop-filter: var(--hud-panel-blur);
+  
+  box-shadow: 
+    var(--hud-panel-shadow),
+    inset -2px 0 0 rgba(100, 180, 255, 0.15);
+  
+  border-radius: 0 var(--hud-panel-r) var(--hud-panel-r) 0;
+  padding: 10px 12px;
+  
+  display: none;
+  pointer-events: auto;
+  transition: opacity 0.35s, transform 0.35s;
+  animation: ql-slide-in 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@keyframes ql-slide-in {
+  from { transform: translateX(-100%) translateY(20px); opacity: 0; }
+  to { transform: translateX(0) translateY(0); opacity: 1; }
+}
+
+#ql-panel.vis {
+  display: block;
+}
+
+#ql-panel-toggle {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+  font-size: 12px;
+  color: rgba(100, 180, 255, 0.5);
+  transition: color 0.3s, transform 0.3s;
+}
+
+#ql-panel-toggle:hover {
+  color: rgba(150, 220, 255, 0.8);
+}
+
+#ql-name {
+  font-family: var(--hud-font-display);
+  font-size: var(--hud-fs-xs);
+  letter-spacing: 2px;
+  color: rgba(200, 235, 255, 0.92);
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+
+#ql-steps {
+  font-size: 10px;
+  letter-spacing: 1.2px;
+  color: rgba(180, 220, 255, 0.7);
+  line-height: 1.4;
+}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   ACTIVE PROJECTS HUD IMPROVEMENT
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+
+#active-projects-hud {
+  position: fixed;
+  right: 12px;
+  bottom: calc(120px + env(safe-area-inset-bottom, 0px));
+  z-index: 12;
+  max-width: clamp(160px, 35vw, 240px);
+  
+  background: var(--hud-panel-bg);
+  border: 1px solid rgba(100, 180, 255, 0.3);
+  border-right: 3px solid rgba(80, 255, 160, 0.5);
+  
+  backdrop-filter: var(--hud-panel-blur);
+  -webkit-backdrop-filter: var(--hud-panel-blur);
+  
+  box-shadow: var(--hud-panel-shadow);
+  border-radius: var(--hud-panel-r) 0 0 var(--hud-panel-r);
+  
+  padding: 10px 12px;
+  display: none;
+  pointer-events: auto;
+  animation: ap-slide-in 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@keyframes ap-slide-in {
+  from { transform: translateX(100%) translateY(20px); opacity: 0; }
+  to { transform: translateX(0) translateY(0); opacity: 1; }
+}
+
+#active-projects-hud.vis {
+  display: block;
+}
+
+#ap-hud-label {
+  font-family: var(--hud-font-display);
+  font-size: var(--hud-fs-xs);
+  letter-spacing: 2px;
+  color: rgba(200, 235, 255, 0.92);
+  text-transform: uppercase;
+  margin-bottom: 8px;
+  text-shadow: 0 0 12px rgba(100, 180, 255, 0.5);
+}
+
+#ap-hud-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 10px;
+  letter-spacing: 1px;
+  color: rgba(180, 220, 255, 0.75);
+  line-height: 1.3;
+}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   LAYER3 HUD IMPROVEMENTS
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+
+#l3-hud {
+  position: fixed;
+  top: 60px;
+  right: 12px;
+  z-index: 9;
+  max-width: clamp(200px, 30vw, 280px);
+  
+  background: var(--hud-panel-bg);
+  border: 1px solid rgba(80, 160, 255, 0.3);
+  border-right: 3px solid rgba(80, 160, 255, 0.6);
+  
+  backdrop-filter: var(--hud-panel-blur);
+  -webkit-backdrop-filter: var(--hud-panel-blur);
+  
+  box-shadow: var(--hud-panel-shadow);
+  border-radius: var(--hud-panel-r) 0 var(--hud-panel-r) var(--hud-panel-r);
+  
+  padding: 14px 16px;
+  opacity: 0;
+  transform: translateX(100%);
+  transition: opacity 0.35s, transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+  pointer-events: none;
+}
+
+#l3-hud.show {
+  opacity: 1;
+  transform: translateX(0);
+  pointer-events: auto;
+}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   UNIVERSAL BUTTON IMPROVEMENTS
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+
+.hud-btn,
+button.hud-btn {
+  font-family: var(--hud-font-mono);
+  font-size: 11px;
+  letter-spacing: 1.8px;
+  text-transform: uppercase;
+  font-weight: 500;
+  
+  padding: 8px 16px;
+  background: rgba(100, 180, 255, 0.12);
+  border: 1px solid rgba(100, 180, 255, 0.24);
+  border-radius: 6px;
+  color: rgba(180, 220, 255, 0.8);
+  
+  cursor: pointer;
+  transition: 
+    background 0.2s,
+    border-color 0.2s,
+    color 0.2s,
+    box-shadow 0.3s;
+  
+  outline: none;
+}
+
+.hud-btn:hover {
+  background: rgba(100, 180, 255, 0.24);
+  border-color: rgba(130, 210, 255, 0.4);
+  color: rgba(200, 240, 255, 0.95);
+  box-shadow: 0 0 16px rgba(100, 180, 255, 0.2);
+}
+
+.hud-btn:active {
+  transform: scale(0.95);
+}
+
+.hud-btn:disabled {
+  opacity: 0.32;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   TEXT & LABEL IMPROVEMENTS
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+
+.hud-label {
+  font-family: var(--hud-font-mono);
+  font-size: var(--hud-fs-xs);
+  letter-spacing: var(--hud-ls-mid);
+  text-transform: uppercase;
+  color: rgba(150, 200, 255, 0.8);
+  font-weight: 500;
+}
+
+.hud-value {
+  font-family: var(--hud-font-mono);
+  font-size: var(--hud-fs-sm);
+  letter-spacing: 1.5px;
+  color: rgba(200, 235, 255, 0.95);
+  font-weight: 600;
+}
+
+.hud-stat {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 8px;
+  background: rgba(100, 180, 255, 0.06);
+  border: 1px solid rgba(100, 180, 255, 0.15);
+  border-radius: 4px;
+  font-size: 11px;
+  font-family: var(--hud-font-mono);
+  color: rgba(180, 220, 255, 0.8);
+}
+
+.hud-stat.success {
+  background: rgba(80, 255, 160, 0.08);
+  border-color: rgba(80, 255, 160, 0.2);
+  color: rgba(120, 255, 180, 0.9);
+}
+
+.hud-stat.warning {
+  background: rgba(255, 200, 60, 0.08);
+  border-color: rgba(255, 200, 60, 0.2);
+  color: rgba(255, 220, 100, 0.9);
+}
+
+.hud-stat.danger {
+  background: rgba(255, 80, 80, 0.08);
+  border-color: rgba(255, 80, 80, 0.2);
+  color: rgba(255, 120, 120, 0.9);
+}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   SEPARATOR & DIVIDER STYLING
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+
+.hud-sep {
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(100, 180, 255, 0.2),
+    transparent
+  );
+  margin: var(--hud-space-md) 0;
+}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   RESPONSIVE IMPROVEMENTS
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+
+@media (max-width: 768px) {
+  #ql-panel, #active-projects-hud {
+    max-width: clamp(140px, 30vw, 180px);
+    font-size: 9px;
+  }
+  
+  #ctrl-dock {
+    gap: 4px;
+  }
+  
+  .mbtn {
+    font-size: 10px;
+    height: 48px;
+    max-width: 140px;
+  }
+  
+  .tbtn {
+    padding: 0 12px;
+    height: 32px;
+    font-size: 9px;
+  }
+}
+
+@media (max-width: 480px) {
+  #ql-panel, #active-projects-hud {
+    max-width: 140px;
+    font-size: 8px;
+  }
+  
+  #hint {
+    font-size: 10px;
+    padding: 6px 16px;
+  }
+}

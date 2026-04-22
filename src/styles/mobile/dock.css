@@ -1,0 +1,526 @@
+/* ══════════════════════════════════════════════════════════════════════════════
+   SYNAPSE v95 — MOBILE ALIGNMENT & MINIMAL HUD
+   ──────────────────────────────────────────────────────────────────────────────
+   Goals:
+   • Visually align the entire mobile UI to one coherent grid
+   • Free up screen real estate so the network stays the protagonist
+   • Reveal the build / link-type sub-menu only when actually needed
+   • Touch targets ≥ 44 px, safe-areas honoured, idle-fade for chrome
+
+   Strategy: additive layer, no markup changes. Pairs with
+   `src/ui/dock-collapse.js` which toggles two body classes:
+       body.v92-types-open   — sub-menu (#type-bar) is currently expanded
+       body.v92-hud-idle     — no input for 4 s, fade non-critical chrome
+   ══════════════════════════════════════════════════════════════════════════════ */
+
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   00 · LOCAL TOKENS
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+:root {
+  --m2-radius-pill:  999px;
+  --m2-radius-tile:  10px;
+  --m2-radius-chip:  6px;
+
+  --m2-border:       rgba(80,160,255,.20);
+  --m2-border-h:     rgba(120,200,255,.45);
+  --m2-bg-glass:     rgba(2,8,24,.78);
+  --m2-bg-glass-hi:  rgba(6,14,38,.88);
+
+  --m2-tap-min:      44px;
+  --m2-tile-h:       54px;
+
+  --m2-ease:         cubic-bezier(.16,1,.3,1);
+  --m2-spring:       cubic-bezier(.34,1.56,.64,1);
+}
+
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   01 · SAFE AREAS — universal, also desktop (no-op on non-notched)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+#hud {
+  padding-top: max(8px, env(safe-area-inset-top, 0px)) !important;
+  padding-left: max(10px, env(safe-area-inset-left, 0px)) !important;
+  padding-right: max(10px, env(safe-area-inset-right, 0px)) !important;
+}
+#ctrl-dock {
+  padding-bottom: max(8px, env(safe-area-inset-bottom, 0px)) !important;
+  padding-left: max(8px, env(safe-area-inset-left, 0px)) !important;
+  padding-right: max(8px, env(safe-area-inset-right, 0px)) !important;
+}
+button { touch-action: manipulation; }
+
+
+/* ══════════════════════════════════════════════════════════════════════════════
+   ░▒▓ MOBILE VIEWPORT (≤ 768 px) — full restructuring
+   ══════════════════════════════════════════════════════════════════════════════ */
+@media (max-width: 768px) {
+
+  /* ── 02 · GLOBAL TYPOGRAPHIC TIGHTENING ────────────────────────────────── */
+  #hud, #ctrl-dock, .stat, .mbtn, .tbtn,
+  #phase-name, #obj-line, #now-action, #prog-lbl,
+  #diff-badge, #spine-banner {
+    letter-spacing: 1.6px !important;
+  }
+  #title-label, #info-label-line, #settings-label-line,
+  #pause-label-line, #protocol-label-line {
+    letter-spacing: 2px !important;
+  }
+
+
+  /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+     03 · TOP-HUD — keep existing flex from topbar-minimalist, just compress
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+  #hud {
+    background: linear-gradient(180deg,
+      rgba(2,7,22,.94) 0%,
+      rgba(1,4,16,.78) 70%,
+      rgba(1,4,16,.0)  100%) !important;
+    border-bottom: none !important;
+    box-shadow: none !important;
+    padding-bottom: 4px !important;
+  }
+  #hud::before { display: none !important; }       /* drop the heavy accent line */
+
+  /* Main row: 3 columns, no wrap, tight gaps */
+  #hud-main-row {
+    padding: max(6px, env(safe-area-inset-top, 6px)) 10px 6px !important;
+    gap: 8px !important;
+    flex-wrap: nowrap !important;
+    align-items: center !important;
+  }
+  #hud-left, #hud-right {
+    flex: 0 0 auto !important;
+    min-width: 0 !important;
+    overflow: hidden !important;
+  }
+  #hud-center {
+    flex: 1 1 auto !important;
+    min-width: 0 !important;
+    justify-content: center !important;
+  }
+
+  /* Stats row — compact horizontal scroll if too many chips */
+  #stats-row {
+    gap: 4px !important;
+    flex-wrap: nowrap !important;
+    overflow-x: auto !important;
+    overflow-y: hidden !important;
+    scrollbar-width: none;
+    max-width: 42vw;
+  }
+  #stats-row::-webkit-scrollbar { display: none; }
+
+  /* Stats chips — uniform compact pills */
+  #stats-row .stat {
+    flex: 0 0 auto !important;
+    height: 24px !important;
+    padding: 0 7px !important;
+    border-radius: var(--m2-radius-pill) !important;
+    font-size: 10.5px !important;
+    letter-spacing: 1.2px !important;
+    background: rgba(8,18,40,.72) !important;
+    border: 1px solid var(--m2-border) !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 3px !important;
+    white-space: nowrap !important;
+  }
+  #stats-row .stat .sv { font-weight: 600 !important; }
+  #stats-row .stat #energy-mini-bar { display: none !important; } /* save horizontal */
+
+  /* Layer/proto chips on left — keep tiny */
+  #layer-tag {
+    font-size: 9.5px !important;
+    letter-spacing: 1.4px !important;
+    padding: 3px 7px !important;
+    border-radius: 999px !important;
+  }
+  #proto-chip, #cond-chip { font-size: 10px !important; }
+
+  /* Phase name + diff badge — same line, equal height pills */
+  #phase-name-row {
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 6px !important;
+    flex-wrap: nowrap !important;
+  }
+  #phase-name {
+    font-size: 11px !important;
+    letter-spacing: 2.2px !important;
+    color: rgba(220,240,255,.96) !important;
+    line-height: 1 !important;
+  }
+  #diff-badge {
+    height: 22px !important;
+    padding: 0 8px !important;
+    font-size: 9.5px !important;
+    letter-spacing: 1.6px !important;
+    border-radius: 999px !important;
+    line-height: 22px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+  }
+
+  /* Objective + AI lines: stack below the row, full width, tight */
+  #obj-line, #now-action {
+    flex-basis: 100% !important;
+    text-align: center !important;
+    font-size: 11px !important;
+    line-height: 1.3 !important;
+    margin-top: 2px !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    max-width: 100% !important;
+    padding: 0 4px !important;
+  }
+  #obj-line { color: rgba(210,230,255,.92) !important; }
+  #now-action { color: rgba(160,200,255,.72) !important; font-size: 10.5px !important; }
+
+  /* VERFALL / spine banner — pill, same height as stats chips */
+  #spine-banner {
+    display: inline-flex !important;
+    align-items: center !important;
+    height: 24px !important;
+    padding: 0 9px !important;
+    border-radius: var(--m2-radius-pill) !important;
+    font-size: 10px !important;
+    letter-spacing: 1.5px !important;
+    background: rgba(255,140,40,.10) !important;
+    border: 1px solid rgba(255,160,60,.4) !important;
+    color: rgba(255,210,140,.95) !important;
+    box-shadow: 0 0 0 1px rgba(255,160,60,.18) inset,
+                0 4px 14px -4px rgba(255,140,40,.32);
+    flex-shrink: 0 !important;
+  }
+  #hud-right { gap: 6px !important; }
+
+  /* Progress row — compact stack */
+  #hud-prog-row {
+    padding: 2px 12px 6px !important;
+    gap: 3px !important;
+    display: flex !important;
+    flex-direction: column !important;
+  }
+  #prog-wrap, #sync-decay-bar-wrap {
+    width: 100% !important;
+    height: 3px !important;
+    border-radius: 999px !important;
+    overflow: hidden;
+  }
+  #prog-lbl {
+    font-size: 9.5px !important;
+    letter-spacing: 1.6px !important;
+    opacity: .55 !important;
+    text-align: center !important;
+    padding-top: 1px !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+  }
+
+
+  /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+     04 · CTRL-DOCK — collapsing, balanced, one cohesive unit
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+  #ctrl-dock {
+    background: linear-gradient(180deg,
+      rgba(1,4,16,.0) 0%,
+      rgba(2,8,28,.85) 30%,
+      rgba(2,8,28,.94) 100%) !important;
+    backdrop-filter: blur(20px) saturate(1.7) !important;
+    -webkit-backdrop-filter: blur(20px) saturate(1.7) !important;
+    border-top: 1px solid rgba(80,160,255,.18) !important;
+    box-shadow: 0 -1px 0 rgba(80,160,255,.12) inset,
+                0 -8px 32px rgba(0,4,18,.6) !important;
+    padding-top: 6px !important;
+    gap: 4px !important;
+  }
+
+  /* Type zone (sub-menu): collapse when types-open is false */
+  #dock-type-zone {
+    overflow: hidden;
+    max-height: 0;
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(8px);
+    transition:
+      max-height 320ms var(--m2-ease),
+      opacity 220ms var(--m2-ease),
+      transform 320ms var(--m2-ease),
+      padding 320ms var(--m2-ease) !important;
+    padding: 0 8px !important;
+  }
+  body.v92-types-open #dock-type-zone {
+    max-height: 52px;
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(0);
+    padding: 4px 8px 2px !important;
+  }
+
+  /* Type-bar inner: equal-width 4-column grid, no overflow */
+  #type-bar { width: 100% !important; min-height: 0 !important; }
+  #type-bar #nb,
+  #type-bar #lb {
+    display: grid !important;
+    grid-template-columns: repeat(4, 1fr) !important;
+    gap: 5px !important;
+    width: 100% !important;
+  }
+
+  /* Unified type-button — single-line layout, compact */
+  .tbtn {
+    width: auto !important;
+    min-width: 0 !important;
+    min-height: 0 !important;
+    height: 40px !important;
+    padding: 0 6px !important;
+    border-radius: 8px !important;
+    background: rgba(8,18,40,.62) !important;
+    border: 1px solid var(--m2-border) !important;
+    color: rgba(200,225,255,.82) !important;
+    font-size: 10px !important;
+    letter-spacing: .8px !important;
+    line-height: 1.1 !important;
+    display: inline-flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 4px !important;
+    text-transform: uppercase !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    transition: background var(--m2-ease) 180ms,
+                border-color var(--m2-ease) 180ms,
+                color var(--m2-ease) 180ms,
+                transform var(--m2-spring) 220ms !important;
+  }
+  .tbtn:active { transform: scale(.96); }
+  .tbtn.on,
+  .tbtn[aria-pressed="true"] {
+    background: linear-gradient(180deg, rgba(80,160,255,.22), rgba(60,130,220,.12)) !important;
+    border-color: var(--m2-border-h) !important;
+    color: rgba(245,252,255,.99) !important;
+    box-shadow:
+      0 0 0 1px rgba(140,210,255,.45) inset,
+      0 4px 18px -4px rgba(80,170,255,.45);
+  }
+
+
+  /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+     05 · MODE-BAR — 2 primary + 2 secondary, balanced
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+  #dock-action-zone { padding: 4px 8px 4px !important; }
+
+  #mode-bar {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr 44px 44px !important;
+    gap: 5px !important;
+    padding: 0 !important;
+    width: 100% !important;
+    align-items: stretch !important;
+  }
+
+  .mbtn {
+    width: auto !important;
+    min-width: 0 !important;
+    min-height: 0 !important;
+    height: 44px !important;
+    padding: 0 6px !important;
+    border-radius: 10px !important;
+    font-size: 11px !important;
+    letter-spacing: 1.2px !important;
+    text-transform: uppercase !important;
+    background: rgba(8,18,40,.72) !important;
+    border: 1px solid var(--m2-border) !important;
+    color: rgba(200,225,255,.85) !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 5px !important;
+    white-space: nowrap !important;
+    transition: background 180ms var(--m2-ease),
+                border-color 180ms var(--m2-ease),
+                color 180ms var(--m2-ease),
+                transform 220ms var(--m2-spring),
+                box-shadow 220ms var(--m2-ease) !important;
+  }
+  .mbtn:active { transform: scale(.97); }
+  .mbtn.active {
+    background: linear-gradient(180deg, rgba(80,160,255,.30), rgba(60,130,220,.16)) !important;
+    border-color: rgba(140,210,255,.6) !important;
+    color: rgba(248,253,255,.99) !important;
+    box-shadow:
+      0 0 0 1px rgba(140,210,255,.5) inset,
+      0 6px 22px -6px rgba(80,170,255,.55);
+  }
+
+  /* Active primary mode also signals "tap again to expand types" via chevron */
+  #btn-p.active::after,
+  #btn-c.active::after {
+    content: "▾";
+    margin-left: 4px;
+    font-size: 9px;
+    opacity: .7;
+    transition: transform 220ms var(--m2-ease);
+    display: inline-block;
+  }
+  body.v92-types-open #btn-p.active::after,
+  body.v92-types-open #btn-c.active::after {
+    transform: rotate(180deg);
+  }
+
+  /* Secondary icon buttons: keep square, smaller */
+  #btn-pulse, #btn-train, #pulse-cd-wrap {
+    width: 44px !important;
+    height: 44px !important;
+    padding: 0 !important;
+    letter-spacing: 0 !important;
+  }
+  #btn-pulse, #btn-train {
+    color: rgba(180,220,255,.9) !important;
+    border-radius: 10px !important;
+    font-size: 0 !important;
+  }
+  #btn-pulse::before { content: "⚡"; font-size: 16px; letter-spacing: 0; color: rgba(255,210,140,.95); }
+  #btn-train::before { content: "◈"; font-size: 14px; letter-spacing: 0; }
+  #pulse-cd-wrap { position: relative; }
+  #pulse-cd-wrap #btn-pulse { width: 100% !important; height: 100% !important; }
+
+
+  /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+     06 · IDLE-FADE — let the network breathe when no input for 4 s
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+  #hud, #ctrl-dock {
+    transition: opacity 480ms var(--m2-ease), filter 480ms var(--m2-ease);
+  }
+  body.v92-hud-idle #hud {
+    opacity: .42;
+    filter: blur(.3px);
+  }
+  body.v92-hud-idle #ctrl-dock {
+    opacity: .58;
+  }
+  /* Always full opacity when overlays are open or types are expanded */
+  body.v92-hud-idle.v92-types-open #ctrl-dock,
+  body.is-paused #hud,
+  body.is-paused #ctrl-dock {
+    opacity: 1 !important;
+    filter: none !important;
+  }
+
+
+  /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+     07 · MISC SECONDARY PANELS — pull back to give the network the stage
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+  #active-projects-hud,
+  #ql-panel {
+    max-width: min(72vw, 280px) !important;
+    font-size: 11px !important;
+    opacity: .82;
+    transition: opacity 320ms var(--m2-ease);
+  }
+  body.v92-hud-idle #active-projects-hud,
+  body.v92-hud-idle #ql-panel { opacity: .35; }
+
+  /* Hint pill: smaller, auto-fade after first interaction (CSS-only fallback) */
+  #hint {
+    font-size: 11px !important;
+    letter-spacing: 1.2px !important;
+    padding: 6px 12px !important;
+    border-radius: var(--m2-radius-pill) !important;
+    bottom: calc(120px + env(safe-area-inset-bottom, 0px)) !important;
+  }
+  body.v92-hud-idle #hint { opacity: 0; pointer-events: none; }
+
+
+  /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+     08 · MIN TOUCH TARGETS — enforce 44 px everywhere
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+  button, [role="button"] { min-height: var(--m2-tap-min); }
+  /* Top stats are info, not buttons → leave at 26 px height */
+  .stat { min-height: 26px !important; }
+
+
+  /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+     09 · PROGRESS BAR LABEL — compact stack
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+  #hud-prog-row {
+    display: flex !important;
+    flex-direction: column !important;
+  }
+  #prog-wrap { width: 100% !important; }
+
+
+  /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+     10 · NORMAL / VERFALL — equal sized warning pills
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+  #spine-banner {
+    background: rgba(255,140,40,.10) !important;
+    border: 1px solid rgba(255,160,60,.4) !important;
+    color: rgba(255,210,140,.95) !important;
+    box-shadow: 0 0 0 1px rgba(255,160,60,.18) inset,
+                0 4px 16px -4px rgba(255,140,40,.35);
+  }
+} /* /max-width: 768px */
+
+
+/* ══════════════════════════════════════════════════════════════════════════════
+   ░▒▓ DESKTOP & TABLET (> 768 px) — keep the dock-collapse mechanic too
+   ══════════════════════════════════════════════════════════════════════════════ */
+@media (min-width: 769px) {
+  #dock-type-zone {
+    overflow: hidden;
+    max-height: 0;
+    opacity: 0;
+    pointer-events: none;
+    transition: max-height 280ms var(--m2-ease),
+                opacity 200ms var(--m2-ease),
+                padding 280ms var(--m2-ease) !important;
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+  }
+  body.v92-types-open #dock-type-zone {
+    max-height: 80px;
+    opacity: 1;
+    pointer-events: auto;
+    padding-top: 6px !important;
+    padding-bottom: 4px !important;
+  }
+  /* Chevron on active mode button */
+  #btn-p.active::after,
+  #btn-c.active::after {
+    content: "▾";
+    margin-left: 6px;
+    font-size: 10px;
+    opacity: .65;
+    transition: transform 220ms var(--m2-ease);
+    display: inline-block;
+  }
+  body.v92-types-open #btn-p.active::after,
+  body.v92-types-open #btn-c.active::after {
+    transform: rotate(180deg);
+  }
+}
+
+
+/* ══════════════════════════════════════════════════════════════════════════════
+   REDUCED MOTION
+   ══════════════════════════════════════════════════════════════════════════════ */
+@media (prefers-reduced-motion: reduce) {
+  #dock-type-zone,
+  #hud, #ctrl-dock,
+  body.v92-hud-idle #hud,
+  body.v92-hud-idle #ctrl-dock {
+    transition-duration: 1ms !important;
+  }
+  body.v92-hud-idle #hud,
+  body.v92-hud-idle #ctrl-dock { filter: none !important; }
+}
+
+/* ══════════════════════════════════════════════════════════════════════════════
+   END · v92 MOBILE ALIGN
+   ══════════════════════════════════════════════════════════════════════════════ */

@@ -1,0 +1,448 @@
+/**
+ * SYNAPSE v97 — Awakening CSS
+ *
+ * Covers:
+ *   - Epoch body classes (mechanical / reactive / temporal / sentience)
+ *   - HUD element progressive reveal (hidden by default, unlocked by JS)
+ *   - Root Server panel
+ *   - Daemon panel
+ *   - Heartbeat beat-glow animation
+ *   - Node evolution overlay
+ *   - Cortex Cell / macro-structure visual aura
+ *   - Epoch badge
+ */
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   EPOCH BASE CLASSES — applied to <body>
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* Epoch I — Mechanical: cold, grey-blue. Breathe animations OFF. */
+body.epoch-mechanical {
+  --epoch-accent:    #334455;
+  --epoch-glow:      #224;
+  --epoch-text-dim:  0.55;
+  --sentience-opacity: 0;
+}
+
+/* Epoch II — Reactive: cyan starts waking up. Breathe animations ON. */
+body.epoch-reactive {
+  --epoch-accent:    var(--aaa-cyan, #44ccff);
+  --epoch-glow:      #044;
+  --epoch-text-dim:  0.75;
+}
+
+body.epoch-reactive .sc-breathe,
+body.epoch-breathe-on .sc-breathe {
+  animation: sc-breathe 3.5s ease-in-out infinite;
+}
+
+/* Epoch III — Temporal: purple/violet memory tones. */
+body.epoch-temporal {
+  --epoch-accent:    #9944ff;
+  --epoch-glow:      #204;
+  --epoch-text-dim:  0.88;
+}
+
+/* Epoch IV — Sentience: full saturation, all breathe active. */
+body.epoch-sentience {
+  --epoch-accent:    var(--m-accent-glow, #ff88cc);
+  --epoch-glow:      #420;
+  --epoch-text-dim:  1.0;
+  --sentience-opacity: 1;
+}
+
+body.epoch-sentience-flash {
+  filter: brightness(2.5) saturate(3);
+  transition: filter 0.8s ease;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   HUD PROGRESSIVE REVEAL
+   Initially hidden — JS removes display:none when epoch advances.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+body.epoch-mechanical #stats-row,
+body.epoch-mechanical #active-projects-hud,
+body.epoch-mechanical #diag-panel,
+body.epoch-mechanical #ai-hud,
+body.epoch-mechanical #history-panel {
+  display: none !important;
+}
+
+/* Each element becomes visible via JS (.style.display = '') + glitch reveal */
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   EPOCH BADGE (top-left HUD chip)
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+#v97-epoch-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  border-radius: 3px;
+  font-size: 10px;
+  font-family: var(--font-mono, monospace);
+  letter-spacing: 0.08em;
+  color: var(--epoch-accent, #44ccff);
+  border: 1px solid var(--epoch-accent, #44ccff);
+  opacity: 0.72;
+  margin-right: 8px;
+  text-transform: uppercase;
+  transition: color 1.2s ease, border-color 1.2s ease;
+}
+
+body.epoch-sentience #v97-epoch-badge {
+  animation: sc-breathe 2.5s ease-in-out infinite;
+  opacity: 1;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   HEARTBEAT GLOW — applied to stats-row on each beat
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+#stats-row.hb-beat {
+  animation: hb-ring 0.38s ease-out both;
+}
+
+@keyframes hb-ring {
+  0%   { box-shadow: 0 0 0   0   rgba(68, 204, 255, 0.00); }
+  30%  { box-shadow: 0 0 14px 4px rgba(68, 204, 255, 0.35); }
+  100% { box-shadow: 0 0 0   0   rgba(68, 204, 255, 0.00); }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   ROOT SERVER PANEL
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+#v97-root-server {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  min-width: 340px;
+  max-width: 480px;
+  background: rgba(4, 8, 16, 0.93);
+  border: 1px solid rgba(68, 204, 255, 0.28);
+  border-radius: 6px;
+  padding: 16px 20px 20px;
+  z-index: 9800;
+  display: none;   /* shown via showRootServer() */
+}
+
+.rs-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.rs-title {
+  font-size: 13px;
+  font-family: var(--font-mono, monospace);
+  letter-spacing: 0.12em;
+  color: #44ccff;
+  text-transform: uppercase;
+}
+
+.rs-ap {
+  font-size: 14px;
+  color: #ffcc44;
+  font-weight: bold;
+}
+
+.rs-stats {
+  display: flex;
+  gap: 16px;
+  font-size: 10px;
+  color: rgba(180, 220, 255, 0.55);
+  margin-bottom: 12px;
+}
+
+.rs-upgrades {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.rs-upgrade {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 8px 10px;
+  border: 1px solid rgba(68, 204, 255, 0.12);
+  border-radius: 4px;
+  background: rgba(12, 24, 40, 0.6);
+  transition: border-color 0.2s;
+}
+
+.rs-upgrade.rs-buyable {
+  border-color: rgba(68, 204, 255, 0.4);
+  cursor: pointer;
+}
+.rs-upgrade.rs-buyable:hover {
+  border-color: rgba(68, 204, 255, 0.75);
+  background: rgba(20, 40, 60, 0.7);
+}
+
+.rs-upgrade.rs-owned {
+  border-color: rgba(100, 255, 100, 0.2);
+  opacity: 0.6;
+}
+
+.rs-upgrade.rs-locked {
+  opacity: 0.35;
+  filter: grayscale(0.5);
+}
+
+.rs-icon {
+  font-size: 18px;
+  min-width: 24px;
+  text-align: center;
+  padding-top: 2px;
+}
+
+.rs-upg-info {
+  flex: 1;
+}
+
+.rs-upg-name {
+  font-size: 11px;
+  color: rgba(220, 240, 255, 0.9);
+  font-weight: 600;
+  margin-bottom: 2px;
+  letter-spacing: 0.04em;
+}
+
+.rs-upg-desc {
+  font-size: 10px;
+  color: rgba(180, 210, 240, 0.55);
+  line-height: 1.4;
+}
+
+.rs-gen-mem {
+  font-size: 9px;
+  color: #aa44ff;
+  margin-top: 4px;
+}
+
+.rs-cost {
+  min-width: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.rs-buy-btn {
+  padding: 3px 8px;
+  border: 1px solid rgba(68, 204, 255, 0.5);
+  border-radius: 3px;
+  background: transparent;
+  color: #44ccff;
+  font-size: 10px;
+  cursor: pointer;
+  font-family: var(--font-mono, monospace);
+  transition: background 0.15s, color 0.15s;
+}
+
+.rs-buy-btn:hover:not(:disabled) {
+  background: rgba(68, 204, 255, 0.18);
+  color: #fff;
+}
+
+.rs-buy-btn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.rs-owned-label {
+  color: #44ff88;
+  font-size: 14px;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   DAEMON PANEL
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.v97-daemon-panel {
+  padding: 10px 14px;
+  background: rgba(4, 12, 24, 0.88);
+  border: 1px solid rgba(100, 80, 200, 0.30);
+  border-radius: 5px;
+  margin-top: 8px;
+  display: none;   /* revealed by unlockDaemons() */
+}
+
+.daemon-title {
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  color: rgba(160, 120, 255, 0.8);
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+
+.daemon-slots {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.daemon-slot {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.daemon-icon { font-size: 14px; }
+
+.daemon-label {
+  font-size: 10px;
+  color: rgba(200, 180, 255, 0.75);
+  min-width: 64px;
+}
+
+.daemon-assign-btns {
+  display: flex;
+  gap: 3px;
+}
+
+.daemon-assign-btn {
+  padding: 2px 5px;
+  font-size: 9px;
+  border: 1px solid rgba(150, 100, 255, 0.3);
+  border-radius: 2px;
+  background: rgba(80, 50, 120, 0.25);
+  color: rgba(200, 180, 255, 0.7);
+  cursor: pointer;
+  font-family: var(--font-mono, monospace);
+  transition: background 0.12s;
+}
+
+.daemon-assign-btn:hover {
+  background: rgba(120, 80, 200, 0.5);
+  color: #fff;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   NODE EVOLUTION OVERLAY
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.evolution-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9900;
+  animation: v96-glitch-clip 0.2s steps(3, end) both;
+}
+
+.evo-box {
+  background: rgba(4, 10, 20, 0.97);
+  border: 1px solid rgba(68, 204, 255, 0.35);
+  border-radius: 8px;
+  padding: 24px 28px;
+  max-width: 400px;
+  width: 90%;
+}
+
+.evo-title {
+  font-size: 12px;
+  letter-spacing: 0.12em;
+  color: #44ccff;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+
+.evo-sub {
+  font-size: 11px;
+  color: rgba(180, 220, 255, 0.55);
+  margin-bottom: 16px;
+  line-height: 1.5;
+}
+
+.evo-cards {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.evo-card {
+  border: 1px solid var(--evo-color, #44ccff);
+  border-radius: 5px;
+  padding: 12px 14px;
+  cursor: pointer;
+  background: rgba(4, 12, 24, 0.6);
+  transition: background 0.15s, box-shadow 0.15s;
+}
+
+.evo-card:hover {
+  background: rgba(var(--evo-color, #44ccff), 0.12);
+  box-shadow: 0 0 14px var(--evo-color, #44ccff);
+}
+
+.evo-card-name {
+  font-size: 12px;
+  color: var(--evo-color, #44ccff);
+  font-weight: 700;
+  margin-bottom: 4px;
+  letter-spacing: 0.05em;
+}
+
+.evo-card-desc {
+  font-size: 10px;
+  color: rgba(180, 210, 240, 0.6);
+  line-height: 1.4;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   CORTEX CELL NODE AURA
+   Applied to nodes with .cortex-core class (set by JS)
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* Three.js nodes don't use DOM classes directly,
+   but we can add a DOM overlay badge for Cortex cores */
+
+.cortex-badge {
+  position: absolute;
+  pointer-events: none;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: radial-gradient(circle, #aa44ff 0%, transparent 70%);
+  animation: cortex-breathe 2s ease-in-out infinite;
+}
+
+@keyframes cortex-breathe {
+  0%, 100% { transform: scale(1); opacity: 0.6; }
+  50%       { transform: scale(1.6); opacity: 1.0; }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   SENTIENCE THEME — full glow mode
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+body.epoch-sentience #stats-row {
+  border-color: rgba(255, 136, 204, 0.35) !important;
+}
+
+body.epoch-sentience #vE {
+  color: #ff88cc !important;
+}
+
+/* Fade in aaa-cyan accents as sentience-opacity rises */
+body {
+  --sentience-opacity: 0;
+}
+
+body.epoch-sentience .stat-chip,
+body.epoch-sentience .tbtn {
+  border-color: color-mix(in srgb, rgba(68, 204, 255, 0.3) calc(var(--sentience-opacity, 0) * 100%), transparent);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   HUD HIDDEN STATE (Epoch I)
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* All non-essential elements start invisible in Epoch I.
+   The JS unlock queue reveals them one by one with glitch effect.  */

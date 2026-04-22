@@ -1,0 +1,534 @@
+/* ══════════════════════════════════════════════════════
+   SYNAPSE — BOSS ENCOUNTER & RUN REPORT
+   §D  Parasite Infection Bar — premium glass panel
+   §E  Vortex Charge Bar — premium glass panel
+   §F  Mirror Cluster Bar — premium glass panel
+   §G  Boss Vuln Bar — premium glass panel
+   §H  History Tabs — refined selection rail
+   §I  Run Report Panel — richer typography
+   §J  Win Screen + Progression — cinematic
+   ══════════════════════════════════════════════════════ */
+
+   /* §D  PARASITE INFECTION BAR — premium glass panel
+   ══════════════════════════════════════════════════════════════════ */
+
+#parasite-infection-bar {
+  background: linear-gradient(145deg,
+    rgba(2,14,2,.94) 0%,
+    rgba(1,10,1,.97)  100%) !important;
+  border: 1px solid rgba(100,255,40,.22) !important;
+  border-top: 1px solid rgba(120,255,60,.32) !important;
+  border-left: 2px solid rgba(110,255,50,.42) !important;
+  border-radius: var(--u-r-md) !important;
+  box-shadow:
+    0 0 0 1px rgba(80,220,30,.06),
+    0 8px 36px rgba(0,0,0,.70),
+    0 0 22px rgba(80,200,30,.06),
+    inset 0 1px 0 rgba(120,255,60,.05) !important;
+  backdrop-filter: var(--u-blur) !important;
+  -webkit-backdrop-filter: var(--u-blur) !important;
+  padding: 8px 16px 9px !important;
+  min-width: 175px !important;
+}
+#pib-title {
+  font-size: var(--u-fs-xs) !important;
+  letter-spacing: var(--u-ls-wide) !important;
+  color: rgba(110,255,50,.80) !important;
+  text-shadow: 0 0 10px rgba(80,230,30,.40) !important;
+  margin-bottom: 5px !important;
+}
+#pib-track {
+  width: 150px !important;
+  height: 4px !important;
+  background: rgba(255,255,255,.06) !important;
+  border-radius: 2px !important;
+}
+#pib-fill {
+  height: 100% !important;
+  border-radius: 2px !important;
+  background: linear-gradient(90deg, rgba(80,210,30,.82), rgba(140,255,70,.95)) !important;
+  box-shadow: 0 0 8px rgba(100,240,40,.55) !important;
+  transition: width .4s cubic-bezier(.22,1,.36,1) !important;
+}
+#pib-count {
+  font-size: var(--u-fs-xxs) !important;
+  letter-spacing: var(--u-ls-normal) !important;
+  color: rgba(110,255,50,.55) !important;
+  margin-top: 4px !important;
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   §E  VORTEX CHARGE BAR — premium glass panel
+   ══════════════════════════════════════════════════════════════════ */
+
+#vortex-charge-bar {
+  background: linear-gradient(145deg,
+    rgba(14,8,0,.94) 0%,
+    rgba(10,5,0,.97)  100%);
+  border: 1px solid rgba(255,165,40,.22);
+  border-top: 1px solid rgba(255,195,60,.30);
+  border-left: 2px solid rgba(255,175,45,.42);
+  border-radius: var(--u-r-md);
+  box-shadow:
+    0 0 0 1px rgba(200,120,0,.06),
+    0 8px 34px rgba(0,0,0,.68),
+    inset 0 1px 0 rgba(255,210,70,.05);
+  backdrop-filter: var(--u-blur);
+  -webkit-backdrop-filter: var(--u-blur);
+  padding: 7px 14px 8px;
+  min-width: 110px;
+  align-items: flex-end;
+}
+
+.vx-label {
+  font-size: var(--u-fs-xs) !important;
+  letter-spacing: var(--u-ls-wide) !important;
+  color: rgba(255,168,45,.55) !important;
+}
+.vx-track {
+  width: 90px !important;
+  height: 4px !important;
+  background: rgba(255,255,255,.06) !important;
+  border-radius: 2px !important;
+}
+.vx-fill {
+  border-radius: 2px !important;
+  background: linear-gradient(90deg, rgba(255,125,5,.75), rgba(255,225,65,.95)) !important;
+  box-shadow: 0 0 8px rgba(255,170,40,.55) !important;
+}
+#vortex-charge-bar.saturated .vx-label {
+  color: rgba(255,210,65,.92) !important;
+  text-shadow: 0 0 10px rgba(255,190,40,.52) !important;
+}
+#vortex-charge-bar.saturated .vx-fill {
+  box-shadow: 0 0 14px rgba(255,185,40,.82) !important;
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   §F  MIRROR CLUSTER BAR — premium glass panel
+   ══════════════════════════════════════════════════════════════════ */
+
+#mirror-cluster-bar {
+  background: linear-gradient(145deg,
+    rgba(12,0,22,.94) 0%,
+    rgba(8,0,16,.97)  100%);
+  border: 1px solid rgba(200,80,255,.22);
+  border-top: 1px solid rgba(220,100,255,.30);
+  border-left: 2px solid rgba(210,90,255,.42);
+  border-radius: var(--u-r-md);
+  box-shadow:
+    0 0 0 1px rgba(160,40,220,.06),
+    0 8px 34px rgba(0,0,0,.68),
+    inset 0 1px 0 rgba(220,110,255,.05);
+  backdrop-filter: var(--u-blur);
+  -webkit-backdrop-filter: var(--u-blur);
+  padding: 8px 18px 9px;
+}
+#mirror-cluster-title {
+  font-size: var(--u-fs-md) !important;
+  letter-spacing: var(--u-ls-xwide) !important;
+}
+#mirror-cluster-info {
+  font-size: var(--u-fs-xs) !important;
+  letter-spacing: var(--u-ls-wide) !important;
+  color: rgba(210,150,255,.68) !important;
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   §G  BOSS VULN BAR — premium glass panel
+   ══════════════════════════════════════════════════════════════════ */
+
+#boss-vuln-bar {
+  background: linear-gradient(145deg,
+    rgba(14,0,0,.94) 0%,
+    rgba(10,0,0,.97)  100%);
+  border: 1px solid rgba(255,60,40,.22);
+  border-top: 1px solid rgba(255,80,60,.30);
+  border-left: 2px solid rgba(255,70,50,.42);
+  border-radius: var(--u-r-md);
+  box-shadow:
+    0 0 0 1px rgba(200,20,0,.06),
+    0 8px 34px rgba(0,0,0,.68),
+    inset 0 1px 0 rgba(255,90,70,.05);
+  backdrop-filter: var(--u-blur);
+  -webkit-backdrop-filter: var(--u-blur);
+  padding: 8px 18px 9px;
+}
+#boss-vuln-title {
+  font-size: var(--u-fs-md) !important;
+  letter-spacing: var(--u-ls-xwide) !important;
+  color: rgba(255,88,75,.98) !important;
+  text-shadow: 0 0 20px rgba(255,38,20,.85), 0 0 40px rgba(220,15,0,.35) !important;
+  margin-bottom: 5px !important;
+}
+#boss-vuln-fill-wrap {
+  width: 210px !important;
+  height: 5px !important;
+  background: rgba(255,255,255,.07) !important;
+  border-radius: 3px !important;
+  overflow: hidden !important;
+}
+#boss-vuln-fill {
+  border-radius: 3px !important;
+  background: linear-gradient(90deg, rgba(255,55,35,.92), rgba(255,200,40,.92)) !important;
+  box-shadow: 0 0 10px rgba(255,120,40,.65) !important;
+}
+
+/* Profile-tinted vuln bar */
+body.boss-profile-ghost #boss-vuln-bar {
+  border-color: rgba(40,255,200,.22);
+  border-top-color: rgba(60,255,210,.30);
+  border-left-color: rgba(50,255,205,.42);
+}
+body.boss-profile-sigma #boss-vuln-bar {
+  border-color: rgba(200,80,255,.22);
+  border-top-color: rgba(215,100,255,.30);
+  border-left-color: rgba(208,90,255,.42);
+}
+body.boss-profile-parasite #boss-vuln-bar {
+  border-color: rgba(100,255,40,.22);
+  border-top-color: rgba(120,255,60,.30);
+  border-left-color: rgba(110,255,50,.42);
+}
+body.boss-profile-vortex #boss-vuln-bar {
+  border-color: rgba(255,165,40,.22);
+  border-top-color: rgba(255,195,60,.30);
+  border-left-color: rgba(255,180,50,.42);
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   §H  HISTORY TABS — refined selection rail
+   ══════════════════════════════════════════════════════════════════ */
+
+#history-tabs {
+  gap: 0 !important;
+  border-bottom: 1px solid rgba(75,140,255,.14) !important;
+  margin-bottom: 12px !important;
+}
+.htab {
+  flex: 1 !important;
+  padding: 7px 0 6px !important;
+  font-size: var(--u-fs-xs) !important;
+  letter-spacing: var(--u-ls-wide) !important;
+  color: rgba(85,145,255,.38) !important;
+  border: none !important;
+  border-bottom: 2px solid transparent !important;
+  background: transparent !important;
+  cursor: pointer !important;
+  text-transform: uppercase !important;
+  font-family: 'Share Tech Mono', monospace !important;
+  transition: color .20s, border-color .20s !important;
+  outline: none !important;
+  position: relative !important;
+}
+.htab:hover:not(.active) {
+  color: rgba(110,178,255,.62) !important;
+}
+.htab.active {
+  color: rgba(135,215,255,.92) !important;
+  border-bottom-color: rgba(85,185,255,.68) !important;
+  text-shadow: 0 0 12px rgba(80,200,255,.28) !important;
+}
+
+/* ── History rows — stronger legibility — */
+.hist-row,
+.best-row,
+.codex-trait {
+  font-size: var(--u-fs-xxs) !important;
+  letter-spacing: var(--u-ls-tight) !important;
+  padding: 4px 0 !important;
+  border-bottom-color: rgba(80,140,255,.06) !important;
+}
+.hist-row {
+  color: rgba(165,205,255,.40) !important;
+}
+.best-row {
+  color: rgba(165,205,255,.42) !important;
+}
+.best-row .br-rank {
+  color: rgba(255,225,85,.60) !important;
+  text-shadow: 0 0 8px rgba(245,200,50,.25) !important;
+}
+.codex-trait {
+  color: rgba(125,205,255,.58) !important;
+}
+.codex-trait .ct-run {
+  color: rgba(255,255,255,.24) !important;
+  font-size: var(--u-fs-xxs) !important;
+}
+
+/* Tier colours — consistent tint hierarchy */
+.h-tier1, .br-t1 { color: rgba(100,255,172,.78) !important; }
+.h-tier2, .br-t2 { color: rgba(255,208,68,.82) !important; }
+.h-tier3, .br-t3 { color: rgba(255,126,48,.88) !important; }
+
+/* Profile frequency bar */
+.pfreq-label {
+  font-size: var(--u-fs-xxs) !important;
+  letter-spacing: var(--u-ls-normal) !important;
+}
+.pfreq-bar {
+  height: 4px !important;
+  background: rgba(255,255,255,.06) !important;
+  border-radius: 2px !important;
+}
+.pfreq-fill {
+  border-radius: 2px !important;
+  transition: width .5s cubic-bezier(.22,1,.36,1) !important;
+}
+.pfreq-count {
+  font-size: var(--u-fs-xxs) !important;
+  color: rgba(255,255,255,.25) !important;
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   §I  RUN REPORT PANEL — richer typography
+   ══════════════════════════════════════════════════════════════════ */
+
+.rr-header {
+  font-size: var(--u-fs-xs) !important;
+  letter-spacing: var(--u-ls-wide) !important;
+  color: rgba(110,205,255,.42) !important;
+  margin-bottom: 14px !important;
+}
+.rr-grade {
+  font-size: var(--u-fs-sm) !important;
+  letter-spacing: var(--u-ls-normal) !important;
+  padding: 2px 9px !important;
+  border-radius: var(--u-r-sm) !important;
+}
+.rr-grade.S {
+  background: rgba(255,225,45,.20) !important;
+  color: rgba(255,235,85,.98) !important;
+  border-color: rgba(255,215,40,.42) !important;
+  box-shadow: 0 0 12px rgba(255,205,40,.30) !important;
+  text-shadow: 0 0 12px rgba(255,200,40,.65) !important;
+}
+.rr-grade.A {
+  background: rgba(80,255,162,.16) !important;
+  color: rgba(105,255,175,.94) !important;
+  border-color: rgba(60,225,140,.32) !important;
+}
+.rr-grade.B {
+  background: rgba(80,162,255,.16) !important;
+  color: rgba(125,205,255,.94) !important;
+  border-color: rgba(80,162,255,.30) !important;
+}
+.rr-grade.C {
+  background: rgba(255,182,40,.14) !important;
+  color: rgba(255,205,82,.84) !important;
+  border-color: rgba(242,162,30,.28) !important;
+}
+.rr-grade.F {
+  background: rgba(255,60,60,.14) !important;
+  color: rgba(255,115,115,.84) !important;
+  border-color: rgba(222,50,50,.28) !important;
+}
+
+.rr-key {
+  font-size: var(--u-fs-xxs) !important;
+  letter-spacing: var(--u-ls-normal) !important;
+  color: rgba(255,255,255,.26) !important;
+}
+.rr-val {
+  font-size: var(--u-fs-md) !important;
+  letter-spacing: var(--u-ls-normal) !important;
+  color: rgba(105,225,185,.92) !important;
+  font-weight: 700 !important;
+}
+.rr-val.highlight {
+  color: rgba(255,215,65,.98) !important;
+  text-shadow: 0 0 12px rgba(255,185,42,.50) !important;
+}
+.rr-val.dim {
+  color: rgba(185,205,255,.58) !important;
+  font-size: var(--u-fs-sm) !important;
+}
+
+/* Run report bar rows */
+.rr-bar-label {
+  font-size: var(--u-fs-xxs) !important;
+  letter-spacing: var(--u-ls-tight) !important;
+  color: rgba(255,255,255,.30) !important;
+  width: 55px !important;
+}
+.rr-bar-track {
+  height: 4px !important;
+  background: rgba(255,255,255,.07) !important;
+  border-radius: 2px !important;
+}
+.rr-bar-fill {
+  border-radius: 2px !important;
+}
+.rr-bar-score {
+  font-size: var(--u-fs-xxs) !important;
+  color: rgba(255,255,255,.30) !important;
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   §J  WIN SCREEN + PROGRESSION — cinematic
+   ══════════════════════════════════════════════════════════════════ */
+
+/* Win-screen itself: full-shell, same grammar as title screen */
+#win-screen {
+  background:
+    radial-gradient(ellipse 80% 70% at 22% 50%, rgba(8,18,55,.92) 0%, transparent 65%),
+    radial-gradient(ellipse 55% 55% at 72% 30%, rgba(2,8,30,.88) 0%, transparent 60%),
+    #010308;
+}
+
+/* Win title — matching the cinematic title-main style */
+#win-title {
+  font-family: 'Bebas Neue', sans-serif !important;
+  font-size: clamp(3.5rem, 10vw, 6.5rem) !important;
+  letter-spacing: 7px !important;
+  line-height: .90 !important;
+  color: #fff !important;
+  text-shadow:
+    0 0 22px rgba(100,220,255,.55),
+    0 0 55px rgba(60,180,255,.28),
+    0 0 100px rgba(45,145,255,.12),
+    0 2px 0 rgba(0,0,0,.70) !important;
+}
+
+/* Label line above win title */
+#win-label-line {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: var(--u-fs-xxs);
+  letter-spacing: var(--u-ls-xwide);
+  color: rgba(80,160,255,.45);
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+
+/* Win tier badge */
+#win-tier-badge {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: var(--u-fs-xs);
+  letter-spacing: var(--u-ls-wide);
+  text-transform: uppercase;
+  padding: 3px 12px;
+  border-radius: var(--u-r-sm);
+  display: inline-block;
+  margin-top: 8px;
+  margin-bottom: 16px;
+}
+
+/* Tier badge colors */
+#win-tier-badge.t1 {
+  background: rgba(80,255,162,.14);
+  color: rgba(100,255,172,.92);
+  border: 1px solid rgba(60,225,140,.28);
+  box-shadow: 0 0 14px rgba(60,225,140,.12);
+}
+#win-tier-badge.t2 {
+  background: rgba(255,208,60,.14);
+  color: rgba(255,218,78,.94);
+  border: 1px solid rgba(240,185,40,.28);
+  box-shadow: 0 0 14px rgba(240,185,40,.12);
+}
+#win-tier-badge.t3 {
+  background: rgba(255,118,40,.14);
+  color: rgba(255,138,65,.92);
+  border: 1px solid rgba(240,100,28,.28);
+  box-shadow: 0 0 14px rgba(240,100,28,.12);
+}
+
+/* Progression headers */
+.prog-header,
+.rr-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: 'Share Tech Mono', monospace;
+  text-transform: uppercase;
+}
+
+/* Best run rows in win screen */
+.best-run-row {
+  font-size: var(--u-fs-xxs) !important;
+  letter-spacing: var(--u-ls-tight) !important;
+  padding: 5px 0 !important;
+  border-bottom-color: rgba(80,145,255,.07) !important;
+  color: rgba(155,195,255,.48) !important;
+}
+.best-run-row:last-child { border-bottom: none !important; }
+.br-medal { font-size: var(--u-fs-sm) !important; }
+
+/* Tier badges in best runs */
+.br-tier-badge {
+  padding: 2px 8px !important;
+  border-radius: var(--u-r-sm) !important;
+  font-size: var(--u-fs-xxs) !important;
+}
+.br-tier-badge.t1 {
+  background: rgba(80,255,162,.12) !important;
+  color: rgba(100,255,172,.88) !important;
+  border-color: rgba(60,222,140,.22) !important;
+}
+.br-tier-badge.t2 {
+  background: rgba(255,205,62,.12) !important;
+  color: rgba(255,218,82,.92) !important;
+  border-color: rgba(242,182,40,.26) !important;
+}
+.br-tier-badge.t3 {
+  background: rgba(255,120,42,.12) !important;
+  color: rgba(255,145,68,.92) !important;
+  border-color: rgba(242,102,32,.26) !important;
+}
+
+/* Trait progress rows */
+.tpr-name {
+  font-size: var(--u-fs-xxs) !important;
+  letter-spacing: var(--u-ls-tight) !important;
+  color: rgba(125,205,255,.58) !important;
+}
+.tpr-name.unlocked {
+  color: rgba(100,255,172,.84) !important;
+  text-shadow: 0 0 8px rgba(70,235,148,.22) !important;
+}
+.tpr-bar {
+  height: 4px !important;
+  background: rgba(255,255,255,.07) !important;
+  border-radius: 2px !important;
+}
+.tpr-fill {
+  border-radius: 2px !important;
+  background: rgba(80,165,255,.75) !important;
+  box-shadow: 0 0 6px rgba(70,155,255,.30) !important;
+}
+.tpr-fill.unlocked {
+  background: rgba(80,255,162,.88) !important;
+  box-shadow: 0 0 8px rgba(60,235,145,.40) !important;
+}
+
+/* Next run box */
+.next-run-box {
+  border-radius: var(--u-r-md) !important;
+  border-color: rgba(80,255,162,.15) !important;
+  background: rgba(0,18,10,.42) !important;
+  backdrop-filter: blur(14px) !important;
+  -webkit-backdrop-filter: blur(14px) !important;
+  box-shadow: 0 0 0 1px rgba(60,210,120,.05) !important;
+}
+.next-run-label {
+  font-size: var(--u-fs-xxs) !important;
+  letter-spacing: var(--u-ls-wide) !important;
+  color: rgba(100,255,172,.48) !important;
+}
+.next-obj-item {
+  font-size: var(--u-fs-xs) !important;
+  letter-spacing: var(--u-ls-tight) !important;
+  color: rgba(185,255,225,.64) !important;
+}
+
+/* Win compare badge */
+#win-run-compare {
+  border-radius: var(--u-r-sm) !important;
+  font-size: var(--u-fs-xs) !important;
+  letter-spacing: var(--u-ls-normal) !important;
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   §K  EVENT PILL — more prominent & polished
+ */

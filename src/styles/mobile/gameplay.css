@@ -1,0 +1,521 @@
+/* ══════════════════════════════════════════════════════
+   SYNAPSE — MOBILE GAMEPLAY LAYOUT
+   - CONTROL DOCK — Tactical Console concept
+   - TOP BAR — pointer events
+   - PROTOCOL CHIPS + PAUSE BUTTON
+   - QUEST PANEL & SECONDARY HUDS
+   - AI HUD, BOSS HUD, ONBOARDING, TOAST, DRAFT
+   ══════════════════════════════════════════════════════ */
+
+/* ══════════════════════════════════════════════════════════════════════════════
+   CONTROL DOCK — NEW CONCEPT v3 · "Tactical Console"
+   Game-cohesive: Share Tech Mono, sharp angles, cyan accents (matches HUD)
+   Layout (top to bottom):
+     ┌─────────────────────────────────────────┐
+     │ ◉SRC   →RLY   ↑AMP   ◎MEM     ← Build  │  type tile grid (icon+name+cost)
+     ├─────────────────────────────────────────┤
+     │  PLATZIEREN  │  VERBINDEN  │ ⚡ │ ◈    │  mode strip (segmented)
+     └─────────────────────────────────────────┘
+   ══════════════════════════════════════════════════════════════════════════════ */
+@media (max-width: 768px) {
+  /* ── OUTER PANEL: pinned to bottom, full-width, sharp angles ─────────── */
+  #ctrl-dock {
+    position: fixed !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    transform: none !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding: 0 0 max(0px, env(safe-area-inset-bottom, 0px)) !important;
+
+    background:
+      linear-gradient(180deg, rgba(3, 7, 26, 0.94) 0%, rgba(1, 3, 14, 0.98) 100%) !important;
+    backdrop-filter: blur(20px) saturate(1.5) !important;
+    -webkit-backdrop-filter: blur(20px) saturate(1.5) !important;
+
+    border: none !important;
+    border-radius: 0 !important;
+    box-shadow:
+      0 -16px 48px rgba(0, 0, 0, 0.55),
+      inset 0 1px 0 rgba(80, 160, 255, 0.06) !important;
+
+    box-sizing: border-box !important;
+    z-index: 50 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 0 !important;
+    pointer-events: auto !important;
+    font-family: 'Share Tech Mono', 'Courier New', monospace !important;
+  }
+
+  /* Top accent line — subtle cyan gradient (matches HUD top accent) */
+  #ctrl-dock::before {
+    content: '' !important;
+    position: absolute !important;
+    top: 0 !important; left: 0 !important; right: 0 !important;
+    height: 1px !important;
+    background: linear-gradient(90deg,
+      transparent 0%,
+      rgba(80, 160, 255, 0.0) 8%,
+      rgba(100, 200, 255, 0.55) 35%,
+      rgba(140, 220, 255, 0.85) 50%,
+      rgba(100, 200, 255, 0.55) 65%,
+      rgba(80, 160, 255, 0.0) 92%,
+      transparent 100%) !important;
+    pointer-events: none !important;
+    z-index: 1 !important;
+  }
+
+  /* ── ZONE WRAPPERS: clean, no decorations ────────────────────────────── */
+  #dock-type-zone, #dock-action-zone {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    display: block !important;
+    box-sizing: border-box !important;
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+  }
+
+  /* ── TYPE TILE GRID (top section) ────────────────────────────────────── */
+  /* CRITICAL: navigation-minimalist.css sets opacity:0 on #type-bar by default
+     (it expects a .vis class). Force visible so the build menu always shows. */
+  #type-bar {
+    display: block !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    padding: 6px 8px 4px !important;
+    margin: 0 !important;
+    background: transparent !important;
+    border: none !important;
+    border-bottom: 1px solid rgba(80, 150, 255, 0.10) !important;
+    box-shadow: none !important;
+    overflow: visible !important;
+    opacity: 1 !important;
+    pointer-events: auto !important;
+  }
+  #nb, #lb {
+    gap: 4px !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    align-items: stretch !important;
+  }
+  /* JS toggles which bar is active via inline display:flex/none */
+  #nb[style*="flex"], #lb[style*="flex"] {
+    display: grid !important;
+    grid-template-columns: repeat(4, 1fr) !important;
+  }
+
+  /* Type tile: compact, icon+name only */
+  .tbtn {
+    flex: 1 1 auto !important;
+    min-height: 42px !important;
+    height: 42px !important;
+    padding: 4px 3px !important;
+    font-size: 10px !important;
+    letter-spacing: 1px !important;
+    white-space: normal !important;
+    text-align: center !important;
+    line-height: 1.15 !important;
+    border-radius: 4px !important;
+    background: rgba(8, 18, 38, 0.55) !important;
+    border: 1px solid rgba(80, 150, 255, 0.18) !important;
+    color: rgba(180, 220, 255, 0.72) !important;
+    font-family: 'Share Tech Mono', 'Courier New', monospace !important;
+    text-transform: uppercase !important;
+    transition: background .15s, border-color .15s, color .15s, box-shadow .2s !important;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.03) !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 1px !important;
+    position: relative !important;
+    overflow: hidden !important;
+  }
+  .tbtn:active { transform: scale(0.97) !important; }
+
+  /* Active type tile: cyan border + glow + brighter text */
+  .tbtn.on {
+    background: linear-gradient(180deg, rgba(60, 140, 255, 0.22), rgba(30, 90, 200, 0.10)) !important;
+    border-color: rgba(130, 220, 255, 0.85) !important;
+    color: rgba(220, 245, 255, 1) !important;
+    box-shadow:
+      0 0 12px rgba(100, 200, 255, 0.45),
+      inset 0 0 12px rgba(100, 200, 255, 0.12),
+      inset 0 1px 0 rgba(200, 240, 255, 0.18) !important;
+  }
+  /* Active tile gets a 2px cyan top accent */
+  .tbtn.on::before {
+    content: '' !important;
+    position: absolute !important;
+    top: 0 !important; left: 8% !important; right: 8% !important;
+    height: 2px !important;
+    background: linear-gradient(90deg, transparent, rgba(140, 230, 255, 0.95), transparent) !important;
+  }
+
+  /* ── MODE STRIP (bottom section) ─────────────────────────────────────── */
+  #mode-bar {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr 52px 52px !important;
+    gap: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding: 5px 8px 6px !important;
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    box-sizing: border-box !important;
+    align-items: stretch !important;
+  }
+
+  /* Mode buttons share a hairline divider style */
+  .mbtn, #pulse-cd-wrap {
+    min-height: 40px !important;
+    height: 40px !important;
+    padding: 0 6px !important;
+    font-size: 11px !important;
+    letter-spacing: 1.4px !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    border-radius: 0 !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+    line-height: 1 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    text-align: center !important;
+    margin: 0 !important;
+    font-family: 'Share Tech Mono', 'Courier New', monospace !important;
+    text-transform: uppercase !important;
+    transition: background .15s, color .15s, box-shadow .2s !important;
+    background: transparent !important;
+    color: rgba(160, 200, 255, 0.55) !important;
+    border: 1px solid rgba(80, 150, 255, 0.18) !important;
+    border-left-width: 0 !important;
+    box-shadow: none !important;
+    position: relative !important;
+  }
+  .mbtn:first-child { border-left-width: 1px !important; }
+  /* Round outer corners only */
+  #btn-p { border-top-left-radius: 4px !important; border-bottom-left-radius: 4px !important; }
+  #btn-train { border-top-right-radius: 4px !important; border-bottom-right-radius: 4px !important; }
+  #pulse-cd-wrap { padding: 0 !important; }
+
+  .mbtn:active { background: rgba(80, 150, 255, 0.06) !important; }
+
+  /* Active mode (Place/Connect): cyan top accent + brighter text */
+  #btn-p.active, #btn-c.active {
+    background: linear-gradient(180deg, rgba(60, 140, 255, 0.18), rgba(30, 90, 200, 0.04)) !important;
+    color: rgba(220, 245, 255, 1) !important;
+    border-color: rgba(130, 220, 255, 0.55) !important;
+    box-shadow:
+      inset 0 2px 0 rgba(140, 230, 255, 0.95),
+      0 0 18px rgba(100, 200, 255, 0.18) inset !important;
+  }
+  #btn-p.active { border-left-color: rgba(130, 220, 255, 0.55) !important; }
+
+  /* Disabled state — dim, but keep the shape visible */
+  .mbtn[disabled] { opacity: 0.32 !important; cursor: not-allowed !important; }
+
+  /* ── PULSE + TRAIN: icon action cells inside the mode strip ──────────── */
+  #pulse-cd-wrap {
+    position: relative !important;
+    width: 56px !important;
+    height: 44px !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    background: transparent !important;
+    border: 1px solid rgba(80, 150, 255, 0.18) !important;
+    border-left-width: 0 !important;
+    color: rgba(160, 200, 255, 0.55) !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+  }
+  #btn-pulse, #btn-train {
+    width: 100% !important;
+    height: 100% !important;
+    min-height: 44px !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    border: none !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+    color: rgba(180, 220, 255, 0.78) !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    font-size: 0 !important;
+    letter-spacing: 0 !important;
+    line-height: 1 !important;
+    box-shadow: none !important;
+    transition: background .15s, color .15s !important;
+    position: relative !important;
+  }
+  #btn-pulse::before {
+    content: '⚡' !important;
+    font-size: 18px !important;
+    line-height: 1 !important;
+    color: rgba(255, 220, 130, 0.92) !important;
+    text-shadow: 0 0 10px rgba(255, 200, 100, 0.55) !important;
+  }
+  #btn-train::before {
+    content: '◈' !important;
+    font-size: 17px !important;
+    line-height: 1 !important;
+    color: rgba(180, 230, 255, 0.92) !important;
+    text-shadow: 0 0 10px rgba(120, 200, 255, 0.55) !important;
+  }
+  #btn-pulse:not([disabled]):active,
+  #btn-train:not([disabled]):active { background: rgba(80, 150, 255, 0.10) !important; }
+  #btn-pulse[disabled]::before { color: rgba(180, 200, 230, 0.35) !important; text-shadow: none !important; }
+  #btn-train[disabled]::before { color: rgba(180, 200, 230, 0.35) !important; text-shadow: none !important; }
+
+  /* Pulse cooldown ring — fills the cell */
+  #pulse-cd-ring {
+    position: absolute !important;
+    inset: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    pointer-events: none !important;
+    border-radius: 0 !important;
+    overflow: visible !important;
+  }
+  #pulse-cd-ring .track,
+  #pulse-cd-ring .fill {
+    rx: 0 !important;
+    ry: 0 !important;
+  }
+}
+
+/* Very small screens: tighter labels */
+@media (max-width: 380px) {
+  .mbtn { font-size: 10px !important; letter-spacing: 1px !important; padding: 0 3px !important; }
+  .tbtn { font-size: 9px !important; padding: 5px 3px !important; min-height: 46px !important; height: 46px !important; }
+  #pulse-cd-wrap, #btn-pulse, #btn-train { width: 48px !important; }
+  #mode-bar { grid-template-columns: 1fr 1fr 48px 48px !important; padding: 6px 8px 8px !important; }
+  #stats-row { gap: 3px !important; }
+  .stat { font-size: 9px !important; padding: 2px 4px !important; }
+  #phase-name { font-size: 10px !important; }
+  #diff-badge { font-size: 7px !important; }
+}
+
+/* ══════════════════════════════════════════════════════════════════════════════
+   TOP BAR — capture pointer events so taps don't fall through to the canvas
+   (otherwise tapping the phase name / stats / progress placed a neuron)
+   ══════════════════════════════════════════════════════════════════════════════ */
+@media (max-width: 768px) {
+  #hud,
+  #hud-main-row,
+  #hud-prog-row,
+  #hud-left, #hud-center, #hud-right,
+  #phase-name-row, #phase-name, #diff-badge,
+  #obj-line, #now-action,
+  #stats-row, .stat,
+  #prog-wrap, #prog-lbl, #sync-decay-bar-wrap,
+  #layer-tag, #cond-chip {
+    pointer-events: auto !important;
+  }
+}
+
+/* ══════════════════════════════════════════════════════════════════════════════
+   PROTOCOL CHIPS + PAUSE BUTTON — keep clutter out of the network viewport
+   ══════════════════════════════════════════════════════════════════════════════ */
+@media (max-width: 768px) {
+  #proto-chip,
+  #proto-sig-overlay,
+  #proto-sig-banner {
+    display: none !important;
+  }
+  #pause-btn {
+    position: fixed !important;
+    top: max(6px, env(safe-area-inset-top, 6px)) !important;
+    right: 8px !important;
+    width: 36px !important;
+    height: 36px !important;
+    z-index: 60 !important;
+    font-size: 14px !important;
+  }
+}
+
+/* ══════════════════════════════════════════════════════════════════════════════
+   QUEST PANEL & SECONDARY HUDS — anchor above the slim dock (~80px)
+   ══════════════════════════════════════════════════════════════════════════════ */
+@media (max-width: 768px) {
+  #ql-panel {
+    left: 8px !important;
+    right: 8px !important;
+    bottom: 96px !important;
+    top: auto !important;
+    width: auto !important;
+    max-width: none !important;
+    font-size: 10px !important;
+    padding: 6px 10px !important;
+    z-index: 35 !important;
+  }
+  #l3-obj {
+    left: 8px !important;
+    right: 8px !important;
+    width: auto !important;
+    max-width: none !important;
+    font-size: 10px !important;
+  }
+  #sync-overlay {
+    left: 8px !important;
+    right: 8px !important;
+    width: auto !important;
+    max-width: none !important;
+  }
+  #hint {
+    bottom: 100px !important;
+    font-size: 11px !important;
+  }
+}
+
+/* ══════════════════════════════════════════════════════════════════════════════
+   AI HUD, BOSS HUD, ONBOARDING, TOAST, DRAFT
+   Keep them on screen, away from dock, full-width safe.
+   ══════════════════════════════════════════════════════════════════════════════ */
+@media (max-width: 768px) {
+  /* AI HUD — small, anchored just above the slim dock */
+  #ai-hud {
+    top: auto !important;
+    bottom: 92px !important;
+    right: 6px !important;
+    left: auto !important;
+    max-width: 180px !important;
+    font-size: 9px !important;
+    padding: 5px 7px !important;
+    transform: none !important;
+    z-index: 40 !important;
+    border-radius: 4px !important;
+  }
+
+  /* Boss HUD — full width across top, below the topbar */
+  #boss-hud {
+    left: 8px !important;
+    right: 8px !important;
+    width: auto !important;
+    max-width: none !important;
+    top: 60px !important;
+  }
+
+  /* L3 HUD (notifications strip) — center under topbar */
+  #l3-hud {
+    left: 8px !important;
+    right: 8px !important;
+    width: auto !important;
+    max-width: none !important;
+    top: 64px !important;
+    font-size: 10px !important;
+  }
+
+  /* Onboarding card — full width, bottom-anchored above dock */
+  #onboard-card {
+    left: 10px !important;
+    right: 10px !important;
+    bottom: 96px !important;
+    top: auto !important;
+    width: auto !important;
+    max-width: none !important;
+    padding: 14px 16px !important;
+    font-size: 12px !important;
+    border-radius: 6px !important;
+  }
+
+  /* Toast notifications — top-anchored, full width */
+  #toast {
+    top: 96px !important;
+    left: 12px !important;
+    right: 12px !important;
+    bottom: auto !important;
+    width: auto !important;
+    max-width: none !important;
+    transform: none !important;
+    padding: 12px 14px !important;
+  }
+  #t-title { font-size: 13px !important; letter-spacing: 1.5px !important; }
+  #t-sub   { font-size: 11px !important; letter-spacing: 1px !important; }
+
+  /* Hint text — sit just above dock */
+  #hint {
+    bottom: 96px !important;
+    left: 12px !important;
+    right: 12px !important;
+    text-align: center !important;
+    font-size: 11px !important;
+  }
+
+  /* Draft / loadout cards — single column, full width */
+  #draft-cards,
+  #protocol-cards {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 10px !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    padding: 0 12px !important;
+    box-sizing: border-box !important;
+  }
+  .draft-card,
+  .protocol-card {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    box-sizing: border-box !important;
+  }
+
+  /* Active projects HUD — sit above onboarding/dock */
+  #active-projects-hud {
+    left: 8px !important;
+    right: 8px !important;
+    width: auto !important;
+    max-width: none !important;
+    bottom: 220px !important;
+    top: auto !important;
+    font-size: 10px !important;
+  }
+
+  /* Train score popup — center, full-width */
+  #train-score-popup {
+    left: 12px !important;
+    right: 12px !important;
+    width: auto !important;
+    max-width: none !important;
+    transform: translate(0, -50%) !important;
+    top: 50% !important;
+  }
+
+  /* Settings / Pause / Info / Protocol overlays — full screen, scrollable */
+  #settings-overlay,
+  #pause-overlay,
+  #info-overlay,
+  #protocol-overlay,
+  #boss-screen,
+  #win-screen {
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+  }
+  #settings-box,
+  #info-box,
+  #protocol-box,
+  #pause-content {
+    width: calc(100% - 24px) !important;
+    max-width: 100% !important;
+    margin: 12px !important;
+    padding: 20px 16px !important;
+    box-sizing: border-box !important;
+    max-height: calc(100vh - 24px) !important;
+    overflow-y: auto !important;
+  }
+}

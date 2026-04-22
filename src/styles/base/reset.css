@@ -1,0 +1,105 @@
+/* ══════════════════════════════════════════════════════
+   SYNAPSE v95 — BASE STYLES
+   Reset, body, canvas, atmospheric layers, accessibility.
+   ══════════════════════════════════════════════════════ */
+
+*,*::before,*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  background: #010308;
+}
+
+body {
+  overflow: hidden;
+  background: #010308;
+  font-family: 'Share Tech Mono', 'Courier New', monospace;
+  user-select: none;
+  touch-action: none;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+/* Production flag — set by prod-ready layer */
+body.prod-ready {
+  overscroll-behavior: none;
+}
+
+/* Reduced-motion mode — toggled from system preference */
+body.reduce-motion *,
+body.reduce-motion *::before,
+body.reduce-motion *::after {
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.01ms !important;
+  scroll-behavior: auto !important;
+}
+
+/* Low-end hardware — disable expensive layer promotions */
+@media (max-device-memory: 2) {
+  /* will-change: auto on all promoted elements */
+}
+
+canvas {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+}
+
+/* ── Atmospheric layers ─────────────────────────────── */
+
+#vignette {
+  position: fixed;
+  inset: 0;
+  z-index: 5;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse at 50% 50%, transparent 30%, rgba(0,1,6,.72) 100%),
+    radial-gradient(ellipse at 50% 0%, rgba(0,2,12,.35) 0%, transparent 60%);
+}
+
+#scanline-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 6;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent, transparent 3px,
+    rgba(0,0,0,.025) 3px, rgba(0,0,0,.025) 4px
+  );
+}
+
+/* ── FIX C-03: Minimum font-size enforcement for WCAG 2.1 AA ─ */
+/* Any element that is interactive or conveys information         */
+/* must have at least 10px effective size.                        */
+button, input, select, textarea, [role="button"] {
+  font-size: max(10px, 1em);
+}
+
+/* ── Production status banner ───────────────────────── */
+#prod-status-banner {
+  position: fixed;
+  left: 50%;
+  top: 16px;
+  transform: translateX(-50%);
+  z-index: 9998;
+  display: none;
+  max-width: min(90vw, 760px);
+  padding: 10px 14px;
+  border-radius: 10px;
+  border: 1px solid rgba(255,120,120,.28);
+  background: rgba(42,10,16,.94);
+  color: rgba(255,245,245,.96);
+  font: 500 14px/1.4 system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+  box-shadow: 0 12px 40px rgba(0,0,0,.45);
+}
+
+#prod-status-banner[data-level="warn"] {
+  border-color: rgba(255,210,120,.28);
+  background: rgba(46,28,6,.94);
+}

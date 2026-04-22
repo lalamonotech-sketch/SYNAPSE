@@ -1,0 +1,454 @@
+/* ══════════════════════════════════════════════════════
+   SYNAPSE — PROTOCOL OVERLAYS & MOBILE LAYOUT
+   - Protocol Selection Overlay
+   - v79 Mobile-First HUD responsive polish
+   - Phase 3 Protocol Signature Overlays & unlock indicators
+   ══════════════════════════════════════════════════════ */
+
+/* ══════════════════════════════════════════════════════════
+   PROTOCOL SELECTION OVERLAY
+   ══════════════════════════════════════════════════════════ */
+#protocol-overlay{
+  position:fixed;inset:0;z-index:120;
+  display:flex;align-items:stretch;
+  background:#010308;
+  opacity:0;pointer-events:none;
+  transition:opacity .45s cubic-bezier(.4,0,.2,1);
+  overflow:hidden
+}
+#protocol-overlay.show{opacity:1;pointer-events:auto}
+
+/* Left content column — mirrors info-box / boss-intro-box */
+#protocol-box{
+  position:relative;z-index:3;
+  display:flex;flex-direction:column;justify-content:center;
+  padding:clamp(40px,8vh,72px) clamp(36px,7vw,100px);
+  padding-left:clamp(54px,10vw,108px);
+  width:min(680px,100%);min-height:100vh;
+  overflow-y:auto;
+  text-align:left
+}
+#protocol-label-line{
+  font-family:'Share Tech Mono','Courier New',monospace;
+  font-size:clamp(.38rem,.85vw,.50rem);letter-spacing:clamp(4px,1.4vw,8px);
+  color:rgba(80,160,255,.48);text-transform:uppercase;margin-bottom:10px;white-space:nowrap
+}
+#protocol-title{
+  font-family:'Bebas Neue','Space Grotesk',sans-serif;
+  font-size:clamp(2.8rem,9vw,5.6rem);
+  font-weight:400;letter-spacing:.05em;line-height:.88;
+  color:#fff;text-transform:uppercase;
+  text-shadow:0 0 60px rgba(80,160,255,.55),0 0 120px rgba(60,140,255,.22);
+  margin-bottom:10px
+}
+#protocol-sub{
+  font-family:'Share Tech Mono','Courier New',monospace;
+  font-size:clamp(.38rem,.75vw,.48rem);letter-spacing:clamp(3px,1vw,6px);
+  color:rgba(100,200,255,.45);text-transform:uppercase;margin-bottom:0
+}
+#protocol-sep{
+  width:100%;height:1px;
+  background:linear-gradient(90deg,rgba(80,160,255,.28),rgba(80,160,255,.06),transparent);
+  margin:clamp(16px,2.5vh,26px) 0
+}
+
+/* Protocol cards grid */
+#protocol-cards{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:8px;
+  margin-bottom:clamp(14px,2.5vh,24px)
+}
+.proto-card{
+  position:relative;
+  padding:14px 16px 12px;
+  border:1px solid rgba(255,255,255,.07);
+  border-left:2px solid var(--pc-color);
+  border-radius:2px;
+  background:rgba(0,0,0,.22);
+  cursor:pointer;
+  transition:background .2s,border-color .2s,box-shadow .2s;
+  outline:none;-webkit-tap-highlight-color:transparent
+}
+.proto-card:hover,.proto-card:focus{
+  background:rgba(255,255,255,.04);
+  border-color:rgba(255,255,255,.14);
+  border-left-color:var(--pc-color);
+  /* FIX C-07: fallback for Safari 15 */ box-shadow:0 0 28px rgba(100,150,255,.18); box-shadow:0 0 28px color-mix(in srgb, var(--pc-color) 18%, transparent)
+}
+.proto-card.selected{
+  background:rgba(255,255,255,.06);
+  border-color:rgba(255,255,255,.18);
+  border-left-color:var(--pc-color);
+  box-shadow:0 0 36px color-mix(in srgb, var(--pc-color) 28%, transparent),inset 0 0 20px rgba(0,0,0,.3)
+}
+.proto-card.locked{
+  opacity:.32;cursor:not-allowed;pointer-events:none;filter:grayscale(.6)
+}
+.proto-card-tag{
+  font-family:'Share Tech Mono',monospace;
+  font-size:max(10px,.40rem);letter-spacing:3.5px;text-transform:uppercase;
+  color:var(--pc-color);opacity:.75;margin-bottom:6px
+}
+.proto-card-name{
+  font-family:'Space Grotesk',sans-serif;
+  font-size:clamp(.58rem,1.4vw,.72rem);font-weight:600;letter-spacing:4px;
+  text-transform:uppercase;color:#fff;margin-bottom:7px;
+  text-shadow:0 0 16px color-mix(in srgb, var(--pc-color) 60%, transparent)
+}
+.proto-card-hook{
+  font-family:'Share Tech Mono',monospace;
+  font-size:max(10px,.42rem);letter-spacing:2.5px;text-transform:uppercase;
+  color:var(--pc-color);margin-bottom:9px
+}
+.proto-card-axes{
+  display:flex;flex-direction:column;gap:2px;margin-bottom:6px
+}
+.proto-card-axis{
+  font-family:'Share Tech Mono',monospace;
+  font-size:max(10px,.38rem);letter-spacing:1.8px;text-transform:uppercase;
+  color:rgba(255,255,255,.42);display:flex;align-items:center;gap:6px;
+  line-height:1.7
+}
+.proto-card-axis::before{content:'·';color:var(--pc-color);opacity:.6;flex-shrink:0}
+.proto-card-locked-tag{
+  font-family:'Share Tech Mono',monospace;
+  font-size:max(10px,.36rem);letter-spacing:2.5px;text-transform:uppercase;
+  color:rgba(255,255,255,.35);margin-top:5px
+}
+/* Selected check mark */
+.proto-card-check{
+  position:absolute;top:10px;right:12px;
+  font-size:max(10px,.52rem);color:var(--pc-color);opacity:0;transition:opacity .2s
+}
+.proto-card.selected .proto-card-check{opacity:1}
+
+/* Confirm button */
+#protocol-confirm{
+  display:block;width:100%;
+  padding:13px 0;border:none;border-radius:0;
+  border-bottom:1px solid rgba(255,255,255,.05);
+  background:transparent;color:rgba(120,210,255,.72);
+  font-family:'Space Grotesk',sans-serif;font-size:clamp(.5rem,1.3vw,.65rem);
+  font-weight:500;letter-spacing:5px;text-transform:uppercase;
+  cursor:pointer;
+  transition:padding-left .32s cubic-bezier(.25,0,.15,1),color .25s,background .25s,opacity .25s;
+  outline:none;position:relative;text-align:left;
+  opacity:.3;pointer-events:none
+}
+#protocol-confirm.ready{
+  opacity:1;pointer-events:auto;
+  color:rgba(160,240,255,.95)
+}
+#protocol-confirm::before{
+  content:'';position:absolute;left:0;top:50%;transform:translateY(-50%);
+  width:0;height:1px;background:currentColor;opacity:.65;
+  transition:width .32s cubic-bezier(.25,0,.15,1),opacity .25s
+}
+#protocol-confirm.ready:hover::before{width:12px;opacity:.9}
+#protocol-confirm.ready:hover{padding-left:18px;color:rgba(180,255,255,.98);background:rgba(40,100,180,.04)}
+
+/* Protocol HUD chip — extends cond-chip pattern */
+#proto-chip{
+  display:none;
+  font-size:max(10px,.32rem);letter-spacing:3.5px;text-transform:uppercase;
+  margin-bottom:3px;
+  padding:2px 10px 2px 8px;
+  border-radius:2px;
+  border-left:2px solid var(--proto-color,rgba(80,160,255,.6));
+  color:var(--proto-color,rgba(80,160,255,.85));
+  background:rgba(0,0,0,.22);
+  transition:opacity .5s,color .5s,border-color .5s
+}
+#proto-chip.vis{display:inline-block}
+
+/* Protocol colors */
+.proto-card.p-phantom { --pc-color: rgba(200,80,255,.95) }
+.proto-card.p-spine   { --pc-color: rgba(255,200,60,.95) }
+.proto-card.p-temporal{ --pc-color: rgba(0,220,255,.95) }
+.proto-card.p-mnemonic{ --pc-color: rgba(120,255,160,.95) }
+
+@media(max-width:680px){
+  #protocol-cards{grid-template-columns:1fr}
+  #protocol-box{padding:36px 20px;padding-left:clamp(44px,9vw,60px);width:100%}
+}
+/* ══════════════════════════════════════════════ end protocol overlay CSS ══ */
+
+/* ════════════════════════════════════════════════════════
+   v79 MOBILE-FIRST HUD & LAYOUT — Responsive polish
+   ════════════════════════════════════════════════════════ */
+
+/* ── Mobile: smaller AI HUD, compact layout ── */
+@media(max-width:480px){
+  #ai-hud{
+    width:clamp(128px,38vw,155px);
+    padding:10px 12px 10px 14px;
+    top:max(54px,calc(env(safe-area-inset-top,0px) + 54px));
+  }
+  #ai-stage-lbl{font-size:max(10px,.24rem);letter-spacing:2.5px}
+  #ai-profile-lbl{font-size:max(10px,.46rem);letter-spacing:2.5px}
+  #ai-mood-lbl{font-size:max(10px,.24rem)}
+  .ai-bar-key{font-size:max(10px,.24rem);width:20px}
+  .ai-bar-val{font-size:max(10px,.24rem);width:18px}
+  .ai-bar-track{height:2px}
+
+  /* HUD: tighter on mobile */
+  #hud{padding:max(10px,env(safe-area-inset-top,10px)) 12px 6px}
+  #phase-name{font-size:.78rem;letter-spacing:5px}
+  #layer-tag{font-size:max(10px,.3rem);letter-spacing:5px}
+  #stats-row{font-size:max(10px,.36rem);padding:3px 10px;gap:1px}
+  .stat{padding:1px 5px}
+  #prog-wrap{width:min(160px,50vw)}
+
+  /* Dock: full-width, larger touch targets on mobile */
+  #ctrl-dock{padding-bottom:0}
+  .mbtn{
+    padding:8px 14px;
+    font-size:max(10px,.42rem);
+    letter-spacing:2px;
+    min-height:46px;
+    flex:1;
+  }
+  #dock-action-zone{gap:3px;padding:6px 8px env(safe-area-inset-bottom,14px)}
+  #dock-type-zone{padding:5px 8px 4px;gap:2px}
+  .tbtn{
+    padding:5px 10px;
+    font-size:max(10px,.36rem);
+    letter-spacing:1.8px;
+    min-height:38px;
+    flex:1;
+  }
+
+  /* Pause button: comfortable tap target */
+  #pause-btn{
+    width:44px;height:44px;border-radius:11px;
+    top:max(10px,env(safe-area-inset-top,10px));
+    right:12px;
+  }
+
+  /* Missed flash: bigger on mobile */
+  #missed-flash{font-size:max(10px,.46rem);letter-spacing:3px}
+
+  /* Combo hud: tighter positioning */
+  #combo-hud{top:max(48px,calc(env(safe-area-inset-top,0px) + 48px));font-size:max(10px,.34rem)}
+  #decay-ind{top:max(48px,calc(env(safe-area-inset-top,0px) + 48px));font-size:max(10px,.26rem)}
+
+  /* Node tooltip: not too wide on mobile */
+  #node-tip{max-width:80vw;white-space:normal;font-size:max(10px,.35rem)}
+
+  /* Boss HUD: scale down labels */
+  #boss-hud-label{font-size:max(10px,.2rem);letter-spacing:2px}
+  #boss-hud-name{font-size:clamp(1.1rem,5vw,1.8rem)}
+}
+
+/* ── Very small phones (< 375px) ── */
+@media(max-width:375px){
+  #phase-name{font-size:.68rem;letter-spacing:4px}
+  .mbtn{font-size:max(10px,.38rem);padding:7px 10px;letter-spacing:1.8px}
+  .tbtn{font-size:max(10px,.32rem);padding:5px 8px}
+  #stats-row{font-size:max(10px,.33rem);padding:3px 8px}
+  #ai-hud{width:130px}
+}
+
+/* ── Landscape mobile: reduce HUD height ── */
+@media(max-height:500px) and (orientation:landscape){
+  #hud{padding:6px 12px 4px}
+  #layer-tag{margin-bottom:1px;font-size:max(10px,.28rem)}
+  #phase-name{font-size:.7rem;letter-spacing:4px;margin-bottom:2px}
+  #stats-row{margin-top:3px;padding:2px 10px}
+  #prog-wrap{margin:4px auto 2px}
+  .mbtn{min-height:40px;padding:6px 16px}
+  .tbtn{min-height:34px;padding:4px 10px}
+  #dock-type-zone{min-height:30px;padding:3px 10px}
+  #dock-action-zone{padding:4px 10px env(safe-area-inset-bottom,8px)}
+}
+
+/* ── Touch device: slightly larger tap targets ── */
+@media(pointer:coarse){
+  .mbtn{min-height:46px}
+  .tbtn{min-height:40px}
+  #pause-btn{min-width:44px;min-height:44px}
+}
+
+/* ── v79 GLOBAL: no-hover visual tweaks ── */
+.mbtn:not(:disabled):not(.pulse-cd):not(.active):hover{
+  background:rgba(255,255,255,.05);
+  color:rgba(255,255,255,.45);
+}
+
+/* Smooth focus ring for accessibility */
+:focus-visible{outline:1px solid rgba(80,160,255,.5);outline-offset:2px;}
+
+/* Button hover brightness lift */
+.mbtn:not(:disabled):not(.pulse-cd):hover{
+  filter:brightness(1.15);
+}
+.tbtn:not(.tbtn-disabled):hover{
+  color:rgba(255,255,255,.55);
+  background:rgba(255,255,255,.04);
+}
+
+/* HUD stat chips — subtle hover (for touch: ignored) */
+@media(hover:hover){
+  .stat:hover{background:rgba(100,200,255,.06);color:rgba(200,240,255,.6);}
+}
+
+/* Smooth backdrop for all overlays */
+/* FIX C-02: removed anti-pattern [style*="backdrop-filter"] selector — webkit-backdrop-filter is already set inline where needed */
+
+/* v78: pulse button ready state — additional shimmer */
+/* @keyframes pulse-rdy-shimmer — removed: defined in animations.css */
+.mbtn.pulse-rdy{
+  animation:pulse-rdy-shimmer 2.2s infinite;
+}
+/* Override capture blink to not conflict */
+.mbtn.pulse-capture{animation:capture-blink .38s infinite alternate!important;}
+.mbtn.pulse-spine{animation:spine-btn-glow 0.6s infinite alternate!important;}
+.mbtn.pulse-fusion{animation:fusion-btn-blink .3s infinite alternate!important;}
+
+/* v78: cond chip — softer */
+#cond-chip.vis{
+  letter-spacing:3px;
+  font-size:max(10px,.34rem);
+}
+
+/* v78: layer-tag — cleaner mono style */
+#layer-tag{font-family:'Share Tech Mono',monospace;}
+
+/* v78: dock type zone separator */
+#dock-type-zone{
+  border-bottom:1px solid rgba(255,255,255,.04);
+}
+
+/* v78: AI hud labels */
+#ai-stage-lbl{font-size:max(10px,.26rem);letter-spacing:3.5px;}
+#ai-profile-lbl{letter-spacing:3px;font-size:max(10px,.54rem);}
+
+/* v78: ql-panel softer border */
+#ql-panel{border-radius:0 6px 6px 0;}
+
+/* v78: HUD & dock fade-in on game start */
+/* @keyframes hud-fadein — removed: defined in animations.css */
+/* @keyframes dock-slidein — removed: defined in animations.css */
+.hud-animate{animation:hud-fadein .65s cubic-bezier(.22,1,.36,1) both}
+.dock-animate{animation:dock-slidein .55s .12s cubic-bezier(.22,1,.36,1) both}
+
+/* FIX U-02 / C-03: Minimum font-size enforcement for WCAG 2.1 AA
+   Raises micro-text (.28-.32rem) on interactive/informational elements */
+.mbtn, #train-btn, #pulse-btn, #boss-start-btn, 
+#win-restart, .draft-btn, .protocol-btn, 
+#protocol-confirm, .syn-slider-label { 
+  min-height: 32px; /* touch target minimum */
+}
+/* Boost the tiniest labels to 0.5rem minimum where possible */
+.dc-tag { font-size: max(.3rem, 8px) !important; }
+.wstat  { font-size: max(.32rem, 9px) !important; }
+
+
+/* FIX L-08: win-stats grid span moved from inline style */
+.wstat.full-width, #win-stats .wstat:last-child { grid-column: 1 / -1; }
+
+
+/* ── PHASE 3: Protocol Signature Overlays ── */
+#proto-sig-overlay{
+  position:fixed;inset:0;pointer-events:none;z-index:999;overflow:hidden;
+}
+.proto-sig-flash{
+  position:absolute;inset:0;opacity:0;
+  animation:proto-sig-in 1.8s cubic-bezier(.25,0,.15,1) forwards;
+}
+/* @keyframes proto-sig-in — removed: defined in animations.css */
+/* Phantom: lila Diagonalstreifen-Scan */
+.proto-sig-phantom{
+  background: repeating-linear-gradient(
+    -55deg,
+    transparent 0px, transparent 18px,
+    rgba(200,80,255,.15) 18px, rgba(200,80,255,.15) 20px
+  );
+  animation-duration:2.2s;
+}
+/* Spine: goldener Backbone-Strahl */
+.proto-sig-spine{
+  background: linear-gradient(
+    to right,
+    transparent 0%, rgba(255,200,60,.22) 48%,
+    rgba(255,220,80,.35) 50%, rgba(255,200,60,.22) 52%, transparent 100%
+  );
+  animation-duration:1.4s;
+}
+/* Temporal: Cyan-Pulsring */
+.proto-sig-temporal{
+  background: radial-gradient(
+    circle at 50% 50%,
+    rgba(80,220,255,.28) 0%, rgba(80,220,255,.08) 35%, transparent 65%
+  );
+  animation-duration:2.0s;
+}
+/* Mnemonic: Violett-Membranenüberlagerung */
+.proto-sig-mnemonic{
+  background: radial-gradient(
+    ellipse at 50% 60%,
+    rgba(160,80,255,.22) 0%, rgba(140,60,255,.06) 45%, transparent 70%
+  );
+  animation-duration:2.4s;
+}
+
+/* Protokoll-HUD-Chip permanent sichtbar während Run */
+#proto-chip{
+  transition: opacity .5s ease, transform .5s cubic-bezier(.25,0,.15,1);
+  /* PHASE 3.4: always visible once set */
+}
+#proto-chip.vis{
+  display:inline-block;
+  min-width:80px;
+  text-align:center;
+}
+#proto-chip.proto-intro{
+  animation: proto-chip-pop .7s cubic-bezier(.2,1.4,.4,1) forwards;
+}
+/* @keyframes proto-chip-pop — removed: defined in animations.css */
+
+/* Protocol signature text banner */
+#proto-sig-banner{
+  position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);
+  pointer-events:none;z-index:1000;
+  font-family:'Share Tech Mono','Courier New',monospace;
+  font-size:clamp(.55rem,1.6vw,.9rem);
+  letter-spacing:8px;text-transform:uppercase;text-align:center;
+  opacity:0;white-space:nowrap;
+  animation: none;
+}
+#proto-sig-banner.show{
+  animation: proto-banner-in 2.5s cubic-bezier(.25,0,.15,1) forwards;
+}
+/* @keyframes proto-banner-in — removed: defined in animations.css */
+
+
+/* ── PHASE 3.3: Protocol unlock indicators ── */
+.proto-card.locked{
+  opacity:.38;
+  pointer-events:none;
+  filter: grayscale(.7);
+}
+.proto-card.locked::after{
+  content:'GESPERRT';
+  position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+  font-family:'Share Tech Mono',monospace;font-size:max(10px,.38rem);
+  letter-spacing:5px;color:rgba(255,255,255,.4);
+  background:rgba(0,0,0,.55);padding:4px 10px;border-radius:3px;
+}
+.proto-unlock-hint{
+  font-size:max(10px,.32rem);letter-spacing:2px;color:rgba(255,180,60,.55);
+  margin-top:6px;text-transform:uppercase;text-align:center;
+  font-family:'Share Tech Mono',monospace;
+  min-height:.8em;
+}
+/* Run count indicator */
+.proto-run-badge{
+  position:absolute;top:7px;right:9px;
+  font-family:'Share Tech Mono',monospace;font-size:max(10px,.28rem);
+  letter-spacing:2px;color:rgba(255,255,255,.3);
+  background:rgba(0,0,0,.4);padding:2px 6px;border-radius:2px;
+}
+
+

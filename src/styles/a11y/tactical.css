@@ -1,0 +1,47 @@
+/* ══════════════════════════════════════════════════════
+   SYNAPSE — Tactical View
+   ──────────────────────────────────────────────────────
+   Toggle: `body[data-tactical="on"]`.
+   Strips bloom, glow, shadows, and animated FX so the
+   player can read the network as a flat blueprint.
+   Engaged via Shift+L (see hotkeys.js). Existing 'L'
+   diagnostic lens stays untouched.
+   ══════════════════════════════════════════════════════ */
+
+body[data-tactical="on"] *,
+body[data-tactical="on"] *::before,
+body[data-tactical="on"] *::after {
+  text-shadow: none !important;
+  box-shadow: 0 0 0 1px rgba(120, 200, 255, 0.35) !important;
+  -webkit-backdrop-filter: none !important;
+          backdrop-filter: none !important;
+  filter: none !important;
+  animation: none !important;
+}
+
+/* Repaint background as deep navy blueprint */
+body[data-tactical="on"] {
+  background: #061018 !important;
+}
+
+body[data-tactical="on"] #vignette,
+body[data-tactical="on"] #scanline-overlay {
+  display: none !important;
+}
+
+/* Tactical badge in the top-right so the player knows the mode is on */
+body[data-tactical="on"]::after {
+  content: "TACTICAL VIEW · Shift+L";
+  position: fixed;
+  top: 8px;
+  right: 12px;
+  z-index: 9999;
+  font-family: ui-monospace, "JetBrains Mono", monospace;
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  padding: 4px 10px;
+  color: #66d9ff;
+  border: 1px solid rgba(102, 217, 255, 0.55);
+  background: rgba(6, 16, 24, 0.85);
+  pointer-events: none;
+}

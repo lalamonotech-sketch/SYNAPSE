@@ -1,0 +1,199 @@
+/* ── SYNAPSE v98 Sprint 3 — Research System ─────────────────────────────── */
+
+/* === Existing sprint3 content preserved === */
+/* (Original sprint3.css was already present — this extends it) */
+
+/* ─────────────────────────────────────────────────────────────────────────── */
+/* Synaptic Plasticity — Link Level Badges (overlay on the canvas)            */
+/* ─────────────────────────────────────────────────────────────────────────── */
+
+/* Plasticity HUD indicator (bottom-left corner, subtle) */
+#plasticity-legend {
+  position: fixed;
+  bottom: 72px;
+  left: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  z-index: 80;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.6s ease;
+}
+
+body.epoch-reactive  #plasticity-legend,
+body.epoch-temporal  #plasticity-legend,
+body.epoch-sentience #plasticity-legend {
+  opacity: 1;
+}
+
+.plast-legend-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.58rem;
+  letter-spacing: 0.04em;
+  color: rgba(180, 200, 230, 0.6);
+}
+
+.plast-legend-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.plast-legend-dot.level-0 { background: rgba(68, 102, 204, 0.5); }
+.plast-legend-dot.level-1 { background: #44ffcc; box-shadow: 0 0 6px #44ffcc88; }
+.plast-legend-dot.level-2 { background: #ffdd44; box-shadow: 0 0 8px #ffdd4499; }
+
+
+/* ─────────────────────────────────────────────────────────────────────────── */
+/* Auto-Router UI                                                              */
+/* ─────────────────────────────────────────────────────────────────────────── */
+
+/* Selection indicator (top bar) */
+#ar-select-hint {
+  position: fixed;
+  top: 56px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 600;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.65rem;
+  letter-spacing: 0.12em;
+  color: #00ccff;
+  text-transform: uppercase;
+  padding: 5px 18px;
+  background: rgba(0, 20, 40, 0.88);
+  border: 1px solid rgba(0, 170, 255, 0.45);
+  border-radius: 3px;
+  text-shadow: 0 0 10px rgba(0, 200, 255, 0.6);
+  animation: ar-hint-pulse 2s ease-in-out infinite;
+  pointer-events: none;
+}
+
+@keyframes ar-hint-pulse {
+  0%, 100% { opacity: 0.85; }
+  50%       { opacity: 1.0; text-shadow: 0 0 16px rgba(0, 220, 255, 0.9); }
+}
+
+/* Confirm banner */
+#ar-confirm-banner {
+  position: fixed;
+  bottom: 28px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 600;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 20px;
+  background: rgba(0, 15, 35, 0.92);
+  border: 1px solid rgba(0, 160, 255, 0.5);
+  border-radius: 4px;
+  backdrop-filter: blur(8px);
+  box-shadow:
+    0 0 0 1px rgba(0, 120, 220, 0.15),
+    0 4px 24px rgba(0, 60, 120, 0.5);
+  animation: ar-banner-in 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@keyframes ar-banner-in {
+  from { opacity: 0; transform: translateX(-50%) translateY(14px); }
+  to   { opacity: 1; transform: translateX(-50%) translateY(0); }
+}
+
+.ar-banner-info {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.68rem;
+  letter-spacing: 0.06em;
+  color: rgba(160, 220, 255, 0.9);
+  white-space: nowrap;
+}
+
+.ar-banner-info b {
+  color: #44ffcc;
+  font-weight: normal;
+}
+
+.ar-btn {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.62rem;
+  letter-spacing: 0.08em;
+  padding: 5px 14px;
+  border-radius: 3px;
+  border: none;
+  cursor: pointer;
+  transition: background 0.15s, transform 0.1s;
+}
+
+.ar-btn:active { transform: scale(0.96); }
+
+.ar-btn-ok {
+  background: rgba(0, 160, 255, 0.22);
+  color: #44ddff;
+  border: 1px solid rgba(0, 160, 255, 0.5);
+}
+.ar-btn-ok:hover {
+  background: rgba(0, 160, 255, 0.38);
+}
+
+.ar-btn-cancel {
+  background: rgba(255, 60, 60, 0.08);
+  color: rgba(255, 130, 120, 0.8);
+  border: 1px solid rgba(200, 50, 50, 0.3);
+}
+.ar-btn-cancel:hover {
+  background: rgba(255, 60, 60, 0.18);
+}
+
+/* Ghost overlay canvas fades in */
+#ar-ghost-overlay {
+  animation: ar-overlay-in 0.4s ease-out;
+}
+
+@keyframes ar-overlay-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+/* Auto-Router dock button — locked state in Epoch I+II */
+body.epoch-mechanical  #btn-autoroute,
+body.epoch-reactive    #btn-autoroute {
+  opacity: 0.25;
+  pointer-events: none;
+  filter: grayscale(0.8);
+}
+
+body.epoch-temporal  #btn-autoroute,
+body.epoch-sentience #btn-autoroute {
+  opacity: 1;
+  pointer-events: auto;
+  filter: none;
+  animation: ar-btn-glow 3s ease-in-out infinite;
+}
+
+@keyframes ar-btn-glow {
+  0%, 100% { box-shadow: none; }
+  50%       { box-shadow: 0 0 10px rgba(0, 180, 255, 0.4); }
+}
+
+/* Active state on the dock button */
+#btn-autoroute.ar-active {
+  background: rgba(0, 140, 220, 0.28) !important;
+  border-color: rgba(0, 180, 255, 0.7) !important;
+  color: #44ccff !important;
+  box-shadow: 0 0 12px rgba(0, 160, 255, 0.5) !important;
+}
+
+/* Epoch III unlock pulse on button */
+body.epoch-temporal  #btn-autoroute:not(.ar-active) {
+  animation: ar-unlock-pulse 1.5s ease-out 3;
+}
+
+@keyframes ar-unlock-pulse {
+  0%   { box-shadow: 0 0 0 0   rgba(0, 180, 255, 0.6); }
+  70%  { box-shadow: 0 0 0 8px rgba(0, 180, 255, 0); }
+  100% { box-shadow: 0 0 0 0   rgba(0, 180, 255, 0); }
+}

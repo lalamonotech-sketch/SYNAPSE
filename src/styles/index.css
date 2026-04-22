@@ -1,0 +1,64 @@
+/* ══════════════════════════════════════════════════════
+   SYNAPSE v98 — CSS ENTRY POINT (refactored)
+   Order: Tokens → Base → Animations → HUD → Screens →
+          Panels → FX → Polish → Mobile → A11y/Overrides
+   ══════════════════════════════════════════════════════ */
+
+/* 1 — Tokens & Base */
+@import './tokens/tokens.css';
+@import './tokens/atmo.css';
+@import './base/reset.css';
+@import './base/shell.css';
+
+/* 2 — Animations */
+@import './animations/keyframes.css';
+@import './animations/awakening.css';
+
+/* 3 — HUD */
+@import './hud/base.css';
+@import './hud/boss.css';
+@import './hud/history.css';
+@import './hud/widgets.css';
+@import './hud/topbar.css';
+@import './hud/dock.css';
+
+/* 4 — Screens */
+@import './screens/title.css';
+@import './screens/gameplay.css';
+@import './screens/win.css';
+
+/* 5 — Panels */
+@import './panels/panels.css';
+@import './panels/protocol.css';
+@import './panels/boss-report.css';
+@import './panels/blueprint-nomads.css';
+@import './panels/research.css';
+@import './panels/epoch-reveal.css';
+
+/* 6 — FX */
+@import './fx/glass.css';
+@import './fx/cinematic.css';
+@import './fx/premium.css';
+@import './fx/gameplay.css';
+
+/* 7 — Polish */
+@import './polish/hud-polish.css';
+@import './polish/theme.css';
+@import './polish/consistency.css';
+
+/* 8 — Mobile */
+@import './mobile/title.css';
+@import './mobile/gameplay.css';
+@import './mobile/dock.css';
+@import './mobile/overlay-fix.css';
+
+/* 9 — Responsive */
+@import './base/responsive.css';
+
+/* 10 — A11y & final overrides (must come last) */
+@import './a11y/perf.css';
+@import './a11y/colorblind.css';
+@import './a11y/tactical.css';
+
+/* 11 — Mobile network focus (absolute final override) */
+@import './mobile/network-focus.css';

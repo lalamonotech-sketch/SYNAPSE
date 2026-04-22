@@ -1,0 +1,1205 @@
+<!DOCTYPE html>
+<html lang="de" data-runtime="production">
+<head>
+  <meta charset="UTF-8">
+  <meta name="description" content="Synapse v98 — cinematic browser game interface with layered HUD, Awakening system, Root Server meta-progression, and touch-friendly controls.">
+  <meta name="theme-color" content="#020814">
+  <meta name="color-scheme" content="dark">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
+  <meta name="format-detection" content="telephone=no, date=no, email=no, address=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- Fonts: preconnect first, then load -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Space+Grotesk:wght@300;400;500;600;700&family=Share+Tech+Mono&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+  <!-- All CSS injected by Vite from src/styles/index.css -->
+  <title>Synapse v98 — The Awakening</title>
+
+  <!-- ★ Critical inline styles: prevent the FOUC where overlay text leaks
+       before external stylesheets and JS finish loading. These rules are
+       applied the moment the parser sees them — they are intentionally
+       defensive and use !important so they win over anything that streams
+       in afterwards. JS removes the .boot-locked class once it has hidden
+       overlays via their normal class system. -->
+  <style>
+    html { background: #010308; }
+    body {
+      background: #010308;
+      color: #e5f1ff;
+      margin: 0;
+      font-family: 'Space Grotesk', system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+      overflow: hidden;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+    body.synapse-ready {
+      opacity: 1;
+    }
+    /* Hide every modal / overlay screen by default. They become visible
+       only when JS adds a .show / .active class. */
+    #protocol-overlay,
+    #info-overlay,
+    #settings-overlay,
+    #pause-overlay,
+    #boss-screen,
+    #boss-intro,
+    #boss-defeat,
+    #win-screen,
+    #fail-screen,
+    #draft-overlay,
+    #postrun-overlay,
+    #onboard-card,
+    #toast,
+    #train-score-popup,
+    #active-projects-hud,
+    #data-stat,
+    #ai-hud,
+    #boss-hud,
+    #l3-hud,
+    #pause-btn {
+      opacity: 0 !important;
+      visibility: hidden !important;
+      pointer-events: none !important;
+      position: fixed;
+      inset: 0;
+    }
+    /* Once a .show / .active / .visible state is applied, let the real
+       stylesheet take over again. */
+    .show, .active, .visible, .game-active, .is-paused {
+      visibility: visible !important;
+      opacity: 1 !important;
+      pointer-events: auto !important;
+    }
+    /* Title screen is the only thing that should be on screen at boot. */
+    #title-screen {
+      position: fixed;
+      inset: 0;
+      background: #010308;
+      z-index: 100;
+    }
+  </style>
+  <style id="epoch-i-restriction">
+    /* Epoch I: HUD elements hidden until epoch advances */
+    body.epoch-mechanical #stats-row,
+    body.epoch-mechanical #active-projects-hud,
+    body.epoch-mechanical #diag-panel,
+    body.epoch-mechanical #ai-hud,
+    body.epoch-mechanical #history-panel { display: none !important; }
+  </style>
+  <style id="fail-screen-styles">
+    #fail-screen {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 9000;
+      background: radial-gradient(ellipse at 50% 40%, rgba(180,30,30,.18) 0%, #010308 70%);
+      align-items: center;
+      justify-content: center;
+      font-family: 'Share Tech Mono','Courier New',monospace;
+    }
+    #fail-screen.show { display: flex; }
+    #fail-grid {
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(255,60,60,.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,60,60,.04) 1px, transparent 1px);
+      background-size: 32px 32px;
+      pointer-events: none;
+    }
+    #fail-inner {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: clamp(24px,4vw,48px) clamp(20px,5vw,56px);
+      max-width: 520px;
+      width: 90vw;
+      background: rgba(8,4,4,.82);
+      border: 1px solid rgba(255,60,60,.18);
+      border-radius: 4px;
+      backdrop-filter: blur(8px);
+    }
+    #fail-label {
+      font-size: clamp(.26rem,.6vw,.34rem);
+      letter-spacing: clamp(4px,1.2vw,7px);
+      color: rgba(255,80,80,.32);
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+    #fail-title {
+      font-size: clamp(.9rem,3.5vw,1.6rem);
+      letter-spacing: clamp(4px,2vw,10px);
+      color: rgba(255,100,80,.85);
+      text-transform: uppercase;
+      text-shadow: 0 0 24px rgba(255,60,60,.4);
+      text-align: center;
+    }
+    #fail-sub {
+      margin-top: 8px;
+      font-size: clamp(.26rem,.55vw,.34rem);
+      letter-spacing: 3px;
+      color: rgba(255,160,140,.35);
+      text-transform: uppercase;
+      text-align: center;
+    }
+    #fail-sep {
+      width: 100%;
+      height: 1px;
+      background: rgba(255,60,60,.12);
+      margin: 16px 0;
+    }
+    #fail-stats {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .fail-stat-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: clamp(.28rem,.6vw,.36rem);
+      letter-spacing: 2px;
+      color: rgba(255,200,180,.5);
+      text-transform: uppercase;
+    }
+    .fail-stat-row .fsl { color: rgba(255,180,160,.28); }
+    .fail-stat-row .fsv { color: rgba(255,200,180,.65); }
+    #fail-restart {
+      font-family: 'Share Tech Mono','Courier New',monospace;
+      font-size: clamp(.32rem,.75vw,.42rem);
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      color: rgba(255,160,140,.85);
+      background: rgba(255,60,60,.08);
+      border: 1px solid rgba(255,60,60,.22);
+      padding: 10px 28px;
+      cursor: pointer;
+      border-radius: 2px;
+      transition: background .18s, border-color .18s;
+    }
+    #fail-restart:hover {
+      background: rgba(255,60,60,.16);
+      border-color: rgba(255,80,60,.45);
+    }
+  </style>
+<script type="module" crossorigin src="/assets/index-BrVk8K_Q.js"></script>
+<link rel="modulepreload" crossorigin href="/assets/three-vendor-B6txDPAI.js">
+<link rel="modulepreload" crossorigin href="/assets/game-layers-BGkNztcJ.js">
+<link rel="modulepreload" crossorigin href="/assets/game-systems-BDtJYTY8.js">
+<link rel="modulepreload" crossorigin href="/assets/game-ui-BmJJsYSV.js">
+<link rel="stylesheet" crossorigin href="/assets/index-DW14Ywwo.css">
+
+<body class="epoch-mechanical">
+
+  <noscript>
+    <div style="position:fixed;inset:0;z-index:9999;display:grid;place-items:center;padding:24px;background:#020814;color:#f5fbff;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;">
+      <div style="max-width:640px;border:1px solid rgba(120,180,255,.25);background:rgba(8,16,32,.92);padding:24px 28px;border-radius:12px;">
+        <h1 style="margin:0 0 10px;font-size:1.4rem;">JavaScript is required</h1>
+        <p style="margin:0;line-height:1.55;opacity:.9;">Synapse v98 is an interactive single-page experience and needs JavaScript enabled to run.</p>
+      </div>
+    </div>
+  </noscript>
+
+  <!-- ── Game HTML shell — v98 production, no inline CSS/JS ── -->
+<!-- ── TITLE SCREEN ── -->
+<div id="title-screen">
+  <!-- Background layers -->
+  <div id="title-grid"></div>
+  <div id="title-orb1"></div>
+  <div id="title-orb2"></div>
+  <div id="title-scanlines"></div>
+  <div id="title-spine"></div>
+
+  <!-- Left content column -->
+  <div id="title-content">
+    <div id="title-label" data-de="Neuronales Netzwerk · Simulation" data-en="Neural Network · Simulation">Neuronales Netzwerk · Simulation</div>
+    <div id="title-main">Synapse</div>
+    <div id="title-sub" data-de="v98 · The Awakening Update" data-en="v98 · The Awakening Update">v98 · The Awakening Update</div>
+    <div id="title-sep"></div>
+
+    <div id="title-menu">
+      <!-- Save Card -->
+      <div id="save-card" role="button" tabindex="0"
+          >
+        <div id="sc-tag">SPIELSTAND GEFUNDEN · FORTSETZEN</div>
+        <div id="sc-action">▷ Run fortsetzen</div>
+        <div id="sc-stats">
+          <span class="sc-chip" id="sc-diff">—</span>
+          <span class="sc-chip sc-hi" id="sc-clusters">—</span>
+          <span class="sc-chip" id="sc-energy">—</span>
+          <span class="sc-chip" id="sc-layer">—</span>
+          <span class="sc-chip" id="sc-protocol" style="display:none"></span>
+        </div>
+        <div id="sc-age">—</div>
+        <span id="sc-arrow">›</span>
+      </div>
+      <!-- Fallback -->
+      <button class="menu-item primary" id="btn-continue" style="display:none"
+        data-de="▷ &nbsp;Run fortsetzen" data-en="▷ &nbsp;Resume Run">▷ &nbsp;Run fortsetzen</button>
+      <button class="menu-item primary" id="btn-start"
+        data-de="⊕ &nbsp;Neuer Run" data-en="⊕ &nbsp;New Run">⊕ &nbsp;Neuer Run</button>
+      <!-- Secondary row -->
+      <div id="title-secondary-row">
+        <button class="menu-item secondary" id="btn-root-server" onclick="document.getElementById('v97-root-server').style.display=document.getElementById('v97-root-server').style.display==='none'||'' ? '' : 'none'">◈ &nbsp;Root Server</button>
+        <button class="menu-item secondary" id="btn-settings" data-de="◈ &nbsp;Einstellungen" data-en="◈ &nbsp;Settings">◈ &nbsp;Einstellungen</button>
+        <button class="menu-item secondary" id="btn-info" data-de="◎ &nbsp;Info" data-en="◎ &nbsp;Info">◎ &nbsp;Info</button>
+      </div>
+      <!-- Meta-box -->
+      <div id="title-meta-box">
+        <span id="tm-last"></span>
+        <span id="tm-best"></span>
+        <span id="tm-profile"></span>
+        <span id="tm-traits"></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Right decorative neural SVG -->
+  <div id="title-deco">
+    <svg viewBox="0 0 340 340" width="340" height="340" xmlns="http://www.w3.org/2000/svg" style="overflow:visible">
+      <defs>
+        <radialGradient id="ng1" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stop-color="rgba(80,180,255,.9)"/>
+          <stop offset="100%" stop-color="rgba(60,140,255,.2)"/>
+        </radialGradient>
+        <radialGradient id="ng2" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stop-color="rgba(100,255,180,.85)"/>
+          <stop offset="100%" stop-color="rgba(60,220,140,.15)"/>
+        </radialGradient>
+        <radialGradient id="ng3" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stop-color="rgba(200,140,255,.8)"/>
+          <stop offset="100%" stop-color="rgba(160,80,255,.1)"/>
+        </radialGradient>
+        <filter id="glow"><feGaussianBlur stdDeviation="3.5" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+        <filter id="glow-sm"><feGaussianBlur stdDeviation="2" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+      </defs>
+      <!-- Connection lines -->
+      <g stroke="rgba(80,160,255,.14)" stroke-width="1" fill="none">
+        <line x1="170" y1="90"  x2="270" y2="155"/>
+        <line x1="170" y1="90"  x2="100" y2="180"/>
+        <line x1="170" y1="90"  x2="240" y2="55"/>
+        <line x1="270" y1="155" x2="290" y2="245"/>
+        <line x1="270" y1="155" x2="200" y2="230"/>
+        <line x1="100" y1="180" x2="75"  y2="270"/>
+        <line x1="100" y1="180" x2="200" y2="230"/>
+        <line x1="200" y1="230" x2="290" y2="245"/>
+        <line x1="200" y1="230" x2="160" y2="300"/>
+        <line x1="240" y1="55"  x2="310" y2="100"/>
+        <line x1="310" y1="100" x2="270" y2="155"/>
+        <line x1="75"  y1="270" x2="160" y2="300"/>
+        <line x1="55"  y1="120" x2="100" y2="180"/>
+        <line x1="55"  y1="120" x2="170" y2="90"/>
+      </g>
+      <!-- Active pulse lines (brighter) -->
+      <g filter="url(#glow-sm)" stroke-width="1.2" fill="none">
+        <line x1="170" y1="90" x2="270" y2="155" stroke="rgba(80,180,255,.38)">
+          <animate attributeName="stroke-opacity" values=".38;.08;.38" dur="3.2s" repeatCount="indefinite"/>
+        </line>
+        <line x1="200" y1="230" x2="290" y2="245" stroke="rgba(100,255,180,.3)">
+          <animate attributeName="stroke-opacity" values=".08;.3;.08" dur="2.8s" begin="1.1s" repeatCount="indefinite"/>
+        </line>
+        <line x1="100" y1="180" x2="200" y2="230" stroke="rgba(80,180,255,.32)">
+          <animate attributeName="stroke-opacity" values=".32;.06;.32" dur="4s" begin=".6s" repeatCount="indefinite"/>
+        </line>
+        <line x1="55" y1="120" x2="170" y2="90" stroke="rgba(200,140,255,.28)">
+          <animate attributeName="stroke-opacity" values=".06;.28;.06" dur="3.6s" begin="2s" repeatCount="indefinite"/>
+        </line>
+      </g>
+      <!-- Node dots -->
+      <g filter="url(#glow)">
+        <!-- Primary hub — blue -->
+        <circle cx="170" cy="90" r="7" fill="url(#ng1)">
+          <animate attributeName="r" values="7;8.5;7" dur="3s" repeatCount="indefinite"/>
+        </circle>
+        <!-- Secondary — green -->
+        <circle cx="200" cy="230" r="6" fill="url(#ng2)">
+          <animate attributeName="r" values="6;7.5;6" dur="3.8s" begin=".8s" repeatCount="indefinite"/>
+        </circle>
+        <!-- Accent — violet -->
+        <circle cx="55" cy="120" r="5" fill="url(#ng3)">
+          <animate attributeName="r" values="5;6.2;5" dur="4.2s" begin="1.5s" repeatCount="indefinite"/>
+        </circle>
+        <!-- Smaller nodes -->
+        <circle cx="270" cy="155" r="4.5" fill="rgba(80,180,255,.7)">
+          <animate attributeName="opacity" values="1;.45;1" dur="2.6s" begin=".4s" repeatCount="indefinite"/>
+        </circle>
+        <circle cx="100" cy="180" r="4" fill="rgba(100,255,180,.65)">
+          <animate attributeName="opacity" values=".65;1;.65" dur="3.4s" begin="1.2s" repeatCount="indefinite"/>
+        </circle>
+        <circle cx="290" cy="245" r="3.5" fill="rgba(80,160,255,.55)">
+          <animate attributeName="opacity" values=".55;.2;.55" dur="2.9s" begin=".7s" repeatCount="indefinite"/>
+        </circle>
+        <circle cx="75"  cy="270" r="3.5" fill="rgba(100,255,180,.45)">
+          <animate attributeName="opacity" values=".45;.9;.45" dur="3.7s" begin="2.2s" repeatCount="indefinite"/>
+        </circle>
+        <circle cx="240" cy="55"  r="3"   fill="rgba(80,180,255,.5)">
+          <animate attributeName="opacity" values=".5;.15;.5" dur="4.5s" begin="1.8s" repeatCount="indefinite"/>
+        </circle>
+        <circle cx="310" cy="100" r="3"   fill="rgba(200,140,255,.5)">
+          <animate attributeName="opacity" values=".15;.5;.15" dur="3.3s" begin=".3s" repeatCount="indefinite"/>
+        </circle>
+        <circle cx="160" cy="300" r="3"   fill="rgba(80,160,255,.4)">
+          <animate attributeName="opacity" values=".4;.8;.4" dur="5s" begin="1s" repeatCount="indefinite"/>
+        </circle>
+      </g>
+      <!-- Travelling pulse dot -->
+      <circle r="2.5" fill="rgba(180,240,255,.9)" filter="url(#glow)">
+        <animateMotion dur="4s" repeatCount="indefinite" begin="0.5s">
+          <mpath href="#pulse-path-1"/>
+        </animateMotion>
+      </circle>
+      <circle r="2" fill="rgba(120,255,190,.85)" filter="url(#glow)">
+        <animateMotion dur="5.5s" repeatCount="indefinite" begin="2s">
+          <mpath href="#pulse-path-2"/>
+        </animateMotion>
+      </circle>
+      <path id="pulse-path-1" d="M170,90 L270,155 L200,230 L100,180 L170,90" fill="none"/>
+      <path id="pulse-path-2" d="M55,120 L170,90 L240,55 L310,100 L270,155 L290,245 L160,300 L75,270 L55,120" fill="none"/>
+    </svg>
+  </div>
+
+  <div id="title-version">© 2026 · Synapse v98 · <span id="build-meta"></span></div>
+</div>
+
+<!-- ── PROTOCOL SELECTION OVERLAY ── -->
+<div id="protocol-overlay" role="dialog" aria-modal="true" aria-label="Protokoll-Auswahl">
+  <div class="shell-grid shell-grid-blue"></div>
+  <div class="shell-spine shell-spine-blue"></div>
+  <div id="protocol-box">
+    <div id="protocol-label-line">◈ Synaptic Network · Run Initialisierung</div>
+    <div id="protocol-title" data-de="Loadout" data-en="Loadout">Loadout</div>
+    <div id="protocol-sub" data-de="Wähle deine strategische Doktrin für diesen Run" data-en="Choose your strategic doctrine for this run">Wähle deine strategische Doktrin für diesen Run</div>
+    <div id="protocol-sep"></div>
+    <div id="protocol-cards">
+
+      <!-- PHANTOM -->
+      <div class="proto-card p-phantom" id="pcard-phantom" tabindex="0"
+           data-protocol-id="phantom"
+          >
+        <span class="proto-card-check">✓</span>
+        <div class="proto-card-tag">Phantom Protocol</div>
+        <div class="proto-card-name" data-de="Phantom" data-en="Phantom">Phantom</div>
+        <div class="proto-card-hook" data-de="Der Trickster-Build" data-en="The Trickster Build">Der Trickster-Build</div>
+        <div class="proto-card-axes">
+          <div class="proto-card-axis" data-de="Phantom-Cluster häufiger" data-en="Phantom clusters more frequent">Phantom-Cluster häufiger</div>
+          <div class="proto-card-axis" data-de="Hidden Rewards · Echo-Effekte" data-en="Hidden Rewards · Echo effects">Hidden Rewards · Echo-Effekte</div>
+          <div class="proto-card-axis" data-de="Opportunistisch · spät eskalierend" data-en="Opportunistic · late scaling">Opportunistisch · spät eskalierend</div>
+        </div>
+      </div>
+
+      <!-- SPINE -->
+      <div class="proto-card p-spine" id="pcard-spine" tabindex="0"
+           data-protocol-id="spine"
+          >
+        <span class="proto-card-check">✓</span>
+        <div class="proto-card-tag">Spine Protocol</div>
+        <div class="proto-card-name" data-de="Spine" data-en="Spine">Spine</div>
+        <div class="proto-card-hook" data-de="Der Builder-Build" data-en="The Builder Build">Der Builder-Build</div>
+        <div class="proto-card-axes">
+          <div class="proto-card-axis" data-de="Spine-Node-Gewichtung erhöht" data-en="Spine-Node weighting increased">Spine-Node-Gewichtung erhöht</div>
+          <div class="proto-card-axis" data-de="Backbone-Boni früher aktiv" data-en="Backbone bonuses activate earlier">Backbone-Boni früher aktiv</div>
+          <div class="proto-card-axis" data-de="Methodisch · strukturstark" data-en="Methodical · structure-focused">Methodisch · strukturstark</div>
+        </div>
+      </div>
+
+      <!-- TEMPORAL -->
+      <div class="proto-card p-temporal" id="pcard-temporal" tabindex="0"
+           data-protocol-id="temporal"
+          >
+        <span class="proto-card-check">✓</span>
+        <div class="proto-card-tag">Temporal Protocol</div>
+        <div class="proto-card-name" data-de="Temporal" data-en="Temporal">Temporal</div>
+        <div class="proto-card-hook" data-de="Der Timing-Build" data-en="The Timing Build">Der Timing-Build</div>
+        <div class="proto-card-axes">
+          <div class="proto-card-axis" data-de="Sync-Fenster leicht verlängert" data-en="Sync windows slightly longer">Sync-Fenster leicht verlängert</div>
+          <div class="proto-card-axis" data-de="Temporal Events häufiger" data-en="Temporal events more common">Temporal Events häufiger</div>
+          <div class="proto-card-axis" data-de="Präzisions-Build · Timing-Belohnung" data-en="Precision build · Timing rewarded">Präzisions-Build · Timing-Belohnung</div>
+        </div>
+      </div>
+
+      <!-- MNEMONIC -->
+      <div class="proto-card p-mnemonic" id="pcard-mnemonic" tabindex="0"
+           data-protocol-id="mnemonic"
+          >
+        <span class="proto-card-check">✓</span>
+        <div class="proto-card-tag">Mnemonic Protocol</div>
+        <div class="proto-card-name" data-de="Mnemonic" data-en="Mnemonic">Mnemonic</div>
+        <div class="proto-card-hook" data-de="Der Snowball-Build" data-en="The Snowball Build">Der Snowball-Build</div>
+        <div class="proto-card-axes">
+          <div class="proto-card-axis" data-de="Chain-Boni länger persistent" data-en="Chain bonuses persist longer">Chain-Boni länger persistent</div>
+          <div class="proto-card-axis" data-de="Memory-/Recursion-Events aktiver" data-en="Memory/Recursion events more active">Memory-/Recursion-Events aktiver</div>
+          <div class="proto-card-axis" data-de="Skalierend · stark in langen Runs" data-en="Scaling · strong in long runs">Skalierend · stark in langen Runs</div>
+        </div>
+      </div>
+
+    </div>
+    <button id="protocol-confirm"
+      data-de="▶ &nbsp;Protokoll starten" data-en="▶ &nbsp;Launch Protocol">▶ &nbsp;Protokoll starten</button>
+  </div>
+</div>
+
+<!-- ── INFO OVERLAY ── -->
+<div id="info-overlay" role="dialog" aria-modal="true" aria-label="Spielinfo">
+  <div class="shell-grid shell-grid-blue"></div>
+  <div class="shell-spine shell-spine-blue"></div>
+  <div id="info-box">
+    <div id="info-label-line">◈ Synaptic Network · Info</div>
+    <div id="info-title" data-de="Synapse" data-en="Synapse">Synapse</div>
+    <div id="info-sep"></div>
+    <div class="info-row" data-de="Platziere <b>Neuronen</b> und verbinde sie zu einem stabilen Netzwerk." data-en="Place <b>Neurons</b> and connect them into a stable network.">Platziere <b>Neuronen</b> und verbinde sie zu einem stabilen Netzwerk.</div>
+    <div class="info-row" data-de="<b>Source</b> erzeugen Energie · <b>Relay</b> leiten weiter · <b>Amplifier</b> verstärken · <b>Memory</b> speichern." data-en="<b>Source</b> generate energy · <b>Relay</b> transmit · <b>Amplifier</b> boost · <b>Memory</b> store."><b>Source</b> erzeugen Energie · <b>Relay</b> leiten weiter · <b>Amplifier</b> verstärken · <b>Memory</b> speichern.</div>
+    <div class="info-row" data-de="Nutze <b>Pulse</b> um Energie zu senden. Forme <b>Dreiecke</b> für Resonanz-Boni." data-en="Use <b>Pulse</b> to send energy. Form <b>Triangles</b> for resonance bonuses.">Nutze <b>Pulse</b> um Energie zu senden. Forme <b>Dreiecke</b> für Resonanz-Boni.</div>
+    <div class="info-row" data-de="Ziel: <b>8 Makro-Cluster</b> unter Kontrolle bringen." data-en="Goal: Capture all <b>8 Macro-Clusters</b>.">Ziel: <b>8 Makro-Cluster</b> unter Kontrolle bringen.</div>
+    <div id="info-sep-keys"></div>
+    <div class="info-row info-keys-title" data-de="Tastenkürzel" data-en="Keyboard Shortcuts">Tastenkürzel</div>
+    <div class="info-keys">
+      <div class="info-key-row"><kbd>P</kbd> <span data-de="Platzieren-Modus" data-en="Place mode">Platzieren-Modus</span></div>
+      <div class="info-key-row"><kbd>C</kbd> <span data-de="Verbinden-Modus" data-en="Connect mode">Verbinden-Modus</span></div>
+      <div class="info-key-row"><kbd>1</kbd><kbd>2</kbd><kbd>3</kbd><kbd>4</kbd> <span data-de="Source · Relay · Amplifier · Memory" data-en="Source · Relay · Amplifier · Memory">Source · Relay · Amplifier · Memory</span></div>
+      <div class="info-key-row"><kbd>Space</kbd> <span data-de="Notfall-Pulse (30s Cooldown)" data-en="Emergency Pulse (30s cooldown)">Notfall-Pulse (30s Cooldown)</span></div>
+      <div class="info-key-row"><kbd>T</kbd> <span data-de="KI trainieren" data-en="Train AI">KI trainieren</span></div>
+      <div class="info-key-row"><kbd>Shift</kbd>+<kbd>R</kbd> <span data-de="Root Server Panel öffnen/schließen" data-en="Toggle Root Server panel">Root Server Panel öffnen/schließen</span></div>
+      <div class="info-key-row"><kbd>L</kbd> <span data-de="Diagnose-Lens umschalten" data-en="Toggle Diagnose Lens">Diagnose-Lens umschalten</span></div>
+      <div class="info-key-row"><kbd>R</kbd> <span data-de="Neu starten (nach Sieg)" data-en="Restart (after win)">Neu starten (nach Sieg)</span></div>
+      <div class="info-key-row"><kbd>Esc</kbd> <span data-de="Pause / Overlay schließen" data-en="Pause / Close overlay">Pause / Overlay schließen</span></div>
+    </div>
+    <button id="info-close" data-de="← Zurück" data-en="← Back">← Zurück</button>
+  </div>
+</div>
+
+<!-- ── SETTINGS OVERLAY ── -->
+<div id="settings-overlay" role="dialog" aria-modal="true" aria-label="Einstellungen">
+  <div class="shell-grid shell-grid-blue"></div>
+  <div class="shell-spine shell-spine-blue"></div>
+  <div id="settings-box">
+    <div id="settings-label-line">◈ Synaptic Network · Einstellungen</div>
+    <div id="settings-title" data-de="Einstellungen" data-en="Settings">Einstellungen</div>
+    <div id="settings-sep"></div>
+
+    <div class="setting-group">
+      <span class="setting-label" data-de="Schwierigkeit" data-en="Difficulty">Schwierigkeit</span>
+      <span class="setting-desc" data-de="Beeinflusst Energie-Kosten und Sync-Fenster" data-en="Affects energy costs and sync windows">Beeinflusst Energie-Kosten und Sync-Fenster</span>
+      <div class="diff-group">
+        <button class="diff-btn" id="diff-easy" data-de="Leicht" data-en="Easy">Leicht</button>
+        <button class="diff-btn active-normal" id="diff-normal" data-de="Normal" data-en="Normal">Normal</button>
+        <button class="diff-btn" id="diff-hard" data-de="Schwer" data-en="Hard">Schwer</button>
+      </div>
+    </div>
+
+    <div class="setting-group">
+      <span class="setting-label" data-de="Bloom-Intensität" data-en="Bloom Intensity">Bloom-Intensität</span>
+      <span class="setting-desc" data-de="Stärke des Leuchteffekts" data-en="Strength of the glow effect">Stärke des Leuchteffekts</span>
+      <div class="slider-wrap">
+        <input type="range" class="syn-slider" id="bloom-slider" min="0" max="100" value="60">
+        <span class="slider-val" id="bloom-val">60%</span>
+      </div>
+    </div>
+
+
+    <div class="setting-group">
+      <span class="setting-label" data-de="Audio" data-en="Audio">Audio</span>
+      <span class="setting-desc" data-de="SFX aktivieren und Lautstärke feinjustieren" data-en="Enable SFX and fine tune volume">SFX aktivieren und Lautstärke feinjustieren</span>
+      <div class="setting-inline-row">
+        <button class="toggle-btn active" id="sfx-toggle" data-de="SFX aktiv" data-en="SFX on">SFX aktiv</button>
+        <div class="slider-wrap setting-flex-slider">
+          <input type="range" class="syn-slider" id="volume-slider" min="0" max="100" value="70">
+          <span class="slider-val" id="volume-val">70%</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="setting-group">
+      <span class="setting-label" data-de="Bewegung" data-en="Motion">Bewegung</span>
+      <span class="setting-desc" data-de="Reduziert UI-Animationen für mehr Ruhe und bessere Performance" data-en="Reduces UI animation for comfort and performance">Reduziert UI-Animationen für mehr Ruhe und bessere Performance</span>
+      <div class="lang-group compact-options">
+        <button class="lang-btn active" id="motion-full" data-de="Voll" data-en="Full">Voll</button>
+        <button class="lang-btn" id="motion-reduced" data-de="Reduziert" data-en="Reduced">Reduziert</button>
+        <button class="lang-btn" id="motion-minimal" data-de="Minimal" data-en="Minimal">Minimal</button>
+      </div>
+    </div>
+
+    <div class="setting-group">
+      <span class="setting-label" data-de="Grafikqualität" data-en="Graphics Quality">Grafikqualität</span>
+      <span class="setting-desc" data-de="Steuert Pixelratio und Bloom-Basis für schwächere Geräte" data-en="Controls pixel ratio and bloom base for weaker devices">Steuert Pixelratio und Bloom-Basis für schwächere Geräte</span>
+      <div class="lang-group compact-options">
+        <button class="lang-btn" id="graphics-low" data-de="Niedrig" data-en="Low">Niedrig</button>
+        <button class="lang-btn" id="graphics-medium" data-de="Mittel" data-en="Medium">Mittel</button>
+        <button class="lang-btn active" id="graphics-high" data-de="Hoch" data-en="High">Hoch</button>
+      </div>
+    </div>
+
+    <div class="setting-group">
+      <span class="setting-label" data-de="Barrierefreiheit · Farbsehen" data-en="Accessibility · Colorblind">Barrierefreiheit · Farbsehen</span>
+      <span class="setting-desc" data-de="Form-Muster zusätzlich zu Farben (gestrichelt/gepunktet/doppelt) für bessere Unterscheidung." data-en="Adds shape patterns (dotted/dashed/double) on top of colors for better distinction.">Form-Muster zusätzlich zu Farben (gestrichelt/gepunktet/doppelt) für bessere Unterscheidung.</span>
+      <div class="setting-inline-row">
+        <button class="toggle-btn" id="colorblind-toggle" data-de="Farbblind-Modus aus" data-en="Colorblind mode off">Farbblind-Modus aus</button>
+      </div>
+    </div>
+
+    <div class="setting-group">
+      <span class="setting-label" data-de="Tactical View (Shift+L)" data-en="Tactical View (Shift+L)">Tactical View (Shift+L)</span>
+      <span class="setting-desc" data-de="Schaltet alle Glow-/Bloom-Effekte ab und zeigt das Netzwerk als flache Blaupause." data-en="Disables bloom/glow and renders the network as a flat blueprint.">Schaltet alle Glow-/Bloom-Effekte ab und zeigt das Netzwerk als flache Blaupause.</span>
+      <div class="setting-inline-row">
+        <button class="toggle-btn" id="tactical-toggle" data-de="Tactical View aus" data-en="Tactical View off">Tactical View aus</button>
+      </div>
+    </div>
+
+    <div class="setting-group">
+      <span class="setting-label" data-de="Sprache" data-en="Language">Sprache</span>
+      <div class="lang-group">
+        <button class="lang-btn active" id="lang-de">Deutsch</button>
+        <button class="lang-btn" id="lang-en">English</button>
+      </div>
+    </div>
+
+    <div class="settings-footer">
+      <button id="settings-close" data-de="← Zurück" data-en="← Back">← Zurück</button>
+      <button id="settings-onboard-reset" data-de="? Tipps zurücksetzen" data-en="? Reset Tips">? Tipps zurücksetzen</button>
+      <button id="settings-apply" data-de="✓ Übernehmen" data-en="✓ Apply">✓ Übernehmen</button>
+    </div>
+  </div>
+</div>
+
+
+<!-- ── AI AWARENESS HUD ── -->
+<div id="ai-hud">
+  <div id="ai-stage-lbl">STUFE 1 · SIGNALFLUSS</div>
+  <div id="ai-profile-lbl">—</div>
+  <div id="ai-mood-lbl">ruhend</div>
+  <div class="ai-bars">
+    <div class="ai-bar-row ab-analyst"   id="ai-row-analyst">
+      <span class="ai-bar-key">ANA</span>
+      <div class="ai-bar-track"><div class="ai-bar-fill" id="ai-bar-analyst"></div></div>
+      <span class="ai-bar-val" id="ai-val-analyst">0</span>
+    </div>
+    <div class="ai-bar-row ab-predator"  id="ai-row-predator">
+      <span class="ai-bar-key">PRD</span>
+      <div class="ai-bar-track"><div class="ai-bar-fill" id="ai-bar-predator"></div></div>
+      <span class="ai-bar-val" id="ai-val-predator">0</span>
+    </div>
+    <div class="ai-bar-row ab-architect" id="ai-row-architect">
+      <span class="ai-bar-key">ARC</span>
+      <div class="ai-bar-track"><div class="ai-bar-fill" id="ai-bar-architect" style="background:rgba(255,200,60,.8)"></div></div>
+      <span class="ai-bar-val" id="ai-val-architect">0</span>
+    </div>
+    <div class="ai-bar-row ab-mnemonic"  id="ai-row-mnemonic">
+      <span class="ai-bar-key">MNM</span>
+      <div class="ai-bar-track"><div class="ai-bar-fill" id="ai-bar-mnemonic"></div></div>
+      <span class="ai-bar-val" id="ai-val-mnemonic">0</span>
+    </div>
+  </div>
+  <div id="ai-bonus-lbl"></div>
+</div>
+
+<!-- ── PAUSE BUTTON ── -->
+<button id="pause-btn" title="Pause / Menü (Esc)" aria-label="Pausemenü"></button>
+
+<!-- ── PAUSE OVERLAY ── -->
+<div id="pause-overlay" role="dialog" aria-modal="true" aria-label="Pausiert">
+  <div class="shell-grid shell-grid-blue"></div>
+  <div class="shell-spine shell-spine-blue"></div>
+  <div id="pause-box">
+    <div id="pause-label-line">◈ Synaptic Network · Unterbrochen</div>
+    <div id="pause-title" data-de="Pause" data-en="Pause">Pause</div>
+    <div id="pause-sep"></div>
+    <button class="pause-item p-resume" data-de="▶ &nbsp;Weiterspielen" data-en="▶ &nbsp;Resume">▶ &nbsp;Weiterspielen</button>
+    <button class="pause-item p-title" data-de="⟵ &nbsp;Zum Titel" data-en="⟵ &nbsp;Title Screen">⟵ &nbsp;Zum Titel</button>
+    <div id="pause-hint" data-de="Esc · Fortsetzen" data-en="Esc · Resume">Esc · Fortsetzen</div>
+    <!-- PHASE 3.5: Keyboard shortcuts reference -->
+    <div id="pause-shortcuts" style="margin-top:14px;padding:10px 14px;border:1px solid rgba(80,150,255,.12);border-radius:6px;background:rgba(0,5,20,.4)">
+      <div style="font-family:'Share Tech Mono',monospace;font-size:.32rem;letter-spacing:3px;color:rgba(100,180,255,.4);text-transform:uppercase;margin-bottom:8px">Tastenkürzel</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px 18px;font-size:.30rem;letter-spacing:1px;color:rgba(255,255,255,.32);font-family:'Share Tech Mono',monospace">
+        <span><span style="color:rgba(100,200,255,.65)">P</span> Platzieren</span>
+        <span><span style="color:rgba(100,200,255,.65)">C</span> Verbinden</span>
+        <span><span style="color:rgba(100,200,255,.65)">1-4</span> Node-Typ</span>
+        <span><span style="color:rgba(100,200,255,.65)">Space</span> Notfall-Pulse</span>
+        <span><span style="color:rgba(100,200,255,.65)">T</span> Training</span>
+        <span><span style="color:rgba(100,200,255,.65)">Esc</span> Overlay schließen</span>
+        <span><span style="color:rgba(100,200,255,.65)">Shift+R</span> Root Server</span>
+        <span><span style="color:rgba(100,200,255,.65)">L</span> Diagnose-Lens</span>
+      </div>
+    </div>
+    <button id="diag-toggle" style="display:none">◈ Netz-Diagnose</button>
+    <div id="diag-panel">
+      <div class="diag-profile-row" id="diag-profile-lbl">—</div>
+      <div class="diag-row" id="diag-stage">Stufe <span id="diag-stage-v">—</span></div>
+      <div class="diag-row" id="diag-runs">Training-Runs <span id="diag-runs-v">0</span></div>
+      <div class="diag-row">Routing <span id="diag-r">0</span></div>
+      <div class="diag-row">Timing <span id="diag-t">0</span></div>
+      <div class="diag-row">Stabilität <span id="diag-s">0</span></div>
+      <div class="diag-row">Memory <span id="diag-m">0</span></div>
+      <div style="margin-top:8px">
+        <div class="diag-meta-trait" id="dmt-explorative">◎ Explorativ</div>
+        <div class="diag-meta-trait" id="dmt-rhythmic">◎ Rhythmisch</div>
+        <div class="diag-meta-trait" id="dmt-conservative">◎ Konservativ</div>
+        <div class="diag-meta-trait" id="dmt-volatile">◎ Volatil</div>
+      </div>
+      <div style="margin-top:8px" id="diag-meta-traits-global"></div>
+      <div style="margin-top:10px;border-top:1px solid rgba(100,200,255,.1);padding-top:8px" id="diag-telemetry">
+        <div class="diag-row" style="color:rgba(100,255,200,.4);letter-spacing:2px;font-size:.32rem;margin-bottom:4px">◈ BALANCE-TELEMETRIE</div>
+        <div class="diag-row">Draft-Tags <span id="diag-draft-tags">—</span></div>
+        <div class="diag-row">Event-Uptime <span id="diag-event-uptime">—</span></div>
+        <div class="diag-row">Boss-Fenster <span id="diag-boss-windows">—</span></div>
+        <div class="diag-row">⌀ Energie M5 <span id="diag-energy-m5">—</span></div>
+        <div class="diag-row">⌀ Energie M10 <span id="diag-energy-m10">—</span></div>
+        <div class="diag-row">⌀ Energie M15 <span id="diag-energy-m15">—</span></div>
+        <!-- P1-05: Performance baseline row -->
+        <div style="border-top:1px solid rgba(100,200,255,.07);padding-top:6px;margin-top:6px">
+          <div class="diag-row" style="color:rgba(100,255,200,.4);letter-spacing:2px;font-size:.32rem;margin-bottom:4px">◈ PERFORMANCE</div>
+          <div class="diag-row">FPS <span id="diag-fps">—</span></div>
+          <div class="diag-row">Frame-Budget <span id="diag-frame-budget">—</span></div>
+          <div class="diag-row">JS Heap <span id="diag-heap">—</span></div>
+          <div class="diag-row">Nodes×Links <span id="diag-nl-count">—</span></div>
+          <div class="diag-row">AnimListeners <span id="diag-anim-listeners">—</span></div>
+          <div class="diag-row">HUD Flushes <span id="diag-hud-commits">—</span></div>
+          <div class="diag-row">Save I/O <span id="diag-save-io">—</span></div>
+          <div class="diag-row">Save Quelle <span id="diag-save-source">—</span></div>
+          <div class="diag-row">Node-Render <span id="diag-node-render-active">—</span></div>
+          <div class="diag-row">Mode/Threshold <span id="diag-node-render-mode">—</span></div>
+          <div class="diag-row">Eligible/Hysterese <span id="diag-node-render-counts">—</span></div>
+          <div class="diag-row">FX-Qualität <span id="diag-fx-quality">—</span></div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr auto auto;gap:6px;margin-top:8px">
+          <button id="diag-node-render-toggle" style="background:rgba(60,120,255,.12);border:1px solid rgba(80,160,255,.2);border-radius:3px;color:rgba(120,200,255,.55);font-family:'Share Tech Mono',monospace;font-size:.31rem;letter-spacing:1.5px;text-transform:uppercase;padding:5px 8px;cursor:pointer;transition:all .2s">◈ Node-Render: AUTO → wechseln</button>
+          <button id="diag-node-threshold-down" style="background:rgba(40,80,180,.12);border:1px solid rgba(80,160,255,.2);border-radius:3px;color:rgba(120,200,255,.55);font-family:'Share Tech Mono',monospace;font-size:.4rem;padding:4px 10px;cursor:pointer">−</button>
+          <button id="diag-node-threshold-up" style="background:rgba(40,80,180,.12);border:1px solid rgba(80,160,255,.2);border-radius:3px;color:rgba(120,200,255,.55);font-family:'Share Tech Mono',monospace;font-size:.4rem;padding:4px 10px;cursor:pointer">+</button>
+        </div>
+        <button id="diag-snapshot-btn" style="margin-top:8px;background:rgba(60,120,255,.12);border:1px solid rgba(80,160,255,.2);border-radius:3px;color:rgba(120,200,255,.55);font-family:'Share Tech Mono',monospace;font-size:.34rem;letter-spacing:2px;text-transform:uppercase;padding:4px 10px;cursor:pointer;width:100%;transition:all .2s">◈ State-Snapshot → Konsole</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="audio-cue-flash"></div>
+<div id="vignette"></div>
+<div id="scanline-overlay"></div>
+
+<div id="hud">
+  <!-- v80: 3-column grid top row -->
+  <div id="hud-main-row">
+    <!-- LEFT: layer info + condition -->
+    <div id="hud-left">
+      <div id="layer-tag">SCHICHT 01 · MANUELL</div>
+      <div id="proto-chip"></div>
+<div id="proto-sig-overlay"></div>
+<div id="proto-sig-banner"></div>
+      <div id="cond-chip"></div>
+    </div>
+    <!-- CENTER: phase name + obj line -->
+    <div id="hud-center">
+      <div id="phase-name-row">
+        <div id="phase-name">Initiation</div><span id="diff-badge" class="normal">Normal</span>
+      </div>
+      <div id="obj-line"><span class="hud-line-label" data-label="ZIEL"><!-- js fills --></span></div>
+      <div id="now-action" aria-live="polite"><span class="hud-line-label agent" data-label="KI"><!-- js fills --></span></div>
+    </div>
+    <!-- RIGHT: stats -->
+    <div id="hud-right">
+      <div id="stats-row">
+        <span class="stat" id="node-stat">◉&thinsp;<span class="sv" id="vN">0</span></span>
+        <span class="stat" id="link-stat" style="display:none">↔&thinsp;<span class="sv" id="vL">0</span></span>
+        <span class="stat" id="energy-stat">⬡&thinsp;<span class="sv" id="vE">0</span><span
+          id="energy-mini-bar"
+          role="progressbar"
+          aria-label="Energy"
+          aria-valuenow="0"
+          aria-valuemin="0"
+          aria-valuemax="100"><span id="energy-mini-fill"></span></span></span>
+        <!-- Sprint 3: Data currency (◬) -->
+        <span class="stat" id="data-stat" style="display:none;">◬&thinsp;<span class="sv" id="vData" style="color:#d28cff;text-shadow:0 0 10px rgba(180,80,255,0.5);">0</span></span>
+        <span class="stat" id="tri-stat" style="display:none">△&thinsp;<span class="sv" id="vT">0</span></span>
+        <span class="stat" id="br-stat" style="display:none">⬡&thinsp;<span class="sv" id="vB">0</span>/<span class="sv" id="vBT">0</span></span>
+        <span class="stat" id="l3-stat" style="display:none">◈&thinsp;<span class="sv" id="vL3C">0</span>/8&thinsp;·&thinsp;<span class="sv" id="vL3P">0</span>P</span>
+        <span class="stat" id="spine-stat" style="display:none">⬟&thinsp;<span class="sv" id="vSP">—</span></span>
+      </div>
+      <div id="spine-banner"></div>
+    </div>
+  </div>
+  <!-- PROGRESS ROW: full width strip below -->
+  <div id="hud-prog-row">
+    <!-- FIX #7: Eco panel is now static HTML — toggled by body.eco-active CSS class.
+         This replaces the previous JS-injected panel that blocked CSS theming. -->
+    <div id="v96-eco-panel" aria-live="polite" aria-label="Economy status">
+      <span id="v96-upkeep" title="Upkeep pro Tick"></span>
+      <span id="v96-raw" title="Raw Data"></span>
+      <span id="v96-proc" title="Processed Data"></span>
+      <span id="v96-know" title="Knowledge / Tech"></span>
+      <span id="v96-bottleneck" title="Bottlenecks"></span>
+      <span id="v96-brownout" aria-live="assertive"></span>
+      <span id="v96-lens"></span>
+      <span id="v96-proj"></span>
+    </div>
+    <div id="sync-decay-bar-wrap"><div id="sync-decay-fill"></div></div>
+    <div id="prog-wrap"><div id="prog-bar"></div></div>
+    <div id="prog-lbl">Platziere Neuronen</div>
+    <div id="agent-line"></div>
+  </div>
+</div>
+
+<div id="hint">Tippe um ein Neuron zu platzieren</div>
+
+<!-- Type bar: node types (place mode) / link types (connect mode) -->
+<!-- v65 CONTROL DOCK -->
+<div id="ctrl-dock">
+  <div id="dock-type-zone">
+    <div id="type-bar">
+      <div id="nb" style="display:flex;gap:2px">
+        <button class="tbtn t-src on" id="bn-src">◉ Source 0⬡</button>
+        <button class="tbtn t-rly"    id="bn-rly">→ Relay 5⬡</button>
+        <button class="tbtn t-amp tbtn-research-locked" id="bn-amp" title="Forschen: Verstärker-Protokoll">↑ Amp 8⬡</button>
+        <button class="tbtn t-mem"    id="bn-mem">◎ Memory 10⬡</button>
+      </div>
+      <div id="lb" style="display:none;gap:2px">
+        <button class="tbtn t-stb on" id="bl-stb">— Stabil 0⬡</button>
+        <button class="tbtn t-fst"    id="bl-fst">⚡ Schnell 5⬡</button>
+        <button class="tbtn t-res"    id="bl-res">◈ Resonanz 4⬡</button>
+        <button class="tbtn t-frg"    id="bl-frg">~ Fragil 0⬡</button>
+      </div>
+    </div>
+  </div>
+  <div id="dock-action-zone">
+    <div id="mode-bar">
+      <button class="mbtn active" id="btn-p"       aria-label="Platzieren-Modus aktivieren">⊕&nbsp;Platzieren</button>
+      <button class="mbtn"        id="btn-c"     aria-label="Verbinden-Modus aktivieren" disabled>↔&nbsp;Verbinden</button>
+      <div id="pulse-cd-wrap">
+        <button class="mbtn" id="btn-pulse" aria-label="Pulse auslösen" disabled>⚡&nbsp;Pulse</button>
+        <svg id="pulse-cd-ring" viewBox="0 0 100 36" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <rect class="track" x="2" y="2" width="96" height="32" rx="2" fill="none" stroke="rgba(255,255,255,.05)" stroke-width="1.5"/>
+          <rect class="fill" id="pulse-cd-fill" x="2" y="2" width="96" height="32" rx="2" fill="none" stroke-width="1.5"
+            stroke-dasharray="256" stroke-dashoffset="256"/>
+        </svg>
+      </div>
+      <button class="mbtn"        id="btn-train" aria-label="Training-Pulse auslösen" disabled>◈&nbsp;Trainieren</button>
+      <button class="mbtn" id="btn-blueprint" aria-label="Blueprint-Modus aktivieren" title="B">⊡&nbsp;Blueprint</button>
+      <button class="mbtn" id="btn-autoroute" aria-label="Auto-Router (A) — Epoche III" title="A — Epoche III">◈&nbsp;Auto-Route</button>
+      <!-- FIX P1: Mnemonic Tap-Memory button — was referenced in layer3.js but never existed in HTML -->
+      <button class="mbtn" id="btn-tap-memory" aria-label="Memory anzapfen — Mnemonic-Protokoll" style="display:none;" title="Tap Memory [Mnemonic]">◬&nbsp;Memory&nbsp;tap</button>
+    </div>
+  </div>
+</div>
+
+<div id="train-score-popup">
+  <div class="tsp-title" id="tsp-title">TRAINING</div>
+  <div class="tsp-rows" id="tsp-rows"></div>
+  <div class="tsp-total" id="tsp-total"></div>
+</div>
+
+<div id="toast" aria-live="assertive" aria-atomic="true"><div id="t-title"></div><div id="t-sub"></div></div>
+<div id="node-tip"></div>
+<div id="l3-hud"></div>
+<div id="cl-tooltip"></div>
+
+<!-- v75.1: Questline Panel -->
+<!-- Sprint 3: Interaktives Forschungs-Panel -->
+<div id="active-projects-hud" class="research-panel">
+  <div id="ap-header" onclick="document.getElementById('active-projects-hud').classList.toggle('expanded')">
+    <span id="ap-hud-label">◬ Forschung &amp; Projekte</span>
+    <span class="ap-toggle-icon">▾</span>
+  </div>
+  <div id="ap-hud-rows" class="research-list">
+    <!-- Befüllt von research.js -->
+  </div>
+  <!-- FIX P0: Mega-Project launcher — was defined in techTree.js but never triggered -->
+  <div id="mega-project-section" style="display:none;border-top:1px solid rgba(68,255,204,.25);margin-top:6px;padding-top:6px;">
+    <div style="font-size:10px;color:#44ffcc;letter-spacing:.08em;margin-bottom:4px;">⬡ MEGA-PROJEKT</div>
+    <div id="mega-project-status" style="font-size:11px;color:#aaa;margin-bottom:4px;">Kein aktives Projekt</div>
+    <div id="mega-project-buttons" style="display:flex;flex-direction:column;gap:3px;"></div>
+  </div>
+</div>
+
+<div id="ql-panel">
+  <span id="ql-panel-toggle">▾</span>
+  <div id="ql-name">—</div>
+  <div id="ql-steps"></div>
+  <div id="ql-reward"></div>
+</div>
+<div id="l3-obj"></div>
+<div id="sync-overlay">
+  <div id="sync-title">⟳ SYNC-FENSTER — Pulse jetzt!</div>
+  <div id="sync-bar-wrap"><div id="sync-bar"></div></div>
+</div>
+<div id="bonus-flash"></div>
+<div id="missed-flash">✕ Sync-Fenster verpasst</div>
+
+<!-- UPGRADE DRAFT OVERLAY -->
+<div id="draft-overlay" role="dialog" aria-modal="true" aria-label="Node-Entwurf">
+  <div id="draft-inner">
+    <div id="draft-label-line">◈ Synaptic Network · Upgrade-Draft</div>
+    <div id="draft-title">SYNAPTIC UPGRADE</div>
+    <div id="draft-sub">Wähle eine Verbesserung für diesen Run</div>
+    <div id="draft-sep"></div>
+    <div id="draft-cards"></div>
+    <button class="draft-skip">Überspringen ×</button>
+  </div>
+</div>
+
+<!-- EVENT BANNER -->
+<div id="event-banner">
+  <div id="ev-orb"></div>
+  <div id="ev-inner">
+    <div id="ev-label">EREIGNIS</div>
+    <div id="ev-title">—</div>
+    <div id="ev-sep"></div>
+    <div id="ev-desc">—</div>
+  </div>
+</div>
+<div id="event-pill"></div>
+<div id="event-timer-bar"><div id="event-timer-fill"></div></div>
+
+<!-- BOSS SCREEN -->
+<div id="vortex-charge-bar">
+  <span class="vx-label">⬡ VORTEX</span>
+  <div class="vx-track"><div class="vx-fill" style="width:0%"></div></div>
+</div>
+<div id="boss-screen" role="dialog" aria-modal="true" aria-label="Boss-Kampf">
+  <div class="shell-grid shell-grid-red boss-shell-grid"></div>
+  <div class="shell-spine shell-spine-red boss-shell-spine"></div>
+  <div id="boss-intro-box">
+    <div id="boss-intro-label">◈ Synaptic Network · Bedrohung erkannt</div>
+    <div id="boss-name">THE NULL CORTEX</div>
+    <div id="boss-intro-sub">Das Netz wendet sich gegen dich · Bekämpfe die Korruption</div>
+    <!-- v66: encounter context bridge -->
+    <div id="boss-intro-encounter">
+      <div class="bph-pip"></div>
+      <div id="boss-intro-phase-note">Phase 1 · 3 Phasen · Treffe Verwundbarkeits-Fenster</div>
+    </div>
+    <div id="boss-intro-sep"></div>
+    <button id="boss-start-btn" aria-label="Boss-Kampf beginnen" role="button">▶ Kampf beginnen</button>
+  </div>
+</div>
+<div id="boss-hud">
+  <div id="boss-hud-spine"></div>
+  <div id="boss-hud-inner">
+    <div id="boss-hud-label">◈ Synaptic Network · Bedrohung</div>
+    <div id="boss-hud-name">THE NULL CORTEX</div>
+    <!-- v66: Phase dots — encounter continuity indicator -->
+    <div id="boss-phase-dots">
+      <div class="bpd bpd-active" id="bpd-1"></div>
+      <div class="bpd bpd-pending" id="bpd-2"></div>
+      <div class="bpd bpd-pending" id="bpd-3"></div>
+    </div>
+    <div id="boss-hp-block">
+      <div id="boss-hp-row">
+        <span id="boss-hp-key">Integrität</span>
+        <span id="boss-hp-val">100%</span>
+      </div>
+      <div id="boss-hp-track"><div id="boss-hp-fill" style="width:100%"></div></div>
+    </div>
+    <div id="boss-hud-sep"></div>
+    <div id="boss-phase-lbl">Phase 1 · Angriff abwehren</div>
+          <div id="boss-mod-label" style="display:none;font-family:'Share Tech Mono',monospace;font-size:clamp(.2rem,.5vw,.28rem);letter-spacing:2px;color:rgba(255,220,60,.38);text-transform:uppercase;margin-top:3px"></div>
+      <div id="boss-enc-status">● AKTIV</div>
+  </div>
+</div>
+<div id="boss-attack-flash"></div>
+<div id="boss-telegraph"></div>
+<div id="boss-attack-countdown"></div>
+<div id="boss-vuln-bar">
+  <div id="boss-vuln-title">⚡ ANGREIFBAR — PULSE JETZT!</div>
+  <div id="boss-vuln-fill-wrap"><div id="boss-vuln-fill"></div></div>
+</div>
+
+<!-- RUN HISTORY PANEL -->
+<button id="history-toggle">◈ Runs</button>
+<div id="history-panel">
+  <div class="hp-header">◈ RUN-ARCHIV</div>
+  <!-- v61: last-run summary strip, populated by renderSidebarHistory -->
+  <div id="hp-last-run" style="display:none;margin-bottom:8px;padding:5px 8px;border-radius:4px;background:rgba(80,255,160,.04);border:1px solid rgba(80,255,160,.1);font-size:.3rem;letter-spacing:1.5px;text-transform:uppercase;color:rgba(160,255,210,.5);line-height:1.8"></div>
+  <div id="history-tabs">
+    <button class="htab active" id="htab-recent">Letzte</button>
+    <button class="htab" id="htab-best"  >Beste</button>
+    <button class="htab" id="htab-codex" >Codex</button>
+  </div>
+  <div class="htab-pane active" id="hpane-recent">
+    <div id="hp-runs"></div>
+    <div id="hp-profile-freq" style="margin-top:8px"></div>
+  </div>
+  <div class="htab-pane" id="hpane-best">
+    <div id="hp-best-runs"></div>
+  </div>
+  <div class="htab-pane" id="hpane-codex">
+    <div id="hp-codex"></div>
+  </div>
+  <div class="hp-traits" id="hp-traits"></div>
+</div>
+
+<!-- WIN SCREEN -->
+<div id="boss-feint-label">⚡ ECHO — TÄUSCHUNG</div>
+<div id="boss-mirror-flash"></div>
+<!-- v74: Parasite Choir infection tracker -->
+<div id="parasite-infection-bar">
+  <div id="pib-title">⬡ INFIZIERTE LINKS</div>
+  <div id="pib-track"><div id="pib-fill" style="width:0%"></div></div>
+  <div id="pib-count">0 / 0 gereinigt</div>
+</div>
+<div id="mirror-cluster-bar">
+  <div id="mirror-cluster-title">◈ MIRROR-CLUSTER AKTIV</div>
+  <div id="mirror-cluster-info">Zwei Pulses nötig zum Recapture</div>
+</div>
+<div id="win-screen" role="dialog" aria-modal="true" aria-label="Gewonnen">
+  <!-- v63: structural elements matching title-screen -->
+  <div id="win-grid"></div>
+  <div id="win-spine-line"></div>
+  <div id="win-orb"></div>
+  <div id="win-scanlines"></div>
+  <div id="win-inner">
+    <div id="win-label" style="font-family:'Share Tech Mono','Courier New',monospace;font-size:clamp(.28rem,.75vw,.4rem);letter-spacing:clamp(4px,1.4vw,8px);color:rgba(80,255,160,.32);text-transform:uppercase;margin-bottom:8px;white-space:nowrap">◈ Synaptic Network · Run Complete</div>
+    <div id="win-title">NETZ STABILISIERT</div>
+    <div id="win-sub">Alle 8 Makro-Cluster unter Kontrolle</div>
+    <div id="win-sep"></div>
+    <div id="win-mode" style="font-family:'Share Tech Mono',monospace;font-size:.32rem;letter-spacing:3px;color:rgba(255,255,255,.2);text-transform:uppercase;margin-bottom:4px"></div>
+    <div id="win-tier" style="display:none;font-family:'Share Tech Mono',monospace;font-size:.38rem;letter-spacing:3px;color:rgba(255,200,60,.8);text-transform:uppercase;text-shadow:0 0 10px rgba(255,180,40,.4);margin-bottom:6px"></div>
+    <div id="win-perfect">★ PERFEKTER RUN · Spine/Backbone oder 2+ Kern-Paare aktiv</div>
+    <div id="win-stats">
+      <div class="wstat"><span class="wk">Laufzeit</span><span class="wv" id="ws-time">—</span></div>
+      <div class="wstat"><span class="wk">Peak-Energie</span><span class="wv" id="ws-peak">—</span></div>
+      <div class="wstat"><span class="wk">Dreiecke</span><span class="wv" id="ws-tris">—</span></div>
+      <div class="wstat"><span class="wk">Aktive Brücken</span><span class="wv" id="ws-bridges">—</span></div>
+      <div class="wstat"><span class="wk">Pulses</span><span class="wv" id="ws-pulses">—</span></div>
+      <div class="wstat"><span class="wk">Cluster / Paare</span><span class="wv" id="ws-clusters">—</span></div>
+      <div class="wstat"><span class="wk">Spine / Backbone</span><span class="wv" id="ws-spine">—</span></div>
+      <div class="wstat"><span class="wk">Upgrades</span><span class="wv" id="ws-upgrades">—</span></div>
+      <div class="wstat"><span class="wk">Events erlebt</span><span class="wv" id="ws-events">—</span></div>
+      <div class="wstat"><span class="wk">Boss-Trefferquote</span><span class="wv" id="ws-boss-acc">—</span></div>
+      <div class="wstat"><span class="wk">Boss-Zeit</span><span class="wv" id="ws-boss-time">—</span></div>
+      <div class="wstat"><span class="wk">Dominante Linie</span><span class="wv" id="ws-dominant-tag">—</span></div>
+      <div class="wstat"><span class="wk">Aktive Synergien</span><span class="wv" id="ws-synergies">—</span></div>
+      <div class="wstat"><span class="wk">Draft-Picks</span><span class="wv" id="ws-draft-picks">—</span></div>
+      <div class="wstat"><span class="wk">Training-Scores</span><span class="wv" id="ws-train-scores" style="font-size:.52rem;letter-spacing:1.5px">—</span></div>
+      <div class="wstat"><span class="wk">Node-Mix</span><span class="wv" id="ws-node-mix" style="font-size:.5rem;letter-spacing:1.5px">—</span></div>
+      <div class="wstat"><span class="wk">Schicht-Zeiten</span><span class="wv" id="ws-layer-times" style="font-size:.5rem;letter-spacing:1.5px">—</span></div>
+      <div class="wstat"><span class="wk">Awareness-Stufe</span><span class="wv" id="ws-awareness">—</span></div>
+      <div class="wstat"><span class="wk">Schicht-Kondition</span><span class="wv" id="ws-condition">—</span></div>
+      <div class="wstat"><span class="wk">Elite Cluster</span><span class="wv" id="ws-elite-results" style="font-size:.5rem;letter-spacing:1.5px">—</span></div>
+      <div class="wstat"><span class="wk">Loadout Protocol</span><span class="wv" id="ws-protocol">—</span></div>
+      <div class="wstat" style="grid-column:1/-1"><span class="wk">Questline</span><span class="wv" id="ws-questline" style="font-size:.5rem;letter-spacing:1.5px">—</span></div>
+    <div id="win-draft-summary" style="margin-top:8px;font-size:.36rem;letter-spacing:1.5px;color:rgba(200,140,255,.55);min-height:1em;text-align:center;padding:0 8px;line-height:1.6"></div>
+    <div id="win-meta-summary" style="margin-top:10px;font-size:.4rem;letter-spacing:2px;color:rgba(180,255,180,.4);text-transform:uppercase;min-height:1.2em"></div>
+    <div id="win-new-traits" style="margin-top:6px;font-size:.38rem;letter-spacing:2px;color:rgba(100,255,170,.5);min-height:1em"></div>
+    <div id="win-meta-objectives" style="margin-top:14px;font-size:.4rem;letter-spacing:2px;color:rgba(140,220,255,.45);text-transform:uppercase;min-height:1.2em;text-align:center"></div>
+    <!-- v58: POST-RUN REPORT -->
+    <div id="run-report">
+      <div class="rr-header">
+        ◈ RUN REPORT
+        <span id="rr-overall-grade" class="rr-grade B"></span>
+      </div>
+      <div class="rr-grid">
+        <div class="rr-stat"><span class="rr-key">Boss-Trefferquote</span><span class="rr-val" id="rr-boss-acc">—</span></div>
+        <div class="rr-stat"><span class="rr-key">Boss-Kampfzeit</span><span class="rr-val" id="rr-boss-time">—</span></div>
+        <div class="rr-stat"><span class="rr-key">Peak / Avg Energie</span><span class="rr-val" id="rr-energy">—</span></div>
+        <div class="rr-stat"><span class="rr-key">Events ausgelöst</span><span class="rr-val" id="rr-event-up">—</span></div>
+        <div class="rr-stat"><span class="rr-key">Event-Ketten</span><span class="rr-val" id="rr-chain-count">—</span></div>
+        <div class="rr-stat"><span class="rr-key">Dominantes Profil</span><span class="rr-val" id="rr-profile">—</span></div>
+        <div class="rr-stat"><span class="rr-key">Loadout Protocol</span><span class="rr-val" id="rr-protocol" style="color:rgba(200,220,255,.9)">—</span></div>
+        <div class="rr-stat"><span class="rr-key">Win-Tier</span><span class="rr-val dim" id="rr-tier-reason">—</span></div>
+        <div class="rr-stat"><span class="rr-key">Layer Condition</span><span class="rr-val" id="rr-condition">—</span></div>
+        <div class="rr-stat" style="grid-column:1/-1"><span class="rr-key">Elite Encounter</span><span class="rr-val" id="rr-elite" style="font-size:.52rem;letter-spacing:1.5px">—</span></div>
+      </div>
+      <div id="rr-bars">
+        <div class="rr-bar-row"><span class="rr-bar-label">Aggression</span><div class="rr-bar-track"><div class="rr-bar-fill" id="rrb-aggr" style="width:0%;background:rgba(255,80,80,.8)"></div></div><span class="rr-bar-score" id="rrv-aggr">—</span></div>
+        <div class="rr-bar-row"><span class="rr-bar-label">Präzision</span><div class="rr-bar-track"><div class="rr-bar-fill" id="rrb-prec" style="width:0%;background:rgba(80,180,255,.8)"></div></div><span class="rr-bar-score" id="rrv-prec">—</span></div>
+        <div class="rr-bar-row"><span class="rr-bar-label">Struktur</span><div class="rr-bar-track"><div class="rr-bar-fill" id="rrb-stru" style="width:0%;background:rgba(255,200,60,.8)"></div></div><span class="rr-bar-score" id="rrv-stru">—</span></div>
+        <div class="rr-bar-row"><span class="rr-bar-label">Effizienz</span><div class="rr-bar-track"><div class="rr-bar-fill" id="rrb-effi" style="width:0%;background:rgba(100,255,170,.8)"></div></div><span class="rr-bar-score" id="rrv-effi">—</span></div>
+      </div>
+      <div id="rr-traits" style="margin-top:8px;font-size:.35rem;letter-spacing:2px;color:rgba(180,220,255,.35);text-transform:uppercase;min-height:1em"></div>
+      <div id="rr-chains" style="margin-top:4px;font-size:.33rem;letter-spacing:2px;color:rgba(255,200,80,.3);text-transform:uppercase;min-height:1em"></div>
+      <div id="rr-meta-summary" style="margin-top:4px;font-size:.33rem;letter-spacing:2px;color:rgba(180,120,255,.3);text-transform:uppercase;min-height:1em"></div>
+      <div id="rr-run-type" style="margin-top:6px;font-size:.38rem;letter-spacing:3px;text-transform:uppercase;min-height:1.2em;font-family:'Space Grotesk',sans-serif;font-weight:600"></div>
+    </div>
+
+    <!-- v58: PROGRESSION -->
+    <div id="win-progression">
+      <div class="prog-header">◈ PROGRESSION</div>
+      <div id="prog-best-runs" style="margin-bottom:10px"></div>
+      <div id="win-run-compare" style="display:none"></div>
+      <div id="prog-trait-list" style="margin-top:10px"></div>
+      <div id="prog-next-run" class="next-run-box" style="display:none">
+        <div class="next-run-label">▸ Nächster Run</div>
+        <div id="prog-next-objectives"></div>
+      </div>
+    </div>
+
+    <!-- v76.3: RUN TIMELINE -->
+    <div id="win-timeline-panel" style="margin-top:14px;text-align:left">
+      <div style="width:100%;height:1px;background:linear-gradient(90deg,rgba(200,100,255,.18),rgba(80,160,255,.06),transparent);margin-bottom:12px"></div>
+      <div style="font-family:'Share Tech Mono',monospace;font-size:.32rem;letter-spacing:4px;color:rgba(200,140,255,.38);text-transform:uppercase;margin-bottom:8px">◈ RUN-TIMELINE</div>
+      <div id="win-timeline-rows" style="display:flex;flex-direction:column;gap:2px;max-height:160px;overflow-y:auto;scrollbar-width:none"></div>
+      <div id="win-timeline-empty" style="font-size:.32rem;letter-spacing:1.5px;color:rgba(180,180,255,.2);display:none">Keine Ereignisse aufgezeichnet</div>
+    </div>
+
+    <!-- RUN HISTORY PANEL -->
+    <div id="win-history-panel" style="margin-top:14px;text-align:left">
+      <div style="width:100%;height:1px;background:linear-gradient(90deg,rgba(80,160,255,.18),rgba(80,160,255,.04),transparent);margin-bottom:14px"></div>
+      <div style="font-family:'Share Tech Mono',monospace;font-size:.32rem;letter-spacing:4px;color:rgba(100,200,255,.32);text-transform:uppercase;margin-bottom:8px">◈ RUN-VERLAUF</div>
+      <div id="win-history-rows" style="display:flex;flex-direction:column;gap:4px"></div>
+      <div id="win-history-codex" style="margin-top:10px;font-size:.34rem;letter-spacing:2px;color:rgba(180,200,255,.28);text-transform:uppercase;line-height:1.7"></div>
+    </div>
+    <div id="win-best-run" style="margin-top:8px;font-size:.42rem;letter-spacing:2px;color:rgba(255,200,80,.55);text-transform:uppercase;min-height:1em;text-align:center"></div>
+    <div id="win-next-unlock" style="margin-top:6px;font-size:.38rem;letter-spacing:2px;color:rgba(180,100,255,.5);text-transform:uppercase;min-height:1em;text-align:center;padding:0 8px"></div>
+    <!-- v63: menu-item style buttons -->
+    <div style="margin-top:clamp(18px,3vh,32px);width:100%">
+      <!-- Sprint 4: Genetic Memory overlay mounts here via sprint4.js -->
+      <div id="s4-genetic-mount-point"></div>
+      <button id="win-restart">⟳ Neustart</button>
+      <button id="win-hardmode" style="display:none;width:100%;padding:13px 0;border:none;border-radius:0;border-bottom:1px solid rgba(255,255,255,.05);background:transparent;color:rgba(255,110,110,.75);font-family:'Space Grotesk',sans-serif;font-size:clamp(.5rem,1.3vw,.65rem);font-weight:500;letter-spacing:5px;text-transform:uppercase;cursor:pointer;transition:padding-left .32s cubic-bezier(.25,0,.15,1),color .25s,background .25s;outline:none;position:relative;text-align:left">★ Hard Mode</button>
+      <div id="win-hardmode-hint" style="display:none;font-family:'Share Tech Mono',monospace;font-size:.31rem;letter-spacing:3px;color:rgba(255,100,80,.45);text-transform:uppercase;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.04)">HARD MODE FREISCHALTBAR MIT TIER-II-WIN</div>
+    </div>
+    <div id="win-hotkey">oder drücke R</div>
+  </div>
+</div>
+
+<!-- ── FAIL SCREEN ── -->
+<div id="fail-screen" role="dialog" aria-modal="true" aria-label="Run beendet">
+  <div id="fail-grid"></div>
+  <div id="fail-inner">
+    <div id="fail-label">◈ SYNAPTIC NETWORK · RUN ENDED</div>
+    <div id="fail-title">NETZ KOLLABIERT</div>
+    <div id="fail-sub">Brownout-Kaskade — alle Nodes ausgefallen</div>
+    <div id="fail-sep"></div>
+    <div id="fail-stats">
+      <div class="fail-stat-row"><span class="fsl">Dauer</span><span class="fsv" id="fs-time">—</span></div>
+      <div class="fail-stat-row"><span class="fsl">Epoch erreicht</span><span class="fsv" id="fs-epoch">—</span></div>
+      <div class="fail-stat-row"><span class="fsl">Peak-Energie</span><span class="fsv" id="fs-energy">—</span></div>
+      <div class="fail-stat-row"><span class="fsl">Nodes platziert</span><span class="fsv" id="fs-nodes">—</span></div>
+      <div class="fail-stat-row"><span class="fsl">Research abgeschlossen</span><span class="fsv" id="fs-research">—</span></div>
+      <div class="fail-stat-row"><span class="fsl">Triangles</span><span class="fsv" id="fs-tris">—</span></div>
+    </div>
+    <div id="fail-ap-earned" style="margin-top:14px;font-size:.44rem;letter-spacing:3px;color:rgba(200,140,255,.7);text-transform:uppercase;text-align:center;min-height:1.4em"></div>
+    <div id="fail-hint" style="margin-top:10px;font-size:.36rem;letter-spacing:2px;color:rgba(140,180,255,.35);text-transform:uppercase;text-align:center;min-height:1em;padding:0 12px;line-height:1.7"></div>
+    <div id="fail-actions" style="margin-top:20px;display:flex;flex-direction:column;align-items:center;gap:10px">
+      <button id="fail-restart">⟳ Neuer Run</button>
+      <div id="fail-hotkey" style="font-family:'Share Tech Mono',monospace;font-size:.3rem;letter-spacing:3px;color:rgba(255,255,255,.18);text-transform:uppercase">oder drücke R</div>
+    </div>
+  </div>
+</div>
+<div id="onboard-card">
+  <div class="ob-header">
+    <div class="ob-dots">
+      <div class="ob-dot" id="ob-d0"></div>
+      <div class="ob-dot" id="ob-d1"></div>
+      <div class="ob-dot" id="ob-d2"></div>
+      <div class="ob-dot" id="ob-d3"></div>
+      <div class="ob-dot" id="ob-d4"></div>
+      <div class="ob-dot" id="ob-d5"></div>
+      <div class="ob-dot" id="ob-d6"></div>
+      <div class="ob-dot" id="ob-d7"></div>
+    </div>
+    <span class="ob-step-tag" id="ob-tag">1 / 8</span>
+  </div>
+  <div class="ob-body" id="ob-body">
+    <div class="ob-icon-row">
+      <span class="ob-step-icon" id="ob-icon">◌</span>
+      <span class="ob-step-title" id="ob-title">—</span>
+    </div>
+    <div class="ob-step-sub" id="ob-sub">—</div>
+  </div>
+  <div class="ob-footer">
+    <button id="ob-skip">Überspringen ×</button>
+  </div>
+</div>
+
+
+<!-- v78 MOD: Combo HUD — polished -->
+<div id="combo-hud" style="
+  position:fixed;top:52px;left:50%;transform:translateX(-50%) scale(.9);
+  z-index:12;
+  font-family:'Share Tech Mono',monospace;font-size:.36rem;letter-spacing:5px;
+  color:rgba(255,220,60,.95);
+  text-transform:uppercase;
+  text-shadow:0 0 16px rgba(255,200,40,.85),0 0 32px rgba(255,180,20,.3);
+  opacity:0;
+  transition:opacity .25s,transform .25s cubic-bezier(.25,0,.15,1);
+  pointer-events:none;white-space:nowrap;
+  background:rgba(60,40,0,.35);
+  border:1px solid rgba(255,180,30,.18);
+  border-radius:20px;
+  padding:3px 14px;
+  backdrop-filter:blur(8px);
+"></div>
+
+<!-- v78 MOD: Energie-Verfall Indikator — polished -->
+<div id="decay-ind" style="
+  position:fixed;top:52px;right:14px;z-index:12;
+  font-family:'Share Tech Mono',monospace;font-size:.28rem;letter-spacing:3px;
+  color:rgba(255,90,60,.9);text-transform:uppercase;
+  opacity:0;transition:opacity .5s;
+  pointer-events:none;
+  background:rgba(60,10,0,.45);
+  border:1px solid rgba(200,60,40,.25);
+  border-radius:16px;
+  padding:2px 10px;
+  text-shadow:0 0 10px rgba(255,80,40,.6);
+  animation:decay-blink 1.4s infinite alternate;
+">▼ VERFALL</div>
+
+
+<!-- ═══════════════════════════════════════════════════════════════
+     v82 HUD POLISH — readability, hierarchy, visual refinement
+     All overrides use sufficient specificity to win cleanly.
+     ═══════════════════════════════════════════════════════════════ -->
+
+<!-- ═══════════════════════════════════════════════════════════════
+     v83 POLISH — 10 targeted micro-improvements
+     ═══════════════════════════════════════════════════════════════ -->
+
+
+
+
+
+<!-- ═══════════════════════════════════════════════════════════════
+     v88.1  UNIVERSAL COHERENCE PASS
+     One glass recipe • one separator gradient • one radius token
+     One letter-spacing scale • one accent-blue family
+     Covers every element not fully unified by the v88 base layer.
+     ═══════════════════════════════════════════════════════════════ -->
+
+
+<!-- ═══════════════════════════════════════════════════════
+     v95 — FOCUS TRAP + ACCESSIBILITY HARDENING
+     R-05: Trap keyboard focus inside every aria-modal overlay
+     R-01: Migration completeness verified at runtime
+     ═══════════════════════════════════════════════════════ -->
+
+
+  <!-- Runtime status banner (prod-ready layer) -->
+  <div id="prod-status-banner" role="status" aria-live="polite"></div>
+
+  <!-- ── Vite entry point — all JS imported from here ── -->
+
+
+<!-- v98: Plasticity Legend -->
+<div id="plasticity-legend">
+  <div class="plast-legend-row"><div class="plast-legend-dot level-0"></div>Normal</div>
+  <div class="plast-legend-row"><div class="plast-legend-dot level-1"></div>Potenziert</div>
+  <div class="plast-legend-row"><div class="plast-legend-dot level-2"></div>Myelinisiert</div>
+</div>
+
+
+  <!-- v98: Build metadata — injected by Vite at compile time -->
+  <script>
+    // __BUILD_TIME__ and __COMMIT_SHA__ are replaced by Vite define at build time.
+    // In dev mode they are available as-is; in prod they are baked in as string literals.
+    (function() {
+      const bt = typeof __BUILD_TIME__ !== 'undefined' ? __BUILD_TIME__ : null;
+      const sha = typeof __COMMIT_SHA__ !== 'undefined' ? __COMMIT_SHA__ : null;
+      const el = document.getElementById('build-meta');
+      if (!el) return;
+      if (bt) {
+        try {
+          const d = new Date(bt);
+          const pad = n => String(n).padStart(2, '0');
+          const stamp = d.getFullYear() + '-' + pad(d.getMonth()+1) + '-' + pad(d.getDate())
+            + ' ' + pad(d.getHours()) + ':' + pad(d.getMinutes());
+          el.textContent = 'Build ' + stamp + (sha && sha !== 'unknown' ? ' · ' + sha : '');
+        } catch(e) { el.textContent = bt || ''; }
+      } else {
+        el.textContent = 'Dev Build';
+      }
+    })();
+  </script>
+</body>
+</html>

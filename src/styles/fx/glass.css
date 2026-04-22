@@ -1,0 +1,345 @@
+/* ══════════════════════════════════════════════════════
+   SYNAPSE — GLASS SYSTEM UPGRADES
+   Dock separator, Pulse ring, History panel glass,
+   AI HUD glass, Save card, QL panel, Active Projects,
+   Cluster tooltip, Boss HUD, Diff/Proto badges,
+   Settings/Info overlays, Boss start button.
+   ══════════════════════════════════════════════════════ */
+
+/* ── Extra style block 1 ── */
+/* @keyframes decay-blink — removed: defined in animations.css */
+
+/* ═══════════════════════════════════════════════════
+   v80 FINAL POLISH — grid layout fixes, readability
+   ═══════════════════════════════════════════════════ */
+
+/* Energy mini-bar */
+#energy-mini-bar{
+  display:inline-block;width:26px;height:3px;
+  background:rgba(255,255,255,.08);border-radius:2px;
+  vertical-align:middle;margin-left:4px;overflow:hidden;
+}
+#energy-mini-fill{
+  display:block;height:100%;border-radius:2px;
+  background:linear-gradient(90deg,rgba(80,200,255,.7),rgba(120,240,255,.9));
+  transition:width .5s cubic-bezier(.25,0,.15,1);
+  box-shadow:0 0 5px rgba(100,220,255,.4);
+}
+
+/* Pulse cooldown ring */
+#pulse-cd-ring{
+  position:absolute;inset:0;pointer-events:none;z-index:1;
+  opacity:.7;
+}
+#pulse-cd-wrap{position:relative;display:inline-block;flex:1;max-width:140px}
+#pulse-cd-wrap .mbtn{width:100%}
+
+/* Diff badge */
+#diff-badge{
+  display:inline-block;font-family:'Share Tech Mono',monospace;
+  font-size:var(--hud-fs-xs);letter-spacing:var(--hud-ls-norm);text-transform:uppercase;
+  padding:2px 7px;border-radius:20px;margin-left:7px;
+  vertical-align:middle;border:1px solid currentColor;opacity:.62;
+}
+#diff-badge.normal{color:rgba(100,180,255,.8);background:rgba(40,80,200,.12)}
+#diff-badge.hard{color:rgba(255,100,80,.9);background:rgba(200,40,20,.14)}
+#diff-badge.easy{color:rgba(80,230,130,.9);background:rgba(40,180,80,.12)}
+
+/* Proto chip */
+#proto-chip{
+  font-size:max(10px,.3rem);letter-spacing:3px;
+  padding:2px 9px 2px 7px;
+  border-radius:3px;
+}
+
+/* Spine banner */
+#spine-banner{
+  font-size:max(10px,.28rem);letter-spacing:3px;
+  opacity:0;pointer-events:none;
+}
+#spine-banner.vis{opacity:1}
+
+/* Boss vuln fill */
+#boss-vuln-fill-wrap{
+  width:min(220px,60vw);height:5px;
+  background:rgba(255,255,255,.08);border-radius:3px;margin:0 auto
+}
+
+/* Cluster dots */
+.cl-dot{
+  width:7px;height:7px;border-radius:50%;
+  border:1px solid rgba(255,255,255,.2);
+  background:rgba(255,255,255,.08);
+  box-shadow:none;transition:all .3s;
+}
+
+/* Hint above dock */
+#hint{
+  bottom:calc(96px + env(safe-area-inset-bottom,0px));
+}
+
+/* Combo HUD tweak */
+#combo-hud{
+  top:56px !important;
+}
+
+/* Decay indicator tweak */
+#decay-ind{
+  top:56px !important;
+}
+
+/* Draft cards mobile */
+@media(max-width:480px){
+  .draft-card{width:calc(50% - 8px);min-width:130px;padding:14px 12px 12px}
+  #draft-cards{gap:10px}
+  .dc-name{font-size:max(10px,.5rem);letter-spacing:2.5px}
+  .dc-desc{font-size:max(10px,.32rem)}
+  #draft-title{font-size:clamp(2rem,10vw,3rem)}
+  .proto-card-name{font-size:max(10px,.5rem)}
+  #protocol-cards{gap:6px}
+}
+
+/* Settings overlay mobile */
+@media(max-width:480px){
+  #settings-box{
+    padding:clamp(30px,6vh,60px) 20px;
+    padding-left:clamp(36px,8vw,60px);
+    width:100%
+  }
+}
+
+/* Misc-flash */
+#missed-flash{
+  font-size:clamp(.4rem,1vw,.46rem);
+  letter-spacing:3px;
+}
+
+/* Very small screens: wrap type-zone */
+@media(max-width:380px){
+  #dock-type-zone{flex-wrap:wrap;min-height:auto;padding:2px 6px}
+  .tbtn{padding:3px 7px;font-size:max(10px,.32rem);letter-spacing:1px}
+  #hud-main-row{grid-template-columns:1fr 1fr}
+  #hud-right{display:none}
+}
+
+/* Smooth backdrop for glass panels */
+#ctrl-dock, #ai-hud, #node-tip, #save-card, #pause-btn, #hud{
+  will-change:transform;
+}
+
+/* R-04: will-change promotes layers — disable on low-end hardware */
+body[data-graphics="low"] #ctrl-dock,
+body[data-graphics="low"] #ai-hud,
+body[data-graphics="low"] #node-tip,
+body[data-graphics="low"] #save-card,
+body[data-graphics="low"] #pause-btn,
+body[data-graphics="low"] #hud,
+body[data-graphics="low"] #boss-hud,
+body[data-graphics="low"] #sync-bar {
+  will-change: auto;
+}
+
+/* ══════════════════════════════════════════════════════
+   v81 COMPREHENSIVE POLISH — unified design system
+   ══════════════════════════════════════════════════════ */
+
+/* ── Dock separator between type zone and action zone ── */
+#dock-type-zone {
+  border-bottom: 1px solid rgba(255,255,255,.035);
+}
+
+/* ── Pulse button: special premium glow on the CD SVG border ring ── */
+#pulse-cd-ring rect.track {
+  stroke: rgba(255,255,255,.05);
+  stroke-width: 1.5;
+}
+#pulse-cd-ring rect.fill {
+  stroke-linecap: round;
+  transition: stroke-dashoffset .18s linear, stroke .4s;
+}
+#pulse-cd-ring.rdy rect.fill { stroke: rgba(255,220,80,.80); filter: drop-shadow(0 0 3px rgba(255,200,50,.75)); }
+#pulse-cd-ring.cap rect.fill { stroke: rgba(80,255,160,.88); filter: drop-shadow(0 0 4px rgba(60,255,140,.85)); }
+#pulse-cd-ring.fus rect.fill { stroke: rgba(255,155,45,.88); filter: drop-shadow(0 0 4px rgba(255,120,20,.82)); }
+#pulse-cd-ring.cd  rect.fill { stroke: rgba(90,135,255,.45); }
+
+/* ── History panel glass upgrade ── */
+#history-panel {
+  background: linear-gradient(160deg, rgba(0,5,24,.94) 0%, rgba(0,3,16,.97) 100%);
+  border: 1px solid rgba(70,130,255,.16);
+  border-top: 1px solid rgba(90,165,255,.24);
+  box-shadow: 0 8px 40px rgba(0,0,0,.72), 0 0 0 1px rgba(50,100,255,.06);
+}
+
+/* ── AI HUD glass upgrade ── */
+#ai-hud {
+  background: linear-gradient(160deg, rgba(0,5,24,.93) 0%, rgba(0,3,16,.96) 100%);
+  border-left: 1px solid rgba(65,125,255,.16);
+  border-bottom: 1px solid rgba(65,125,255,.16);
+  box-shadow: -4px 4px 32px rgba(0,0,0,.55), 0 0 0 1px rgba(50,100,255,.05);
+}
+
+/* ── Save card upgraded border ── */
+#save-card {
+  border-radius: 8px;
+  box-shadow: 0 0 0 1px rgba(60,200,110,.06), 0 8px 40px rgba(0,0,0,.65);
+}
+
+/* ── QL panel glass upgrade ── */
+#ql-panel {
+  background: linear-gradient(160deg, rgba(0,5,24,.92) 0%, rgba(0,3,16,.96) 100%);
+  border: 1px solid rgba(70,130,255,.14);
+  border-left: 2px solid var(--ql-color, var(--hud-blue-line));
+  box-shadow: 0 4px 28px rgba(0,0,0,.6), 0 0 0 1px rgba(50,100,255,.05);
+}
+
+/* ── Active Projects HUD upgrade ── */
+#active-projects-hud {
+  background: linear-gradient(160deg, rgba(0,4,20,.90) 0%, rgba(0,2,14,.95) 100%);
+  border: 1px solid rgba(110,70,240,.14);
+  border-left: 2px solid rgba(140,80,255,.45);
+  box-shadow: 0 4px 24px rgba(0,0,0,.55), 0 0 0 1px rgba(90,50,200,.05);
+}
+
+/* ── Cluster tooltip upgrade ── */
+#cl-tooltip {
+  background: linear-gradient(160deg, rgba(0,6,22,.95) 0%, rgba(1,4,14,.97) 100%);
+  border: 1px solid rgba(70,185,155,.22);
+  border-left: 2px solid rgba(80,200,160,.55);
+  box-shadow: 0 4px 22px rgba(0,0,0,.65), 0 0 0 1px rgba(50,160,120,.05);
+}
+
+/* ── Boss HUD glass upgrade ── */
+#boss-hud {
+  background: linear-gradient(to right, transparent, rgba(0,2,12,.86) 85%);
+}
+
+/* ── Diff badge rounded ── */
+#diff-badge {
+  border-radius: 4px;
+}
+
+/* ── Proto chip rounded ── */
+#proto-chip {
+  border-radius: 4px;
+}
+
+/* ── Settings & Info overlay boxes: soft top line ── */
+#settings-box::after,
+#info-box::after,
+#pause-box::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent 5%, rgba(70,130,255,.10), transparent 95%);
+  pointer-events: none;
+}
+
+/* ── Settings footer buttons upgrade ── */
+.settings-footer {
+  display: flex;
+  flex-direction: row;
+  gap: 8px;
+  margin-top: clamp(18px,3vh,32px);
+}
+#settings-close,
+#settings-apply {
+  flex: 1;
+  padding: 12px 0;
+  border: none; border-radius: 0;
+  border-bottom: 1px solid rgba(255,255,255,.05);
+  background: transparent;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: clamp(.48rem,1.2vw,.62rem);
+  font-weight: 500; letter-spacing: 5px; text-transform: uppercase;
+  cursor: pointer;
+  transition: padding-left .32s cubic-bezier(.25,0,.15,1), color .25s, background .25s;
+  outline: none; position: relative; text-align: left;
+}
+#settings-close {
+  color: rgba(255,255,255,.32);
+}
+#settings-close:hover {
+  color: rgba(255,255,255,.68);
+  padding-left: 16px;
+}
+#settings-apply {
+  color: rgba(120,210,255,.85);
+  text-shadow: 0 0 14px rgba(100,195,255,.28);
+}
+#settings-apply:hover {
+  color: rgba(160,235,255,.98);
+  padding-left: 16px;
+  background: rgba(40,100,220,.05);
+}
+#settings-close::before,
+#settings-apply::before {
+  content: ''; position: absolute; left: 0; top: 50%; transform: translateY(-50%);
+  width: 0; height: 1px; background: currentColor; opacity: .65;
+  transition: width .32s cubic-bezier(.25,0,.15,1), opacity .25s;
+}
+#settings-close:hover::before,
+#settings-apply:hover::before { width: 10px; opacity: .9; }
+
+/* ── Info rows slightly upgraded ── */
+.info-row {
+  color: rgba(155,195,255,.42);
+  border-bottom: 1px solid rgba(255,255,255,.035);
+}
+.info-row b { color: rgba(115,205,255,.88); }
+
+/* ── Diff buttons: slightly rounder ── */
+.diff-btn, .lang-btn {
+  border-radius: 0 3px 3px 0;
+}
+
+/* ── Slider thumb upgrade ── */
+.syn-slider::-webkit-slider-thumb {
+  border-radius: 3px;
+  background: rgba(90,190,255,.95);
+  box-shadow: 0 0 8px rgba(70,170,255,.55);
+}
+
+/* ── Boss start button upgrade ── */
+#boss-start-btn {
+  border-radius: 4px;
+}
+
+/* ── Draft overlay title alignment ── */
+#draft-title {
+  text-align: left;
+}
+
+/* ── Sync overlay text ── */
+#sync-title {
+  font-family: 'Share Tech Mono', monospace;
+  letter-spacing: 4px;
+}
+
+/* ── Mobile dock: tighter type row label gap ── */
+@media(max-width:480px) {
+  #dock-type-zone::before { display: none; }
+  .mbtn { border-radius: 4px; }
+  .tbtn { border-radius: 3px; }
+}
+
+/* ── Very small screens: compact dock ── */
+@media(max-width:380px) {
+  #dock-type-zone { flex-wrap: wrap; min-height: auto; padding: 2px 6px; }
+  .tbtn { padding: 3px 7px; font-size:max(10px,.32rem); letter-spacing: 1px; }
+  #hud-main-row { grid-template-columns: 1fr 1fr; }
+  #hud-right { display: none; }
+}
+
+/* ── Extra style block 2 ── */
+/* v81.1 roadmap stabilization additions */
+.setting-inline-row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.setting-flex-slider{flex:1;min-width:150px}
+.toggle-btn{border:1px solid rgba(120,200,255,.18);background:rgba(40,90,160,.08);color:rgba(180,225,255,.52);font-family:'Share Tech Mono',monospace;font-size:max(10px,.36rem);letter-spacing:2px;text-transform:uppercase;padding:7px 10px;border-radius:2px;cursor:pointer;transition:background .18s,color .18s,border-color .18s}
+.toggle-btn.active{background:rgba(80,180,255,.16);color:rgba(210,245,255,.88);border-color:rgba(120,220,255,.42)}
+.compact-options{gap:6px;flex-wrap:wrap}
+body[data-motion="reduced"] *{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.08s!important;scroll-behavior:auto!important}
+body[data-motion="minimal"] *{animation:none!important;transition:none!important;scroll-behavior:auto!important}
+body[data-graphics="low"] #combo-hud,body[data-graphics="low"] #decay-ind{filter:none!important;text-shadow:none!important;box-shadow:none!important}
+#project-panel [data-project-skip]:focus-visible,.toggle-btn:focus-visible,.lang-btn:focus-visible,.diff-btn:focus-visible{outline:1px solid rgba(140,220,255,.8);outline-offset:2px}
+

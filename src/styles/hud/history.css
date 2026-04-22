@@ -1,0 +1,365 @@
+/* ══════════════════════════════════════════════════════
+   SYNAPSE — HUD RUN HISTORY & BOSS THEMES
+   - Run History Panel
+   - History Tabs (v57)
+   - v58 Ghost Matrix Boss Theme (teal)
+   - v58 Sigma Recursive Boss Theme (violet-magenta)
+   - v66 Mirror Cluster Indicator
+   - v58 Win Screen Boss Variants
+   - v58 Post-Run Report Panel
+   - v58 Progression Section
+   - v74 Parasite Choir Boss Theme (chartreuse)
+   - v70 Vortex Architect Profile
+   - Vortex Charge Bar
+   ══════════════════════════════════════════════════════ */
+
+/* ── RUN HISTORY PANEL ── */
+.hist-row{
+  display:flex;align-items:center;justify-content:space-between;
+  font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:1.8px;
+  text-transform:uppercase;color:rgba(160,200,255,.35);padding:3px 0;
+  border-bottom:1px solid rgba(80,140,255,.05)
+}
+.hist-row .h-tier1{color:rgba(100,255,170,.7)}
+.hist-row .h-tier2{color:rgba(255,200,60,.75)}
+.hist-row .h-tier3{color:rgba(255,120,40,.85)}
+.hist-row .h-diff-hard{color:rgba(255,100,100,.7)}
+.hist-row .h-diff-easy{color:rgba(80,230,130,.6)}
+.hist-row .h-profile{color:rgba(120,200,255,.6)}
+
+/* ── HISTORY TABS (v57) ── */
+#history-tabs{display:flex;gap:4px;margin-bottom:10px}
+.htab{
+  flex:1;padding:5px 0;border:none;background:transparent;
+  font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:2px;
+  text-transform:uppercase;cursor:pointer;
+  color:rgba(80,140,255,.35);border-bottom:1px solid rgba(80,140,255,.1);
+  transition:all .22s;outline:none
+}
+.htab.active{color:rgba(120,200,255,.85);border-bottom-color:rgba(80,180,255,.6)}
+.htab:hover:not(.active){color:rgba(100,170,255,.6)}
+.htab-pane{display:none}
+.htab-pane.active{display:block}
+/* Profile frequency bar */
+.pfreq-row{display:flex;align-items:center;gap:6px;margin-bottom:3px}
+.pfreq-label{font-size:11px;letter-spacing:1.5px;text-transform:uppercase;width:28px;flex-shrink:0}
+.pfreq-bar{flex:1;height:3px;background:rgba(255,255,255,.06);border-radius:2px;overflow:hidden}
+.pfreq-fill{height:100%;border-radius:2px;transition:width .5s}
+.pfreq-count{font-size:11px;letter-spacing:1px;color:rgba(255,255,255,.22);width:14px;text-align:right;flex-shrink:0}
+/* Best runs rows */
+.best-row{
+  display:flex;align-items:center;justify-content:space-between;
+  font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:1.5px;
+  text-transform:uppercase;color:rgba(160,200,255,.4);padding:3px 0;
+  border-bottom:1px solid rgba(80,140,255,.05)
+}
+.best-row .br-rank{color:rgba(255,220,80,.55);width:18px;flex-shrink:0}
+.best-row .br-tier{font-weight:bold}
+.br-t1{color:rgba(100,255,170,.7)}.br-t2{color:rgba(255,200,60,.75)}.br-t3{color:rgba(255,120,40,.85)}
+/* Codex trait list */
+.codex-trait{
+  font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:1.5px;
+  text-transform:uppercase;color:rgba(120,200,255,.55);padding:2px 0;
+  border-bottom:1px solid rgba(80,140,255,.04);display:flex;
+  justify-content:space-between
+}
+.codex-trait .ct-run{color:rgba(255,255,255,.2);font-size:11px}
+#audio-cue-flash{
+  position:fixed;inset:0;z-index:7;pointer-events:none;opacity:0;
+  background:rgba(255,255,255,.018);transition:opacity .08s
+}
+#audio-cue-flash.show{opacity:1}
+
+.boss-hit-shake{animation:boss-hit-shake .35s ease-out}
+
+/* ── v58: GHOST MATRIX BOSS THEME (teal) ── */
+#boss-intro-box.ghost{
+  border-color:rgba(40,255,200,.3);
+  background:rgba(0,20,18,.9);
+  box-shadow:0 0 80px rgba(40,220,180,.14)
+}
+#boss-intro-box.ghost #boss-name{
+  text-shadow:0 0 40px rgba(40,255,200,.9)
+}
+#boss-intro-box.ghost #boss-start-btn{
+  border-color:rgba(40,255,200,.45);
+  background:rgba(0,55,45,.35);
+  color:rgba(80,255,210,.92)
+}
+#boss-intro-box.ghost #boss-start-btn:hover{
+  background:rgba(0,80,65,.5);
+  box-shadow:0 0 22px rgba(40,255,200,.35)
+}
+/* Feint flash — different from real vuln */
+#boss-feint-label{
+  position:fixed;top:50%;left:50%;transform:translate(-50%,-140px);
+  z-index:15;pointer-events:none;text-align:center;
+  font-family:'Space Grotesk',sans-serif;font-size:12px;font-weight:700;
+  letter-spacing:6px;color:rgba(60,255,200,.9);text-transform:uppercase;
+  text-shadow:0 0 18px rgba(40,220,170,.8);
+  opacity:0;transition:opacity .2s
+}
+#boss-feint-label.show{opacity:1}
+
+/* ── v58: SIGMA RECURSIVE BOSS THEME (violet-magenta) ── */
+#boss-intro-box.sigma{
+  border-color:rgba(200,60,255,.3);
+  background:rgba(15,0,25,.9);
+  box-shadow:0 0 80px rgba(180,50,255,.14)
+}
+#boss-intro-box.sigma #boss-name{
+  text-shadow:0 0 40px rgba(200,80,255,.9)
+}
+#boss-intro-box.sigma #boss-start-btn{
+  border-color:rgba(180,60,255,.45);
+  background:rgba(40,0,65,.35);
+  color:rgba(210,100,255,.92)
+}
+#boss-intro-box.sigma #boss-start-btn:hover{
+  background:rgba(60,10,90,.5);
+  box-shadow:0 0 22px rgba(180,60,255,.35)
+}
+/* Mirror cluster flash */
+#boss-mirror-flash{
+  position:fixed;inset:0;z-index:9;pointer-events:none;
+  background:radial-gradient(ellipse at 50% 50%,rgba(180,50,255,.22) 0%,transparent 70%);
+  opacity:0;transition:opacity .4s
+}
+#boss-mirror-flash.show{opacity:1}
+/* Mirror cluster indicator */
+/* ── v66 QA: mirror cluster indicator — top of the floating stack ── */
+#mirror-cluster-bar{
+  position:fixed;bottom:calc(210px + env(safe-area-inset-bottom,0px));left:50%;transform:translateX(-50%);
+  z-index:14;text-align:center;pointer-events:none;opacity:0;transition:opacity .35s
+}
+#mirror-cluster-bar.show{opacity:1}
+#mirror-cluster-title{
+  font-size:12px;letter-spacing:5px;color:rgba(200,80,255,.95);
+  text-transform:uppercase;text-shadow:0 0 16px rgba(180,50,255,.8);margin-bottom:3px;
+  animation:mirror-pulse .5s ease-in-out infinite alternate
+}
+/* @keyframes mirror-pulse — removed: defined in animations.css */
+#mirror-cluster-info{font-size:11px;letter-spacing:3px;color:rgba(200,140,255,.65);text-transform:uppercase}
+
+/* ── v58: WIN SCREEN BOSS VARIANTS ── */
+/* v63: boss win variants — adapt spine + orb + title glow */
+#win-screen.boss-ghost #win-spine-line{
+  background:linear-gradient(to bottom,
+    transparent 4%,rgba(40,255,200,.14) 15%,
+    rgba(60,255,210,.30) 45%,rgba(40,255,200,.14) 82%,transparent 96%)
+}
+#win-screen.boss-ghost #win-title{
+  text-shadow:0 0 60px rgba(40,255,200,.55),0 0 120px rgba(30,180,150,.22)
+}
+#win-screen.boss-sigma #win-spine-line{
+  background:linear-gradient(to bottom,
+    transparent 4%,rgba(200,80,255,.12) 15%,
+    rgba(180,60,255,.28) 45%,rgba(200,80,255,.12) 82%,transparent 96%)
+}
+#win-screen.boss-sigma #win-title{
+  text-shadow:0 0 60px rgba(200,100,255,.55),0 0 120px rgba(160,50,220,.22)
+}
+
+/* ── v58: POST-RUN REPORT PANEL ── */
+#run-report{
+  margin-top:16px;
+  border-top:none;
+  padding-top:0;
+  text-align:left
+}
+#run-report::before{
+  content:'';display:block;width:100%;height:1px;margin-bottom:16px;
+  background:linear-gradient(90deg,rgba(80,160,255,.22),rgba(80,160,255,.05),transparent)
+}
+.rr-header{
+  font-family:'Share Tech Mono',monospace;
+  font-size:11px;letter-spacing:4px;color:rgba(100,200,255,.35);
+  text-transform:uppercase;margin-bottom:12px;display:flex;align-items:center;gap:8px
+}
+.rr-grade{
+  font-size:11px;font-weight:700;letter-spacing:2px;padding:1px 8px;border-radius:3px;
+  font-family:'Space Grotesk',sans-serif
+}
+.rr-grade.S{background:rgba(255,220,40,.18);color:rgba(255,230,80,.95);border:1px solid rgba(255,210,40,.35);text-shadow:0 0 10px rgba(255,200,40,.6)}
+.rr-grade.A{background:rgba(80,255,160,.14);color:rgba(100,255,170,.9);border:1px solid rgba(60,220,140,.3)}
+.rr-grade.B{background:rgba(80,160,255,.14);color:rgba(120,200,255,.9);border:1px solid rgba(80,160,255,.28)}
+.rr-grade.C{background:rgba(255,180,40,.12);color:rgba(255,200,80,.8);border:1px solid rgba(240,160,30,.25)}
+.rr-grade.F{background:rgba(255,60,60,.12);color:rgba(255,110,110,.8);border:1px solid rgba(220,50,50,.25)}
+.rr-grid{
+  display:grid;grid-template-columns:1fr 1fr;gap:8px 24px;margin-bottom:10px
+}
+.rr-stat{display:flex;flex-direction:column;gap:2px}
+.rr-key{font-size:11px;letter-spacing:2px;color:rgba(255,255,255,.22);text-transform:uppercase}
+.rr-val{font-size:11px;letter-spacing:2px;color:rgba(100,220,180,.88);font-weight:bold}
+.rr-val.highlight{color:rgba(255,210,60,.95);text-shadow:0 0 10px rgba(255,180,40,.5)}
+.rr-val.dim{color:rgba(180,200,255,.55);font-size:12px}
+/* Bar metrics in run report */
+.rr-bar-row{display:flex;align-items:center;gap:7px;margin-bottom:5px}
+.rr-bar-label{font-size:11px;letter-spacing:1.8px;text-transform:uppercase;
+  color:rgba(255,255,255,.28);width:52px;flex-shrink:0}
+.rr-bar-track{flex:1;height:4px;background:rgba(255,255,255,.07);border-radius:2px;overflow:hidden}
+.rr-bar-fill{height:100%;border-radius:2px;transition:width .8s .4s}
+.rr-bar-score{font-size:11px;letter-spacing:1px;color:rgba(255,255,255,.28);
+  width:28px;text-align:right;flex-shrink:0}
+
+/* ── v58: PROGRESSION SECTION ── */
+#win-progression{
+  margin-top:12px;
+  border-top:none;
+  padding-top:0;text-align:left
+}
+#win-progression::before{
+  content:'';display:block;width:100%;height:1px;margin-bottom:14px;
+  background:linear-gradient(90deg,rgba(80,160,255,.18),rgba(80,160,255,.04),transparent)
+}
+.prog-header{
+  font-family:'Share Tech Mono',monospace;
+  font-size:11px;letter-spacing:4px;color:rgba(100,200,255,.35);
+  text-transform:uppercase;margin-bottom:12px
+}
+/* Best runs table */
+.best-run-row{
+  display:flex;align-items:center;gap:0;
+  font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:1.5px;
+  text-transform:uppercase;padding:5px 0;
+  border-bottom:1px solid rgba(80,140,255,.06)
+}
+.best-run-row:last-child{border-bottom:none}
+.br-medal{width:20px;flex-shrink:0;font-size:11px}
+.br-info{flex:1;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.br-tier-badge{padding:1px 6px;border-radius:2px;font-size:11px;font-weight:bold}
+.br-tier-badge.t1{background:rgba(80,255,160,.12);color:rgba(100,255,170,.85);border:1px solid rgba(60,220,140,.2)}
+.br-tier-badge.t2{background:rgba(255,200,60,.12);color:rgba(255,215,80,.9);border:1px solid rgba(240,180,40,.25)}
+.br-tier-badge.t3{background:rgba(255,120,40,.12);color:rgba(255,145,65,.9);border:1px solid rgba(240,100,30,.25)}
+.br-profile-badge{padding:1px 6px;border-radius:2px;font-size:11px;opacity:.7;border:1px solid transparent}
+.br-time{color:rgba(255,255,255,.3);margin-left:auto;font-size:11px}
+.br-peak{color:rgba(100,200,255,.45);font-size:11px}
+/* Trait progress */
+.trait-progress-row{
+  display:flex;align-items:center;gap:8px;margin-bottom:6px
+}
+.tpr-name{font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:1.5px;
+  text-transform:uppercase;width:64px;flex-shrink:0;color:rgba(120,200,255,.55)}
+.tpr-name.unlocked{color:rgba(100,255,170,.8)}
+.tpr-bar{flex:1;height:3px;background:rgba(255,255,255,.07);border-radius:2px;overflow:hidden}
+.tpr-fill{height:100%;border-radius:2px;background:rgba(80,160,255,.7);transition:width .6s}
+.tpr-fill.unlocked{background:rgba(80,255,160,.85)}
+.tpr-check{font-size:11px;width:14px;text-align:center;flex-shrink:0}
+/* Next run objectives box */
+.next-run-box{
+  margin-top:10px;padding:8px 12px;
+  border:1px solid rgba(80,255,160,.12);border-radius:6px;
+  background:rgba(0,20,12,.4)
+}
+.next-run-label{font-size:11px;letter-spacing:3px;color:rgba(100,255,170,.45);
+  text-transform:uppercase;margin-bottom:6px}
+.next-obj-item{
+  font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:1.5px;
+  text-transform:uppercase;color:rgba(180,255,220,.6);padding:2px 0;
+  display:flex;align-items:center;gap:6px
+}
+.next-obj-item::before{content:'▸';color:rgba(80,255,160,.5);font-size:11px}
+/* Current run comparison badge */
+#win-run-compare{
+  margin-top:8px;padding:6px 12px;border-radius:5px;
+  font-family:'Share Tech Mono',monospace;font-size:11px;
+  letter-spacing:2px;text-transform:uppercase;text-align:center;
+  background:rgba(255,200,60,.08);border:1px solid rgba(255,200,60,.18);
+  color:rgba(255,210,80,.7)
+}
+#win-run-compare.new-best{
+  background:rgba(255,200,60,.16);border-color:rgba(255,200,60,.45);
+  color:rgba(255,225,90,.95);
+  animation:best-glow .6s ease-out
+}
+/* @keyframes best-glow — removed: defined in animations.css */
+
+/* ── v74 PARASITE CHOIR boss theme (chartreuse/sickly lime) ── */
+#boss-screen .boss-shell-spine.parasite-tint { background: linear-gradient(to bottom,transparent 4%,rgba(100,255,40,.18) 15%,rgba(136,255,68,.34) 45%,rgba(100,255,40,.18) 82%,transparent 96%) !important }
+#boss-screen .boss-shell-spine.parasite-tint::before,
+#boss-screen .boss-shell-spine.parasite-tint::after { background: rgba(120,255,60,.45) }
+#boss-hud.profile-parasite::before{background-image:
+  repeating-linear-gradient(0deg,rgba(100,255,40,.025) 0 1px,transparent 1px 18px),
+  repeating-linear-gradient(90deg,rgba(100,255,40,.025) 0 1px,transparent 1px 18px)}
+#boss-hud.profile-parasite { --boss-spine-col: linear-gradient(to bottom,transparent 4%,rgba(100,255,40,.14) 18%,rgba(136,255,68,.28) 46%,rgba(100,255,40,.14) 80%,transparent 96%); --boss-spine-pip: rgba(120,255,60,.42); }
+#boss-hud.profile-parasite #boss-hud-spine { background: var(--boss-spine-col) }
+#boss-hud.profile-parasite #boss-hud-spine::before,#boss-hud.profile-parasite #boss-hud-spine::after { background: var(--boss-spine-pip) }
+#boss-hud.profile-parasite #boss-hud-name{text-shadow:0 0 40px rgba(100,255,40,.7),0 0 80px rgba(60,200,20,.22)}
+#boss-hud.profile-parasite #boss-hp-val{color:rgba(120,255,60,.88)}
+#boss-hud.profile-parasite #boss-hud-label{color:rgba(90,220,30,.28)}
+#boss-hud.profile-parasite #boss-hud-sep{background:linear-gradient(90deg,rgba(100,255,40,.18),rgba(100,255,40,.04),transparent)}
+#boss-hud.profile-parasite #boss-phase-dots .bpd.bpd-done{background:rgba(80,200,30,.7)!important;box-shadow:0 0 6px rgba(80,200,30,.5)!important}
+#boss-hud.profile-parasite #boss-phase-dots .bpd.bpd-active{background:rgba(120,255,60,.9)!important;box-shadow:0 0 10px rgba(100,255,40,.7)!important}
+/* @keyframes boss-hud-breathe-parasite — removed: defined in animations.css */
+#boss-hud.profile-parasite.vis{animation:boss-hud-breathe-parasite 2.1s ease-in-out infinite alternate}
+/* Infected link overlay indicator */
+#parasite-infection-bar{
+  position:fixed;bottom:calc(120px + env(safe-area-inset-bottom,0px));left:50%;transform:translateX(-50%);
+  z-index:25;display:none;flex-direction:column;align-items:center;
+  background:rgba(1,10,1,.85);border:1px solid rgba(100,255,40,.25);
+  padding:6px 14px 7px;border-radius:2px;backdrop-filter:blur(8px);min-width:160px
+}
+#parasite-infection-bar.show{display:flex}
+#pib-title{font-size:11px;letter-spacing:3px;color:rgba(100,255,40,.7);text-transform:uppercase;margin-bottom:4px}
+#pib-track{width:140px;height:3px;background:rgba(255,255,255,.06);border-radius:2px}
+#pib-fill{height:100%;border-radius:2px;background:linear-gradient(90deg,rgba(80,200,30,.8),rgba(136,255,68,.9));transition:width .4s}
+#pib-count{font-size:11px;letter-spacing:2px;color:rgba(100,255,40,.5);margin-top:3px}
+/* ── v70 VORTEX ARCHITECT profile ── */
+/* HUD spine: amber */
+#boss-hud.profile-vortex { --boss-spine-col: linear-gradient(to bottom,transparent 4%,rgba(255,160,40,.14) 18%,rgba(255,200,60,.28) 46%,rgba(255,160,40,.14) 80%,transparent 96%); --boss-spine-pip: rgba(255,200,60,.45); }
+#boss-hud.profile-vortex #boss-hud-spine { background: var(--boss-spine-col) }
+#boss-hud.profile-vortex #boss-hud-spine::before,
+#boss-hud.profile-vortex #boss-hud-spine::after { background: var(--boss-spine-pip) }
+#boss-hud.profile-vortex #boss-hud-name { text-shadow: 0 0 40px rgba(255,160,40,.7), 0 0 80px rgba(200,100,20,.22) }
+#boss-hud.profile-vortex #boss-hp-val   { color: rgba(255,190,60,.88) }
+#boss-hud.profile-vortex #boss-hud-label{ color: rgba(255,160,40,.28) }
+#boss-hud.profile-vortex #boss-hud-sep  { background: linear-gradient(90deg,rgba(255,160,40,.18),rgba(255,160,40,.04),transparent) }
+#boss-hud.profile-vortex::before{ background-image:
+  linear-gradient(rgba(255,160,40,.008) 1px,transparent 1px),
+  linear-gradient(90deg,rgba(255,160,40,.008) 1px,transparent 1px) }
+
+/* Phase dots vortex */
+#boss-hud.profile-vortex #boss-phase-dots .bpd.bpd-done{
+  background:rgba(255,160,40,.65);border-color:rgba(255,140,20,.8);
+  box-shadow:0 0 8px rgba(255,120,0,.6)}
+#boss-hud.profile-vortex #boss-phase-dots .bpd.bpd-active{
+  background:rgba(255,200,60,.95);border-color:rgba(255,180,40,.95);
+  box-shadow:0 0 12px rgba(255,160,40,.9),0 0 24px rgba(255,120,0,.4)}
+
+/* enc-vortex-drain: amber pulse on HUD */
+#boss-hud.enc-vortex-drain #boss-hud-name {
+  animation: vortex-drain-pulse .6s infinite alternate;
+  text-shadow: 0 0 30px rgba(255,160,40,.9), 0 0 60px rgba(255,120,0,.5) !important
+}
+/* @keyframes vortex-drain-pulse — removed: defined in animations.css */
+
+/* Intro box vortex colour */
+#boss-intro-box.vortex #boss-name { text-shadow: 0 0 60px rgba(255,160,40,.6), 0 0 120px rgba(200,100,0,.22) }
+#boss-intro-box.vortex #boss-start-btn { color: rgba(255,190,80,.88) }
+#boss-intro-box.vortex #boss-start-btn:hover { color: rgba(255,220,110,.98); background: rgba(80,40,0,.06) }
+
+/* ── Vortex Charge Bar ── */
+#vortex-charge-bar{
+  position:fixed;bottom:calc(100px + env(safe-area-inset-bottom,0px));right:14px;z-index:10;
+  pointer-events:none;opacity:0;transition:opacity .4s;
+  display:flex;flex-direction:column;align-items:flex-end;gap:3px
+}
+#vortex-charge-bar.show{opacity:1}
+.vx-label{
+  font-family:'Share Tech Mono',monospace;
+  font-size:11px;letter-spacing:3px;text-transform:uppercase;
+  color:rgba(255,160,40,.42)
+}
+.vx-track{
+  width:80px;height:2px;background:rgba(255,255,255,.06);border-radius:2px;overflow:hidden
+}
+.vx-fill{
+  height:100%;border-radius:2px;
+  background:linear-gradient(90deg,rgba(255,120,0,.7),rgba(255,220,60,.9));
+  transition:width .4s ease;box-shadow:0 0 6px rgba(255,160,40,.5)
+}
+/* Saturated state (≥80%) — urgent amber glow */
+#vortex-charge-bar.saturated .vx-label { color:rgba(255,200,60,.9); text-shadow:0 0 8px rgba(255,180,40,.5) }
+#vortex-charge-bar.saturated .vx-fill  { box-shadow:0 0 12px rgba(255,180,40,.8); animation: vx-saturate .4s infinite alternate }
+/* @keyframes vx-saturate — removed: defined in animations.css */
+

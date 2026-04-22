@@ -1,0 +1,31 @@
+kind = "web"
+previewPath = "/"
+title = "Synapse v98"
+version = "1.0.0"
+id = "artifacts/synapse"
+router = "path"
+
+[[integratedSkills]]
+name = "react-vite"
+version = "1.0.0"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 22167
+
+[services.development]
+run = "pnpm --filter @workspace/synapse run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/synapse", "run", "build" ]
+publicDir = "artifacts/synapse/dist/public"
+serve = "static"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "22167"
+BASE_PATH = "/"

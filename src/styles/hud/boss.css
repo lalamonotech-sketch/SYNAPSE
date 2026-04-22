@@ -1,0 +1,451 @@
+/* ══════════════════════════════════════════════════════
+   SYNAPSE — HUD BOSS ENCOUNTER
+   - v66 Boss Fight
+   - v66 Boss Phase Dots
+   - v66 Boss Encounter Bridge
+   - v64 Boss HUD — title-screen architecture
+   - v67 Boss encounter state (telegraph / vuln)
+   - Draft Card Tags (v52)
+   - Boss Telegraph (v52)
+   ══════════════════════════════════════════════════════ */
+
+/* ── v66 EVENT TIMER FILL — Urgency-Tint wenn Zeit knapp ── */
+#event-timer-fill{
+  height:100%;
+  background:linear-gradient(to right,rgba(255,180,40,.22),rgba(255,220,80,.48));
+  width:100%;transition:width .5s linear,background .8s
+}
+/* Triggered via JS: data-urgent attribute on #event-timer-bar */
+#event-timer-bar[data-urgent="1"] #event-timer-fill{
+  background:linear-gradient(to right,rgba(255,100,40,.35),rgba(255,160,60,.7));
+  animation:timer-urgent-pulse .9s ease-in-out infinite alternate
+}
+/* @keyframes timer-urgent-pulse — removed: defined in animations.css */
+
+/* ── BOSS FIGHT ── */
+#boss-screen{
+  position:fixed;inset:0;z-index:60;
+  display:flex;align-items:center;justify-content:center;flex-direction:column;
+  background:rgba(1,3,8,.0);pointer-events:none;transition:background 1.2s
+}
+#boss-screen.intro{background:rgba(1,3,8,.95);pointer-events:auto}
+#boss-screen.active{background:rgba(0,0,0,.0);pointer-events:none}
+/* v69: shell grid/spine only visible during boss intro, hidden during active fight */
+#boss-screen.active .boss-shell-grid,
+#boss-screen.active .boss-shell-spine { display: none; }
+#boss-screen:not(.intro) .boss-shell-grid,
+#boss-screen:not(.intro) .boss-shell-spine { display: none; }
+
+/* v63 BOSS INTRO BOX — pure dark, architectural, full screen column */
+#boss-screen.intro{
+  display:flex;align-items:stretch;flex-direction:row;
+  background:#010308
+}
+
+/* v69: boss-screen.intro grid/spine via shell classes in HTML */
+/* v70: boss-screen intro vortex spine tint */
+#boss-screen .boss-shell-spine.vortex-tint { background: linear-gradient(to bottom,transparent 4%,rgba(255,160,40,.18) 15%,rgba(255,200,60,.34) 45%,rgba(255,160,40,.18) 82%,transparent 96%) !important }
+#boss-screen .boss-shell-spine.vortex-tint::before,
+#boss-screen .boss-shell-spine.vortex-tint::after { background: rgba(255,200,60,.45) }
+
+
+
+/* v69: boss intro spine profile tints — applied when intro-box gets .ghost/.sigma class */
+#boss-intro-box.ghost ~ .boss-shell-spine,
+#boss-screen .boss-shell-spine.ghost-tint { background: var(--shell-spine-teal, linear-gradient(to bottom,transparent 4%,rgba(40,255,200,.18) 15%,rgba(60,255,210,.38) 45%,rgba(40,255,200,.18) 82%,transparent 96%)) !important }
+#boss-screen .boss-shell-spine.ghost-tint::before,
+#boss-screen .boss-shell-spine.ghost-tint::after { background: rgba(60,255,200,.45) }
+#boss-intro-box.sigma ~ .boss-shell-spine,
+#boss-screen .boss-shell-spine.sigma-tint { background: var(--shell-spine-violet, linear-gradient(to bottom,transparent 4%,rgba(200,80,255,.18) 15%,rgba(180,60,255,.34) 45%,rgba(200,80,255,.18) 82%,transparent 96%)) !important }
+#boss-screen .boss-shell-spine.sigma-tint::before,
+#boss-screen .boss-shell-spine.sigma-tint::after { background: rgba(200,100,255,.45) }
+#boss-intro-box{
+  position:relative;z-index:3;
+  display:flex;flex-direction:column;justify-content:center;
+  padding:var(--shell-content-pt) var(--shell-content-pr);
+  padding-left:var(--shell-content-pl);
+  width:min(520px,100%);min-height:100vh;
+  text-align:left;border:none;border-radius:0;
+  background:transparent;box-shadow:none;
+  opacity:0;transform:translateX(-16px);
+  transition:opacity .7s cubic-bezier(.4,0,.2,1),transform .7s cubic-bezier(.4,0,.2,1);
+  display:none
+}
+#boss-intro-box.show{opacity:1;transform:translateX(0);display:flex}
+
+/* ── v66 BOSS PHASE DOTS — visuelle Phasenkette im HUD ── */
+#boss-phase-dots{
+  display:flex;gap:5px;align-items:center;
+  margin-bottom:clamp(6px,1.2vh,10px)
+}
+.bpd{
+  width:6px;height:6px;border-radius:50%;
+  background:rgba(255,255,255,.1);
+  border:1px solid rgba(255,80,60,.2);
+  transition:all .5s cubic-bezier(.4,0,.2,1)
+}
+.bpd.bpd-done{
+  background:rgba(255,80,60,.65);
+  border-color:rgba(255,60,40,.8);
+  box-shadow:0 0 8px rgba(255,40,20,.6)
+}
+.bpd.bpd-active{
+  background:rgba(255,130,100,.95);
+  border-color:rgba(255,100,80,.95);
+  box-shadow:0 0 12px rgba(255,80,50,.9),0 0 24px rgba(255,60,30,.4);
+  animation:bpd-throb .8s ease-in-out infinite alternate
+}
+.bpd.bpd-pending{
+  background:rgba(255,255,255,.06);
+  border-color:rgba(255,80,60,.12)
+}
+/* @keyframes bpd-throb — removed: defined in animations.css */
+/* ghost/sigma dot tints */
+#boss-hud.profile-ghost #boss-phase-dots .bpd.bpd-done{
+  background:rgba(40,255,200,.65);border-color:rgba(40,220,180,.8);
+  box-shadow:0 0 8px rgba(30,200,160,.6)
+}
+#boss-hud.profile-ghost #boss-phase-dots .bpd.bpd-active{
+  background:rgba(60,255,210,.95);border-color:rgba(40,230,190,.95);
+  box-shadow:0 0 12px rgba(40,255,200,.9),0 0 24px rgba(30,180,150,.4)
+}
+#boss-hud.profile-sigma #boss-phase-dots .bpd.bpd-done{
+  background:rgba(200,80,255,.65);border-color:rgba(180,60,240,.8);
+  box-shadow:0 0 8px rgba(160,40,220,.6)
+}
+#boss-hud.profile-sigma #boss-phase-dots .bpd.bpd-active{
+  background:rgba(210,100,255,.95);border-color:rgba(190,70,245,.95);
+  box-shadow:0 0 12px rgba(200,80,255,.9),0 0 24px rgba(150,40,200,.4)
+}
+
+/* ── v66 BOSS ENCOUNTER BRIDGE — Intro-Label sync mit HUD-Label ── */
+#boss-intro-label{
+  font-family:'Share Tech Mono','Courier New',monospace;
+  font-size:clamp(10px,.68vw, 10px);letter-spacing:clamp(3.5px,1.1vw,7px);
+  color:rgba(255,60,60,.3);text-transform:uppercase;margin-bottom:8px;white-space:nowrap
+}
+/* Encounter-Kontext unter dem Boss-Namen — stärker als vorher */
+#boss-intro-encounter{
+  display:flex;align-items:center;gap:8px;
+  margin-bottom:clamp(12px,2vh,18px)
+}
+.bph-pip{
+  width:4px;height:4px;border-radius:50%;flex-shrink:0;
+  background:rgba(255,80,60,.55);
+  box-shadow:0 0 6px rgba(255,40,20,.5)
+}
+#boss-intro-phase-note{
+  font-family:'Share Tech Mono',monospace;
+  font-size:clamp(10px,.6vw, 10px);letter-spacing:clamp(2px,.7vw,4px);
+  color:rgba(255,110,80,.32);text-transform:uppercase
+}
+
+/* Boss name — Bebas Neue */
+#boss-name{
+  font-family:'Bebas Neue','Space Grotesk',sans-serif;
+  font-size:clamp(3rem,10vw,6.2rem);
+  font-weight:400;letter-spacing:.05em;line-height:.88;
+  color:#fff;text-transform:uppercase;
+  text-shadow:0 0 60px rgba(255,40,40,.55),0 0 120px rgba(220,20,20,.22);
+  margin-bottom:10px
+}
+
+#boss-intro-sub{
+  font-family:'Share Tech Mono','Courier New',monospace;
+  font-size:clamp(10px,.65vw, 10px);letter-spacing:clamp(3px,1vw,6px);
+  color:rgba(255,110,80,.35);text-transform:uppercase;margin-bottom:0
+}
+
+/* Separator */
+#boss-intro-sep{
+  width:100%;height:1px;
+  background:linear-gradient(90deg,rgba(255,60,40,.28),rgba(255,60,40,.06),transparent);
+  margin:clamp(18px,2.8vh,30px) 0
+}
+
+/* Start button — menu-item arch */
+#boss-start-btn{
+  display:block;width:100%;
+  padding:13px 0;border:none;border-radius:0;
+  border-bottom:1px solid rgba(255,255,255,.05);
+  background:transparent;color:rgba(255,120,100,.88);
+  font-family:'Space Grotesk',sans-serif;font-size:clamp(.5rem,1.3vw, 10px);
+  font-weight:500;letter-spacing:5px;text-transform:uppercase;
+  cursor:pointer;
+  transition:padding-left .32s cubic-bezier(.25,0,.15,1),color .25s,background .25s;
+  outline:none;position:relative;text-align:left
+}
+#boss-start-btn::before{
+  content:'';position:absolute;left:0;top:50%;transform:translateY(-50%);
+  width:0;height:1px;background:currentColor;opacity:.65;
+  transition:width .32s cubic-bezier(.25,0,.15,1),opacity .25s
+}
+#boss-start-btn:hover::before{width:12px;opacity:.9}
+#boss-start-btn:hover{padding-left:18px;color:rgba(255,160,140,.98);background:rgba(100,20,20,.06)}
+
+/* ── v64 BOSS HUD — title-screen architecture, left-anchored ── */
+#boss-hud{will-change:opacity,transform;
+  position:fixed;top:0;left:0;bottom:0;z-index:50;
+  width:clamp(220px,28vw,320px);
+  pointer-events:none;
+  opacity:0;transform:translateX(-16px);
+  transition:opacity .7s cubic-bezier(.4,0,.2,1),transform .7s cubic-bezier(.4,0,.2,1);
+  display:none;
+  background:linear-gradient(to right,rgba(1,3,8,.88) 82%,transparent 100%)
+}
+/* v69: faint grid overlay on boss-hud panel — purely decorative depth */
+#boss-hud::before{
+  content:'';position:absolute;inset:0;pointer-events:none;z-index:0;
+  background-image:
+    linear-gradient(rgba(255,40,40,.008) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(255,40,40,.008) 1px,transparent 1px);
+  background-size:32px 32px;
+  -webkit-mask-image:radial-gradient(ellipse 80% 100% at 20% 50%,rgba(0,0,0,.6) 0%,transparent 70%);
+  mask-image:radial-gradient(ellipse 80% 100% at 20% 50%,rgba(0,0,0,.6) 0%,transparent 70%)
+}
+/* profile-specific grid tints */
+#boss-hud.profile-ghost::before{background-image:
+  linear-gradient(rgba(40,255,200,.007) 1px,transparent 1px),
+  linear-gradient(90deg,rgba(40,255,200,.007) 1px,transparent 1px)}
+#boss-hud.profile-sigma::before{background-image:
+  linear-gradient(rgba(200,80,255,.008) 1px,transparent 1px),
+  linear-gradient(90deg,rgba(200,80,255,.008) 1px,transparent 1px)}
+#boss-hud.vis{opacity:1;transform:translateX(0);display:flex;flex-direction:column}
+/* v66: boss-hud spine aligned to shell-spine-x */
+#boss-hud-spine{
+  position:absolute;left:var(--shell-spine-x);top:0;bottom:0;
+  width:1px;pointer-events:none;z-index:1;
+  background:var(--shell-spine-red);
+  transition:background .5s
+}
+#boss-hud-spine::before,#boss-hud-spine::after{
+  content:'';position:absolute;left:-3px;width:7px;height:1px;background:rgba(255,80,60,.45)
+}
+#boss-hud-spine::before{top:28%}
+#boss-hud-spine::after{top:66%}
+/* v66: boss-hud-inner — left padding aligned to shell-content-pl */
+#boss-hud-inner{
+  position:relative;z-index:1;
+  display:flex;flex-direction:column;justify-content:center;
+  padding:var(--shell-content-pt) var(--shell-content-pr);
+  padding-left:var(--shell-content-pl);
+  height:100%;gap:0
+}
+/* Threat label */
+#boss-hud-label{
+  font-family:'Share Tech Mono','Courier New',monospace;
+  font-size:clamp(10px,.6vw, 10px);letter-spacing:clamp(3px,1vw,6px);
+  color:rgba(255,60,60,.28);text-transform:uppercase;margin-bottom:6px;white-space:nowrap
+}
+/* Boss name */
+#boss-hud-name{
+  font-family:'Bebas Neue','Space Grotesk',sans-serif;
+  font-size:clamp(1.4rem,4.5vw,2.6rem);
+  font-weight:400;letter-spacing:.04em;line-height:.9;
+  color:#fff;text-transform:uppercase;
+  text-shadow:0 0 40px rgba(255,40,40,.5),0 0 80px rgba(220,20,20,.18);
+  margin-bottom:clamp(10px,1.8vh,18px);transition:text-shadow .4s
+}
+/* HP block */
+#boss-hp-block{margin-bottom:clamp(10px,1.6vh,16px)}
+#boss-hp-row{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px}
+#boss-hp-key{
+  font-family:'Share Tech Mono',monospace;
+  font-size:clamp(10px,.55vw, 10px);letter-spacing:3px;
+  color:rgba(255,255,255,.2);text-transform:uppercase
+}
+#boss-hp-val{
+  font-family:'Space Grotesk',sans-serif;
+  font-size:clamp(10px,.9vw,11px);letter-spacing:2px;
+  color:rgba(255,100,80,.88);font-weight:600;transition:color .3s
+}
+#boss-hp-track{
+  height:3px;background:rgba(255,255,255,.08);border-radius:3px;overflow:hidden
+}
+#boss-hp-fill{
+  height:100%;border-radius:3px;background:rgba(255,40,40,.88);
+  transition:width .4s ease,background .4s ease;
+  box-shadow:0 0 8px rgba(255,40,40,.55),0 0 16px rgba(255,20,20,.2)
+}
+#boss-hud-sep{
+  width:100%;height:1px;
+  background:linear-gradient(90deg,rgba(255,60,40,.2),rgba(255,60,40,.05),transparent);
+  margin-bottom:clamp(8px,1.4vh,14px)
+}
+#boss-phase-lbl{
+  font-family:'Share Tech Mono',monospace;
+  font-size:clamp(10px,.55vw, 10px);letter-spacing:clamp(2px,.7vw,4px);
+  color:rgba(255,130,100,.38);text-transform:uppercase;transition:color .4s
+}
+#boss-phase-lbl.phase-2{color:rgba(255,160,60,.52)}
+#boss-phase-lbl.phase-3{color:rgba(255,80,60,.68)}
+/* Profile tints via CSS classes */
+/* v69: profile tints via shell-spine variables — ghost=teal, sigma=violet */
+#boss-hud.profile-ghost { --boss-spine-col: var(--shell-spine-teal, linear-gradient(to bottom,transparent 4%,rgba(40,255,200,.14) 18%,rgba(60,255,210,.28) 46%,rgba(40,255,200,.14) 80%,transparent 96%)); --boss-spine-pip: rgba(60,255,200,.42); }
+#boss-hud.profile-sigma  { --boss-spine-col: var(--shell-spine-violet, linear-gradient(to bottom,transparent 4%,rgba(200,80,255,.14) 18%,rgba(180,60,255,.28) 46%,rgba(200,80,255,.14) 80%,transparent 96%)); --boss-spine-pip: rgba(200,100,255,.42); }
+#boss-hud.profile-ghost #boss-hud-spine,
+#boss-hud.profile-sigma  #boss-hud-spine { background: var(--boss-spine-col) }
+#boss-hud.profile-ghost #boss-hud-spine::before,#boss-hud.profile-ghost #boss-hud-spine::after,
+#boss-hud.profile-sigma  #boss-hud-spine::before,#boss-hud.profile-sigma  #boss-hud-spine::after { background: var(--boss-spine-pip) }
+#boss-hud.profile-ghost #boss-hud-name{text-shadow:0 0 40px rgba(40,255,200,.7),0 0 80px rgba(30,180,150,.22)}
+#boss-hud.profile-ghost #boss-hp-val{color:rgba(60,255,200,.88)}
+#boss-hud.profile-ghost #boss-hud-label{color:rgba(40,220,180,.28)}
+#boss-hud.profile-ghost #boss-hud-sep{background:linear-gradient(90deg,rgba(40,255,200,.18),rgba(40,255,200,.04),transparent)}
+#boss-hud.profile-sigma #boss-hud-name{text-shadow:0 0 40px rgba(200,100,255,.7),0 0 80px rgba(160,50,220,.22)}
+#boss-hud.profile-sigma #boss-hp-val{color:rgba(200,100,255,.88)}
+#boss-hud.profile-sigma #boss-hud-label{color:rgba(180,60,255,.28)}
+#boss-hud.profile-sigma #boss-hud-sep{background:linear-gradient(90deg,rgba(180,60,255,.18),rgba(180,60,255,.04),transparent)}
+/* Breathing glow */
+/* @keyframes boss-hud-breathe — removed: defined in animations.css */
+/* @keyframes boss-hud-breathe-ghost — removed: defined in animations.css */
+/* @keyframes boss-hud-breathe-sigma — removed: defined in animations.css */
+#boss-hud.vis{animation:boss-hud-breathe 1.8s ease-in-out infinite alternate}
+#boss-hud.profile-ghost.vis{animation:boss-hud-breathe-ghost 1.8s ease-in-out infinite alternate}
+#boss-hud.profile-sigma.vis{animation:boss-hud-breathe-sigma 1.8s ease-in-out infinite alternate}
+
+/* ── v67 Boss encounter state — telegraph / vuln als einheitlicher Zustand ── */
+/* Telegraph: Boss-Name dimmt leicht, HP-bar pulsiert orange */
+#boss-hud.enc-telegraph #boss-hud-name{
+  animation:boss-telegraph-name .6s ease-in-out infinite alternate
+}
+/* @keyframes boss-telegraph-name — removed: defined in animations.css */
+#boss-hud.enc-telegraph #boss-hp-fill{
+  animation:boss-telegraph-hp .6s ease-in-out infinite alternate
+}
+/* @keyframes boss-telegraph-hp — removed: defined in animations.css */
+/* Vuln: Boss-HUD spine flares green, HP val flips color, border pulses */
+#boss-hud.enc-vuln{
+  animation:boss-vuln-hud .38s ease-in-out infinite alternate !important
+}
+/* @keyframes boss-vuln-hud — removed: defined in animations.css */
+#boss-hud.enc-vuln #boss-hud-spine{
+  background:linear-gradient(to bottom,transparent 4%,rgba(80,255,160,.25) 18%,rgba(100,255,180,.55) 46%,rgba(80,255,160,.25) 80%,transparent 96%) !important
+}
+#boss-hud.enc-vuln #boss-hp-val{
+  color:rgba(80,255,160,.95) !important;
+  text-shadow:0 0 12px rgba(60,255,140,.7)
+}
+#boss-hud.enc-vuln #boss-hud-name{
+  animation:boss-vuln-name .38s ease-in-out infinite alternate
+}
+/* @keyframes boss-vuln-name — removed: defined in animations.css */
+/* Ghost vuln — teal */
+#boss-hud.profile-ghost.enc-vuln #boss-hud-spine{
+  background:linear-gradient(to bottom,transparent 4%,rgba(40,255,200,.3) 18%,rgba(60,255,210,.6) 46%,rgba(40,255,200,.3) 80%,transparent 96%) !important
+}
+/* Sigma vuln — violet */
+#boss-hud.profile-sigma.enc-vuln #boss-hud-spine{
+  background:linear-gradient(to bottom,transparent 4%,rgba(200,80,255,.28) 18%,rgba(180,60,255,.52) 46%,rgba(200,80,255,.28) 80%,transparent 96%) !important
+}
+#boss-hud.profile-sigma.enc-vuln #boss-hp-val{color:rgba(200,100,255,.95) !important}
+
+#boss-attack-flash{
+  position:fixed;inset:0;z-index:9;pointer-events:none;
+  background:radial-gradient(ellipse at 50% 50%,rgba(255,20,20,.18) 0%,transparent 70%);
+  opacity:0;transition:opacity .5s
+}
+#boss-attack-flash.show{opacity:1}
+
+/* v68: enc-status — single-line encounter state label below boss-phase-lbl */
+#boss-enc-status{
+  font-family:'Share Tech Mono',monospace;
+  font-size:clamp(10px,.5vw, 10px);letter-spacing:clamp(2px,.6vw,4px);
+  color:rgba(255,255,255,.12);text-transform:uppercase;
+  margin-top:clamp(6px,1vh,10px);
+  transition:color .25s,text-shadow .25s;
+  white-space:nowrap
+}
+#boss-hud.enc-telegraph #boss-enc-status{
+  color:rgba(255,160,60,.65);text-shadow:0 0 8px rgba(255,100,20,.45)
+}
+#boss-hud.enc-vuln #boss-enc-status{
+  color:rgba(80,255,160,.82);text-shadow:0 0 10px rgba(60,255,140,.5)
+}
+#boss-hud.profile-ghost.enc-vuln #boss-enc-status{color:rgba(60,255,210,.82);text-shadow:0 0 10px rgba(40,220,180,.5)}
+#boss-hud.profile-sigma.enc-vuln #boss-enc-status{color:rgba(200,100,255,.82);text-shadow:0 0 10px rgba(160,60,220,.5)}
+#boss-hud.profile-parasite.enc-vuln #boss-enc-status{color:rgba(120,255,60,.82);text-shadow:0 0 10px rgba(80,220,30,.5)}
+/* boss vuln bar — stack slot 172px */
+#boss-vuln-bar{
+  position:fixed;bottom:calc(172px + env(safe-area-inset-bottom,0px));left:50%;transform:translateX(-50%);
+  z-index:14;text-align:center;pointer-events:none;opacity:0;transition:opacity .28s
+}
+#boss-vuln-bar.show{opacity:1}
+#boss-vuln-title{
+  font-size:13px;letter-spacing:5px;color:rgba(255,80,80,.95);
+  text-transform:uppercase;text-shadow:0 0 18px rgba(255,30,30,.8);margin-bottom:4px
+}
+/* FIX B-05: removed conflicting 150px width - unified to 200px below */
+#boss-vuln-fill{height:100%;border-radius:3px;background:rgba(255,60,60,.85);width:100%}
+
+/* ── DRAFT CARD TAGS (v52) ── */
+.dc-tag{
+  font-size:11px;letter-spacing:3px;padding:2px 8px;border-radius:20px;
+  text-transform:uppercase;margin-bottom:4px;display:inline-block;
+  opacity:.85;font-family:'Space Grotesk',sans-serif;font-weight:600;
+}
+.dc-tag-predator .dc-tag{background:rgba(255,80,40,.18);color:rgba(255,120,80,.95);border:1px solid rgba(255,80,40,.3)}
+.dc-tag-analyst  .dc-tag{background:rgba(40,120,255,.18);color:rgba(80,180,255,.95);border:1px solid rgba(40,120,255,.3)}
+.dc-tag-mnemonic .dc-tag{background:rgba(160,80,255,.18);color:rgba(200,120,255,.95);border:1px solid rgba(160,80,255,.3)}
+.dc-tag-architect .dc-tag{background:rgba(40,220,140,.18);color:rgba(80,255,180,.95);border:1px solid rgba(40,220,140,.3)}
+.dc-tag-wild     .dc-tag{background:rgba(255,200,40,.18);color:rgba(255,220,100,.95);border:1px solid rgba(255,200,40,.3)}
+.dc-tag-predator{border-color:rgba(255,80,40,.35)!important}
+.dc-tag-analyst  {border-color:rgba(40,120,255,.35)!important}
+.dc-tag-mnemonic {border-color:rgba(160,80,255,.35)!important}
+.dc-tag-architect{border-color:rgba(40,220,140,.35)!important}
+.dc-tag-wild     {border-color:rgba(255,200,40,.35)!important}
+
+/* ── BOSS TELEGRAPH (v52) ── */
+#boss-telegraph{
+  position:fixed;inset:0;z-index:8;pointer-events:none;
+  opacity:0;transition:opacity .15s;
+}
+#boss-telegraph.warn{
+  animation:boss-telegraph-pulse 0.6s ease-in-out infinite alternate;
+}
+/* @keyframes boss-telegraph-pulse — removed: defined in animations.css */
+#boss-telegraph.warn{opacity:1}
+#boss-attack-countdown{
+  position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);
+  z-index:12;pointer-events:none;
+  font-family:'Space Grotesk',sans-serif;font-weight:700;
+  font-size:3rem;letter-spacing:4px;
+  color:rgba(255,40,40,0);
+  text-shadow:0 0 60px rgba(255,0,0,0);
+  transition:all .2s;
+}
+#boss-attack-countdown.show{
+  color:rgba(255,60,60,.9);
+  text-shadow:0 0 60px rgba(255,0,0,.8);
+}
+/* Vuln indicator — bigger and pulsing */
+#boss-vuln-bar.show #boss-vuln-title{
+  animation:vuln-pulse .4s ease-in-out infinite alternate;
+}
+/* v68: boss-vuln-bar profile tints */
+#boss-hud.profile-ghost ~ * #boss-vuln-bar #boss-vuln-title,
+body.boss-profile-ghost #boss-vuln-title{color:rgba(60,255,200,.95);text-shadow:0 0 18px rgba(40,220,170,.8)}
+body.boss-profile-ghost #boss-vuln-fill{background:linear-gradient(90deg,rgba(40,255,200,.9),rgba(60,220,180,.9));box-shadow:0 0 8px rgba(40,220,170,.6)}
+body.boss-profile-sigma #boss-vuln-title{color:rgba(210,100,255,.95);text-shadow:0 0 18px rgba(180,60,255,.8)}
+body.boss-profile-sigma #boss-vuln-fill{background:linear-gradient(90deg,rgba(180,60,255,.9),rgba(210,100,255,.9));box-shadow:0 0 8px rgba(160,40,220,.6)}
+
+/* @keyframes vuln-pulse — removed: defined in animations.css */
+#boss-vuln-fill{
+  height:100%;border-radius:3px;
+  background:linear-gradient(90deg,rgba(255,60,60,.9),rgba(255,200,40,.9));
+  width:100%;
+  box-shadow:0 0 8px rgba(255,120,40,.6);
+  transition:width .05s linear;
+}
+#boss-vuln-fill-wrap{width:200px;height:5px;background:rgba(255,255,255,.08);border-radius:3px;margin:0 auto}
+/* Hit impact: screen shake keyframe */
+/* @keyframes boss-hit-shake — removed: defined in animations.css */
+
+/* FIX P2: Ghost Matrix fake window visual hint — subtle amber tint on boss-hud */
+#boss-hud.ghost-fake-hint #boss-vuln-fill {
+  background: linear-gradient(90deg, rgba(255,180,40,.85), rgba(255,140,0,.85));
+  box-shadow: 0 0 10px rgba(255,160,0,.5);
+}
+#boss-hud.ghost-fake-hint #boss-vuln-title {
+  color: rgba(255,200,80,.9);
+  text-shadow: 0 0 12px rgba(255,160,0,.7);
+}

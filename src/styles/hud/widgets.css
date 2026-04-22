@@ -1,0 +1,177 @@
+/* ══════════════════════════════════════════════════════
+   SYNAPSE — HUD MICRO-WIDGETS
+   Pulse CD Arc, Energy Mini-Bar, Sync Decay Bar,
+   Spine/Backbone Banner, Layer Tag, Active Projects,
+   Agent Line Ticker, Cost Ghost Labels.
+   Carry-over from v75.6–v78 extraction.
+   ══════════════════════════════════════════════════════ */
+
+/* ══════════════════════════════════════════════════════
+   SYNAPSE v95 — LEGACY CSS (Phase B safety net)
+   Contains:
+     - Boss variants, run history, post-run report,
+       progression section
+     - All 7 supplemental style blocks
+       (responsive patches, accessibility hardening,
+        prod-status-banner, pulse CD arc, energy mini-bar)
+   Legacy carry-over from earlier extraction. Keep until the remaining
+   post-run/boss variant rules are either redistributed or explicitly retired.
+   ══════════════════════════════════════════════════════ */
+
+/* ── Remaining main block: boss variants, run history, post-run ── */
+/* ══════════════════════════════════════════════
+   v75.6 HUD UPGRADES
+   ══════════════════════════════════════════════ */
+
+/* ── 2A: Pulse CD Arc — SVG ring around pulse button ── */
+#pulse-cd-wrap{
+  position:relative;display:inline-flex;align-items:center;justify-content:center
+}
+#pulse-cd-ring{
+  position:absolute;top:-5px;left:-5px;right:-5px;bottom:-5px;
+  width:calc(100% + 10px);height:calc(100% + 10px);
+  pointer-events:none;z-index:1;opacity:0;transition:opacity .3s
+}
+#pulse-cd-ring.vis{opacity:1}
+#pulse-cd-ring circle.track{
+  fill:none;stroke:rgba(255,255,255,.06);stroke-width:1.5
+}
+#pulse-cd-ring circle.fill{
+  fill:none;stroke-width:1.5;stroke-linecap:round;
+  transition:stroke-dashoffset .18s linear,stroke .4s;
+  transform:rotate(-90deg);transform-origin:50% 50%
+}
+#pulse-cd-ring.rdy circle.fill{stroke:rgba(255,220,80,.75);filter:drop-shadow(0 0 3px rgba(255,200,50,.7))}
+#pulse-cd-ring.cap circle.fill{stroke:rgba(80,255,160,.85);filter:drop-shadow(0 0 4px rgba(60,255,140,.8))}
+#pulse-cd-ring.fus circle.fill{stroke:rgba(255,150,40,.85);filter:drop-shadow(0 0 4px rgba(255,120,20,.8))}
+#pulse-cd-ring.cd  circle.fill{stroke:rgba(100,140,255,.42)}
+
+/* ── v78 Energy Mini-Bar — polished ── */
+#energy-bar-wrap{
+  display:inline-flex;align-items:center;gap:5px;vertical-align:middle
+}
+#energy-mini-bar{
+  width:36px;height:3px;
+  background:rgba(255,255,255,.06);
+  border-radius:3px;
+  overflow:hidden;display:inline-block;vertical-align:middle;margin-left:4px;
+}
+#energy-mini-fill{
+  height:100%;border-radius:3px;
+  background:rgba(100,220,255,.75);
+  transition:width .4s cubic-bezier(.25,0,.15,1),background .4s;
+  box-shadow:0 0 4px rgba(100,200,255,.4);
+}
+/* low energy: urgent red + pulse */
+#energy-mini-fill.low{
+  background:rgba(220,60,60,.9);
+  box-shadow:0 0 6px rgba(220,60,60,.7);
+  animation:mini-bar-pulse .9s infinite alternate;
+}
+/* @keyframes mini-bar-pulse — removed: defined in animations.css */
+/* high energy: gold */
+#energy-mini-fill.high{
+  background:rgba(255,210,60,.9);
+  box-shadow:0 0 5px rgba(255,190,40,.6);
+}
+
+/* ── 2C: Sync Decay Bar — appears under now-action ── */
+#sync-decay-bar-wrap{
+  height:2px;width:160px;margin:3px auto 0;
+  background:rgba(255,255,255,.05);border-radius:2px;overflow:hidden;
+  opacity:0;transition:opacity .3s
+}
+#sync-decay-bar-wrap.vis{opacity:1}
+#sync-decay-fill{
+  height:100%;border-radius:2px;width:100%;
+  background:rgba(255,200,60,.85);
+  box-shadow:0 0 6px rgba(255,180,40,.6);
+  transition:width .12s linear,background .3s
+}
+#sync-decay-fill.fusion{background:rgba(255,140,40,.9);box-shadow:0 0 8px rgba(255,120,20,.7)}
+#sync-decay-fill.critical{background:rgba(255,60,60,.95);box-shadow:0 0 10px rgba(255,40,40,.85);animation:sync-decay-pulse .25s infinite alternate}
+/* @keyframes sync-decay-pulse — removed: defined in animations.css */
+
+/* ── 2D: Spine/Backbone HUD Banner ── */
+#spine-banner{
+  font-family:'Share Tech Mono','Courier New',monospace;
+  font-size:max(10px,.38rem);letter-spacing:5px;text-transform:uppercase;
+  text-align:center;margin-top:4px;
+  pointer-events:none;
+  opacity:0;transform:translateY(-4px);
+  transition:opacity .5s,transform .5s,color .4s
+}
+#spine-banner.vis{opacity:1;transform:translateY(0)}
+#spine-banner.spn{
+  color:rgba(255,210,60,.82);
+  text-shadow:0 0 12px rgba(255,190,40,.55)
+}
+#spine-banner.bb{
+  color:rgba(255,130,40,.95);
+  text-shadow:0 0 16px rgba(255,110,20,.75),0 0 32px rgba(255,80,0,.25);
+  animation:backbone-banner-glow .9s infinite alternate
+}
+/* @keyframes backbone-banner-glow — removed: defined in animations.css */
+
+/* ── 2E: Layer Tag shimmer on change ── */
+/* @keyframes layer-shimmer — removed: defined in animations.css */
+#layer-tag.shimmer{animation:layer-shimmer .65s ease-out forwards}
+
+/* ── 2F: Active Projects HUD Panel ── */
+#active-projects-hud{
+  position:fixed;left:8px;bottom:calc(145px + env(safe-area-inset-bottom,0px));z-index:12;
+  max-width:clamp(155px,38vw,210px);
+  background:rgba(0,4,18,.82);
+  border:1px solid rgba(120,80,255,.14);
+  border-left:2px solid rgba(140,80,255,.45);
+  border-radius:3px;
+  padding:5px 10px 6px 8px;
+  display:none;pointer-events:none;
+  backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+  transition:opacity .35s
+}
+#active-projects-hud.vis{display:block}
+#ap-hud-label{
+  font-family:'Share Tech Mono',monospace;
+  font-size:max(10px,.26rem);letter-spacing:3.5px;text-transform:uppercase;
+  color:rgba(140,80,255,.38);margin-bottom:4px
+}
+.ap-hud-row{
+  display:flex;align-items:baseline;gap:5px;
+  font-family:'Share Tech Mono',monospace;
+  font-size:max(10px,.3rem);letter-spacing:1.8px;text-transform:uppercase;
+  color:rgba(180,150,255,.55);line-height:1.65;
+}
+.ap-hud-dot{
+  width:5px;height:5px;border-radius:50%;flex-shrink:0;margin-top:1px;
+  background:rgba(140,80,255,.5);border:1px solid rgba(160,100,255,.5);
+  transition:all .3s
+}
+.ap-hud-row.triggered .ap-hud-dot{background:rgba(255,215,60,.9);border-color:rgba(255,200,40,.9);box-shadow:0 0 5px rgba(255,200,40,.6)}
+.ap-hud-row.triggered{color:rgba(255,220,80,.85)}
+.ap-hud-name{overflow:hidden;white-space:nowrap;text-overflow:ellipsis;max-width:130px}
+.ap-hud-progress{font-size:max(10px,.24rem);color:rgba(255,255,255,.25);margin-left:auto;flex-shrink:0}
+
+/* ── 2G: Agent-line ticker animation ── */
+/* @keyframes agent-ticker-in — removed: defined in animations.css */
+#agent-line.ticker-in{animation:agent-ticker-in .4s ease-out}
+
+/* ── 2H: Energy cost ghost label on node/link buttons ── */
+.tbtn .cost-ghost{
+  position:absolute;bottom:1px;right:4px;
+  font-size:max(10px,.26rem);letter-spacing:1px;
+  color:rgba(255,255,255,.2);pointer-events:none;
+  transition:color .2s
+}
+.tbtn:disabled .cost-ghost,.tbtn.tbtn-disabled .cost-ghost{color:rgba(220,60,60,.45)}
+
+/* ── 2I: Pulse button cost ghost ── */
+#pulse-cost-ghost{
+  position:fixed;z-index:11;
+  font-family:'Share Tech Mono',monospace;
+  font-size:max(10px,.3rem);letter-spacing:2px;text-transform:uppercase;
+  color:rgba(255,255,255,.18);pointer-events:none;
+  opacity:0;transition:opacity .2s;white-space:nowrap
+}
+#pulse-cost-ghost.vis{opacity:1}
+/* ══════════════════════════════════════════════ end v75.6 HUD CSS ══ */
